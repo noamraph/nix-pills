@@ -10,7 +10,7 @@ Functions help to build reusable components in a big repository like
 [nixpkgs](https://github.com/NixOS/nixpkgs/). The Nix manual has a
 [great explanation of
 functions](https://nixos.org/manual/nix/stable/expressions/language-constructs.html#functions).
-Let\'s go: pill on one hand, Nix manual on the other hand.
+Let's go: pill on one hand, Nix manual on the other hand.
 
 I remind you how to enter the Nix environment:
 `source ~/.nix-profile/etc/profile.d/nix.sh`
@@ -25,7 +25,7 @@ the body of the function.
     «lambda»
 
 So here we defined a function that takes a parameter `x`, and returns
-`x*2`. The problem is that we cannot use it in any way, because it\'s
+`x*2`. The problem is that we cannot use it in any way, because it's
 unnamed\... joke!
 
 We can store functions in variables.
@@ -41,17 +41,17 @@ As usual, please ignore the special syntax for assignments inside
 `x`, and returns `x*2`. This function is then assigned to the variable
 `double`. Finally we did our first function call: `double 3`.
 
-Big note: it\'s not like many other programming languages
+Big note: it's not like many other programming languages
 where you write `double(3)`. It really is `double 3`.
 
 In summary: to call a function, name the variable, then space, then the
-argument. Nothing else to say, it\'s as easy as that.
+argument. Nothing else to say, it's as easy as that.
 
 ## More than one parameter
 
 How do we create a function that accepts more than one parameter? For
 people not used to functional programming, this may take a while to
-grasp. Let\'s do it step by step.
+grasp. Let's do it step by step.
 
     nix-repl> mul = a: (b: a*b)
     nix-repl> mul
@@ -67,7 +67,7 @@ another function. This other function takes a parameter `b` and returns
 `b: 3*b`. In turn, we call the returned function with `4`, and get the
 expected result.
 
-You don\'t have to use parentheses at all, Nix has sane priorities when
+You don't have to use parentheses at all, Nix has sane priorities when
 parsing the code:
 
     nix-repl> mul = a: b: a*b
@@ -80,7 +80,7 @@ parsing the code:
     nix-repl> mul (6+7) (8+9)
     221
 
-Much more readable, you don\'t even notice that functions only receive
+Much more readable, you don't even notice that functions only receive
 one argument. Since the argument is separated by a space, to pass more
 complex expressions you need parentheses. In other common languages you
 would write `mul(6+7, 8+9)`.
@@ -116,7 +116,7 @@ We then access attributes `a` and `b` from the given set. Note how the
 parentheses-less syntax for function calls is very elegant in this case,
 instead of doing `mul({ a=3; b=4; })` in other languages.
 
-In the second case we defined an argument set. It\'s like defining a
+In the second case we defined an argument set. It's like defining a
 set, except without values. We require that the passed set contains the
 keys `a` and `b`. Then we can use those `a` and `b` in the function body
 directly.
@@ -154,12 +154,12 @@ solution is to give a name to the given set with the **@-pattern**:
     nix-repl> mul { a = 3; b = 4; c = 2; }
     24
 
-That\'s it, you give a name to the whole parameter with name@ before the
+That's it, you give a name to the whole parameter with name@ before the
 set pattern.
 
 Advantages of using argument sets:
 
--   Named unordered arguments: you don\'t have to remember the order of
+-   Named unordered arguments: you don't have to remember the order of
     the arguments.
 
 -   You can pass sets, that adds a whole new layer of flexibility and
@@ -179,7 +179,7 @@ The `import` function is built-in and provides a way to parse a `.nix`
 file. The natural approach is to define each component in a `.nix` file,
 then compose by importing these files.
 
-Let\'s start with the bare metal.
+Let's start with the bare metal.
 
 `a.nix`:
 
@@ -199,7 +199,7 @@ Let\'s start with the bare metal.
     nix-repl> mul a b
     12
 
-Yes it\'s really that simple. You import a file, and it gets parsed as
+Yes it's really that simple. You import a file, and it gets parsed as
 an expression. Note that the scope of the imported file does not inherit
 the scope of the importer.
 
@@ -232,7 +232,7 @@ Explaining:
 -   `builtins.trace` is a [built-in
     function](https://nixos.org/manual/nix/stable/expressions/builtins.html)
     that takes two arguments. The first is the message to display, the
-    second is the value to return. It\'s usually used for debugging
+    second is the value to return. It's usually used for debugging
     purposes.
 
 -   Then we import `test.nix`, and call the function with that set.

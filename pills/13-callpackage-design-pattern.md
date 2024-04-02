@@ -8,7 +8,7 @@ repository.
 
 The next design pattern we will examine is called the `callPackage`
 pattern. This technique is extensively used in
-[nixpkgs](https://github.com/NixOS/nixpkgs), and it\'s the current de
+[nixpkgs](https://github.com/NixOS/nixpkgs), and it's the current de
 facto standard for importing packages in a repository. Its purpose is to
 reduce the duplication of identifiers between package derivation inputs
 and repository derivations.
@@ -86,18 +86,18 @@ value. For our purposes, we are only interested in the argument names;
 we do not care about the default values right now.
 
 The next step is to make `callPackage` automatically pass inputs to our
-package derivations based on the argument names we\'ve just obtained
+package derivations based on the argument names we've just obtained
 with `functionArgs`.
 
 To do this, we need two things:
 
 -   A package repository set containing package derivations that match
-    the arguments names we\'ve obtained
+    the arguments names we've obtained
 
 -   A way to obtain an auto-populated attribute set combining the
     package repository and the return value of `functionArgs`.
 
-The former is easy: we just have to set our package derivation\'s inputs
+The former is easy: we just have to set our package derivation's inputs
 to be package names in a repository, such as `nixpkgs`. For the latter,
 Nix provides another builtin function:
 
@@ -108,7 +108,7 @@ Nix provides another builtin function:
     { a = 3; b = 5; }
 
 The `intersectAttrs` returns an attribute set whose names are the
-intersection of both arguments\' attribute names, with the attribute
+intersection of both arguments' attribute names, with the attribute
 values taken from the second argument.
 
 This is all we need to do: we have obtained the argument names from a
@@ -121,7 +121,7 @@ is our simple implementation of `callPackage`:
     nix-repl> with values; add { inherit a b; }
     8
 
-Let\'s dissect the above snippet:
+Let's dissect the above snippet:
 
 -   We define a `callPackage` variable which is a function.
 
@@ -137,7 +137,7 @@ Let\'s dissect the above snippet:
 -   Finally, we call the passed function `f` with the resulting
     intersection.
 
-In the snippet above, we\'ve also demonstrated that the `callPackage`
+In the snippet above, we've also demonstrated that the `callPackage`
 call is equivalent to directly calling `add a b`.
 
 We achieved most of what we wanted: to automatically call functions
@@ -184,7 +184,7 @@ Given our `callPackages`, we can simplify the repository expression in
     in
     pkgs
 
-Let\'s examine this in detail:
+Let's examine this in detail:
 
 -   The expression above defines our own package repository, which we
     call `pkgs`, that contains `hello` along with our two variants of
@@ -212,10 +212,10 @@ Note how easily we overrode arguments in the case of `graphviz` without
 `gd`. In addition, note how easy it was to merge two repositories:
 `nixpkgs` and our `pkgs`!
 
-The reader should notice a magic thing happening. We\'re defining `pkgs`
+The reader should notice a magic thing happening. We're defining `pkgs`
 in terms of `callPackage`, and `callPackage` in terms of `pkgs`. That
 magic is possible thanks to lazy evaluation: `builtins.intersectAttrs`
-doesn\'t need to know the values in `allPkgs` in order to perform
+doesn't need to know the values in `allPkgs` in order to perform
 intersection, only the keys that do not require `callPackage`
 evaluation.
 
@@ -226,7 +226,7 @@ considerably. We were able to import packages that require named
 arguments and call them automatically, given the set of all packages
 sourced from `nixpkgs`.
 
-We\'ve also introduced some useful builtin functions that allows us to
+We've also introduced some useful builtin functions that allows us to
 introspect Nix functions and manipulate attributes. These builtin
 functions are not usually used when packaging software, but rather act
 as tools for packaging. They are documented in the [Nix

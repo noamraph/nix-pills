@@ -19,10 +19,10 @@ modifications.
 In Nix, we mostly talk about **functions** that accept inputs in order
 to return **derivations**. In our world, we want utility functions that
 are able to manipulate those structures. These utilities add some useful
-properties to the original value, and we\'d like to be able to apply
+properties to the original value, and we'd like to be able to apply
 more utilities on top of the result.
 
-For example, let\'s say we have an initial derivation `drv` and we want
+For example, let's say we have an initial derivation `drv` and we want
 to transform it into a `drv` with debugging information and custom
 patches:
 
@@ -46,7 +46,7 @@ pass the necessary arguments.
 
 In our repository we have a set of attributes that import the
 expressions of the packages and pass these arguments, getting back a
-derivation. Let\'s take for example the graphviz attribute:
+derivation. Let's take for example the graphviz attribute:
 
     graphviz = import ./graphviz.nix { inherit mkDerivation gd fontconfig libjpeg bzip2; };
 
@@ -66,7 +66,7 @@ alternative gd:
       };
     }
 
-That\'s hard to maintain. Using `callPackage` would be easier:
+That's hard to maintain. Using `callPackage` would be easier:
 
     mygraphviz = callPackage ./graphviz.nix { gd = customgd; };
 
@@ -91,7 +91,7 @@ Recall that the graphviz attribute in the repository is the derivation
 returned by the function imported from `graphviz.nix`. We would like to
 add a further attribute named \"`override`\" to the returned set.
 
-Let\'s start by first creating a function \"`makeOverridable`\". This
+Let's start by first creating a function \"`makeOverridable`\". This
 function will take two arguments: a function (that must return a set)
 and the set of original arguments to be passed to the function.
 
@@ -114,7 +114,7 @@ and returns the result of the original function called with the original
 arguments unified with the new arguments. This is admittedly somewhat
 confusing, but the examples below should make it clear.
 
-Let\'s try it with `nix repl`:
+Let's try it with `nix repl`:
 
     $ nix repl
     nix-repl> :l lib.nix
@@ -133,13 +133,13 @@ plain sum. Instead, it returns a set with the sum bound to the name
 `result`.
 
 The variable `res` contains the result of the function call without any
-override. It\'s easy to see in the definition of `makeOverridable`. In
+override. It's easy to see in the definition of `makeOverridable`. In
 addition, you can see that the new `override` attribute is a function.
 
 Calling `res.override` with a set will invoke the original function with
 the overrides, as expected.
 
-This is a good start, but we can\'t override again! This is because the
+This is a good start, but we can't override again! This is because the
 returned set (with `result = 15`) does not have an `override` attribute
 of its own. This is bad; it breaks further composition.
 
@@ -155,10 +155,10 @@ overridable again:
         origRes // { override = newArgs: makeOverridable f (origArgs // newArgs); };
     }
 
-Please note the `rec` keyword. It\'s necessary so that we can refer to
+Please note the `rec` keyword. It's necessary so that we can refer to
 `makeOverridable` from `makeOverridable` itself.
 
-Now let\'s try overriding twice:
+Now let's try overriding twice:
 
     nix-repl> :l lib.nix
     Added 1 variables.

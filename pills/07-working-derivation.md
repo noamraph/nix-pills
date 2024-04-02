@@ -17,25 +17,25 @@ I remind you how to enter the Nix environment:
 
 ## Using a script as a builder
 
-What\'s the easiest way to run a sequence of commands for building
+What's the easiest way to run a sequence of commands for building
 something? A bash script. We write a custom bash script, and we want it
 to be our builder. Given a `builder.sh`, we want the derivation to run
 `bash builder.sh`.
 
-We don\'t use hash bangs in `builder.sh`, because at the time we are
+We don't use hash bangs in `builder.sh`, because at the time we are
 writing it we do not know the path to bash in the nix store. Yes, even
 bash is in the nix store, everything is there.
 
-We don\'t even use /usr/bin/env, because then we lose the cool stateless
+We don't even use /usr/bin/env, because then we lose the cool stateless
 property of Nix. Not to mention that `PATH` gets cleared when building,
-so it wouldn\'t find bash anyway.
+so it wouldn't find bash anyway.
 
 In summary, we want the builder to be bash, and pass it an argument,
 `builder.sh`. Turns out the `derivation` function accepts an optional
 `args` attribute which is used to pass arguments to the builder
 executable.
 
-First of all, let\'s write our `builder.sh` in the current directory:
+First of all, let's write our `builder.sh` in the current directory:
 
     declare -xp
     echo foo > $out
@@ -51,7 +51,7 @@ or a directory. In this case we are creating a file.
 
 In addition, we print out the environment variables during the build
 process. We cannot use env for this, because env is part of coreutils
-and we don\'t have a dependency to it yet. We only have bash for now.
+and we don't have a dependency to it yet. We only have bash for now.
 
 Like for coreutils in the previous pill, we get a blessed bash for free
 from our magic nixpkgs stuff: 
@@ -76,7 +76,7 @@ this derivation produced the following outputs:
 ```
 
 We did it! The contents of
-`/nix/store/w024zci0x1hh1wj6gjq0jagkc1sgrf5r-foo` is really foo. We\'ve
+`/nix/store/w024zci0x1hh1wj6gjq0jagkc1sgrf5r-foo` is really foo. We've
 built our first derivation.
 
 Note that we used `./builder.sh` and not `"./builder.sh"`. This way, it
@@ -110,10 +110,10 @@ declare -x out="/nix/store/gczb4qrag22harvv693wwnflqy7lx5pb-foo"
 declare -x system="x86_64-linux"
 ```
 
-Let\'s inspect those environment variables printed during the build
+Let's inspect those environment variables printed during the build
 process.
 
--   `$HOME` is not your home directory, and `/homeless-shelter` doesn\'t
+-   `$HOME` is not your home directory, and `/homeless-shelter` doesn't
     exist at all. We force packages not to depend on `$HOME` during the
     build process.
 
@@ -126,21 +126,21 @@ process.
     directory
 
 -   Then `$builder`, `$name`, `$out`, and `$system` are variables set
-    due to the .drv file\'s contents.
+    due to the .drv file's contents.
 
-And that\'s how we were able to use `$out` in our derivation and put
-stuff in it. It\'s like Nix reserved a slot in the nix store for us, and
+And that's how we were able to use `$out` in our derivation and put
+stuff in it. It's like Nix reserved a slot in the nix store for us, and
 we must fill it.
 
 In terms of autotools, `$out` will be the `--prefix` path. Yes, not the
-make `DESTDIR`, but the `--prefix`. That\'s the essence of stateless
-packaging. You don\'t install the package in a global common path under
+make `DESTDIR`, but the `--prefix`. That's the essence of stateless
+packaging. You don't install the package in a global common path under
 `/`, you install it in a local isolated path under your nix store slot.
 
 ## The .drv contents
 
 We added something else to the derivation this time: the args attribute.
-Let\'s see how this changed the .drv compared to the previous pill:
+Let's see how this changed the .drv compared to the previous pill:
 
 ```
 $ nix derivation show /nix/store/i76pr1cz0za3i9r6xq518bqqvd2raspw-foo.drv
@@ -175,13 +175,13 @@ $ nix derivation show /nix/store/i76pr1cz0za3i9r6xq518bqqvd2raspw-foo.drv
 ```
 
 Much like the usual
-.drv, except that there\'s a list of arguments in there passed to the
+.drv, except that there's a list of arguments in there passed to the
 builder (bash) with `builder.sh`... In the nix store..? Nix
 automatically copies files or directories needed for the build into the
 store to ensure that they are not changed during the build process and
 that the deployment is stateless and independent of the building
 machine. `builder.sh` is not only in the arguments passed to the
-builder, it\'s also in the input derivations.
+builder, it's also in the input derivations.
 
 Given that `builder.sh` is a plain file, it has no .drv associated with
 it. The store path is computed based on the filename and on the hash of
@@ -202,7 +202,7 @@ And its `simple_builder.sh`:
     mkdir $out
     gcc -o $out/simple $src
 
-Don\'t worry too much about where those variables come from yet; let\'s
+Don't worry too much about where those variables come from yet; let's
 write the derivation and build it: 
 
 ```
@@ -225,7 +225,7 @@ We added two new attributes to the derivation call, `gcc` and
 derivation set, and the name on the right refers to the gcc derivation
 from nixpkgs. The same applies for coreutils.
 
-We also added the `src` attribute, nothing magical --- it\'s just a
+We also added the `src` attribute, nothing magical --- it's just a
 name, to which the path `./simple.c` is assigned. Like
 `simple-builder.sh`, `simple.c` will be added to the store.
 
@@ -236,7 +236,7 @@ when converted to strings, the derivations evaluate to their output
 paths, and appending `/bin` to these leads us to their binaries.
 
 The same goes for the `src` variable. `$src` is the path to `simple.c`
-in the nix store. As an exercise, pretty print the .drv file. You\'ll
+in the nix store. As an exercise, pretty print the .drv file. You'll
 see `simple_builder.sh` and `simple.c` listed in the input derivations,
 along with bash, gcc and coreutils .drv files. The newly added
 environment variables described above will also appear.
@@ -293,7 +293,7 @@ in [the fifth pill](05-functions-and-imports.md). To reiterate:
 `(import <nixpkgs>) {}` makes this clearer.
 
 The value returned by the nixpkgs function is a set; more specifically,
-it\'s a set of derivations. Calling `import <nixpkgs> {}` into a
+it's a set of derivations. Calling `import <nixpkgs> {}` into a
 `let`-expression creates the local variable `pkgs` and brings it into
 scope. This has an effect similar to the `:l <nixpkgs>` we used in nix
 repl, in that it allows us to easily access derivations such as `bash`,
@@ -324,8 +324,8 @@ keyword](https://nixos.org/manual/nix/stable/expressions/language-constructs.htm
 `inherit (pkgs) gcc coreutils;` is equivalent to
 `gcc = pkgs.gcc; coreutils = pkgs.coreutils;`.
 
-This syntax only makes sense inside sets. There\'s no magic involved,
-it\'s simply a convenience to avoid repeating the same name for both the
+This syntax only makes sense inside sets. There's no magic involved,
+it's simply a convenience to avoid repeating the same name for both the
 attribute name and the value in scope.
 
 ## Next pill
@@ -335,5 +335,5 @@ separate `builder.sh` scripts in this post. We would like to have a
 generic builder script instead, especially since each build script goes
 in the nix store: a bit of a waste.
 
-*Is it really that hard to package stuff in Nix? No*, here we\'re
+*Is it really that hard to package stuff in Nix? No*, here we're
 studying the fundamentals of Nix.

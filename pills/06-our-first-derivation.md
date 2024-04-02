@@ -22,37 +22,37 @@ manual about the derivation built-in. A derivation from a Nix language
 view point is simply a set, with some attributes. Therefore you can pass
 the derivation around with variables like anything else.
 
-That\'s where the real power comes in.
+That's where the real power comes in.
 
 The `derivation` function receives a set as its first argument. This set
 requires at least the following three attributes:
 
 -   name: the name of the derivation. In the nix store the format is
-    hash-name, that\'s the name.
+    hash-name, that's the name.
 
 -   system: is the name of the system in which the derivation can be
     built. For example, x86_64-linux.
 
 -   builder: is the binary program that builds the derivation.
 
-First of all, what\'s the name of our system as seen by nix?
+First of all, what's the name of our system as seen by nix?
 
     nix-repl> builtins.currentSystem
     "x86_64-linux"
 
-Let\'s try to fake the name of the system:
+Let's try to fake the name of the system:
 
     nix-repl> d = derivation { name = "myname"; builder = "mybuilder"; system = "mysystem"; }
     nix-repl> d
     «derivation /nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv»
 
-Oh oh, what\'s that? Did it build the derivation? No it didn\'t, but it
+Oh oh, what's that? Did it build the derivation? No it didn't, but it
 **did create the .drv file**. `nix repl` does not build derivations
 unless you tell it to do so.
 
 ## Digression about .drv files
 
-What\'s that `.drv` file? It is the specification of how to build the
+What's that `.drv` file? It is the specification of how to build the
 derivation, without all the Nix language fuzz.
 
 Before continuing, some analogies with the C language:
@@ -60,18 +60,18 @@ Before continuing, some analogies with the C language:
 -   `.nix` files are like `.c` files.
 
 -   `.drv` files are intermediate files like `.o` files. The `.drv`
-    describes how to build a derivation; it\'s the bare minimum
+    describes how to build a derivation; it's the bare minimum
     information.
 
 -   out paths are then the product of the build.
 
 Both drv paths and out paths are stored in the nix store as you can see.
 
-What\'s in that `.drv` file? You can read it, but it\'s better to pretty
+What's in that `.drv` file? You can read it, but it's better to pretty
 print it:
 
 <div class="info">
-Note: If your version of nix doesn\'t have `nix derivation show`, use
+Note: If your version of nix doesn't have `nix derivation show`, use
 `nix show-derivation` instead.
 </div>
 
@@ -99,36 +99,36 @@ $ nix derivation show /nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv
 }
 ```
 
-Ok, we can see there\'s an out path, but it does not exist yet. We never
+Ok, we can see there's an out path, but it does not exist yet. We never
 told Nix to build it, but we know beforehand where the build output will
 be. Why?
 
 Think, if Nix ever built the derivation just because we accessed it in
-Nix, we would have to wait a long time if it was, say, Firefox. That\'s
+Nix, we would have to wait a long time if it was, say, Firefox. That's
 why Nix let us know the path beforehand and kept evaluating the Nix
-expressions, but it\'s still empty because no build was ever made.
+expressions, but it's still empty because no build was ever made.
 
 Important: the hash of the out path is based solely on the
 input derivations in the current version of Nix, not on the contents of
-the build product. It\'s possible however to have
+the build product. It's possible however to have
 [content-addressable](https://en.wikipedia.org/wiki/Content-addressable_storage)
-derivations for e.g. tarballs as we\'ll see later on.
+derivations for e.g. tarballs as we'll see later on.
 
-Many things are empty in that `.drv`, however I\'ll write a summary of
+Many things are empty in that `.drv`, however I'll write a summary of
 the [.drv format](http://nixos.org/~eelco/pubs/phd-thesis.pdf) for you:
 
 1.  The output paths (there can be multiple ones). By default nix
     creates one out path called \"out\".
 
-2.  The list of input derivations. It\'s empty because we are not
+2.  The list of input derivations. It's empty because we are not
     referring to any other derivation. Otherwise, there would be a list
     of other .drv files.
 
-3.  The system and the builder executable (yes, it\'s a fake one).
+3.  The system and the builder executable (yes, it's a fake one).
 
 4.  Then a list of environment variables passed to the builder.
 
-That\'s it, the minimum necessary information to build our derivation.
+That's it, the minimum necessary information to build our derivation.
 
 Important note: the environment variables passed to the
 builder are just those you see in the .drv plus some other Nix related
@@ -139,7 +139,7 @@ suffer from
 
 Back to our fake derivation.
 
-Let\'s build our really fake derivation:
+Let's build our really fake derivation:
 
     nix-repl> d = derivation { name = "myname"; builder = "mybuilder"; system = "mysystem"; }
     nix-repl> :b d
@@ -152,17 +152,17 @@ Let\'s build our really fake derivation:
 The `:b` is a `nix repl` specific command to build a derivation. You can
 see more commands with `:?` . So in the output you can see that it takes
 the `.drv` as information on how to build the derivation. Then it says
-it\'s trying to produce our out path. Finally the error we were waiting
-for: that derivation can\'t be built on our system.
+it's trying to produce our out path. Finally the error we were waiting
+for: that derivation can't be built on our system.
 
-We\'re doing the build inside `nix repl`, but what if we don\'t want to
+We're doing the build inside `nix repl`, but what if we don't want to
 use `nix repl`? You can **realise** a `.drv` with:
 
     $ nix-store -r /nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv
 
 You will get the same output as before.
 
-Let\'s fix the system attribute:
+Let's fix the system attribute:
 
     nix-repl> d = derivation { name = "myname"; builder = "mybuilder"; system = builtins.currentSystem; }
     nix-repl> :b d
@@ -172,7 +172,7 @@ Let\'s fix the system attribute:
 A step forward: of course, that `mybuilder` executable does not really
 exist. Stop for a moment.
 
-## What\'s in a derivation set
+## What's in a derivation set
 
 It is useful to start by inspecting the return value from the derivation
 function. In this case, the returned value is a plain set:
@@ -192,7 +192,7 @@ Start from drvAttrs:
     nix-repl> d.drvAttrs
     { builder = "mybuilder"; name = "myname"; system = "mysystem"; }
 
-That\'s basically the input we gave to the derivation function. Also the
+That's basically the input we gave to the derivation function. Also the
 `d.name`, `d.system` and `d.builder` attributes are exactly the ones we
 gave as input.
 
@@ -200,21 +200,21 @@ gave as input.
     true
 
 So out is just the derivation itself, it seems weird but the reason is
-that we only have one output from the derivation. That\'s also the
-reason why `d.all` is a singleton. We\'ll see multiple outputs later.
+that we only have one output from the derivation. That's also the
+reason why `d.all` is a singleton. We'll see multiple outputs later.
 
 The `d.drvPath` is the path of the `.drv` file:
 `/nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv`.
 
-Something interesting is the `type` attribute. It\'s `"derivation"`. Nix
+Something interesting is the `type` attribute. It's `"derivation"`. Nix
 does add a little of magic to sets with type derivation, but not that
 much. To help you understand, you can create yourself a set with that
-type, it\'s a simple set:
+type, it's a simple set:
 
     nix-repl> { type = "derivation"; }
     «derivation ???»
 
-Of course it has no other information, so Nix doesn\'t know what to say
+Of course it has no other information, so Nix doesn't know what to say
 :-) But you get it, the `type = "derivation"` is just a convention for
 Nix and for us to understand the set is a derivation.
 
@@ -264,7 +264,7 @@ derivations of coreutils in the nix store, no worries):
     $ ls /nix/store/*coreutils*/bin
     [...]
 
-I remind you, inside strings it\'s possible to interpolate Nix
+I remind you, inside strings it's possible to interpolate Nix
 expressions with `${...}`:
 
     nix-repl> "${d}"
@@ -272,7 +272,7 @@ expressions with `${...}`:
     nix-repl> "${coreutils}"
     "/nix/store/8w4cbiy7wqvaqsnsnb3zvabq1cp2zhyz-coreutils-8.21"
 
-That\'s very convenient, because then we could refer to e.g. the
+That's very convenient, because then we could refer to e.g. the
 bin/true binary like this:
 
     nix-repl> "${coreutils}/bin/true"
@@ -296,7 +296,7 @@ builder did not create the out path of course, it just exited with 0.
 Obvious note: every time we change the derivation, a new
 hash is created.
 
-Let\'s examine the new `.drv` now that we referred to another
+Let's examine the new `.drv` now that we referred to another
 derivation:
 
 ```
@@ -327,16 +327,16 @@ $ nix derivation show /nix/store/qyfrcd53wmc0v22ymhhd5r6sz5xmdc8a-myname.drv
 }
 ```
 
-Aha! Nix added a dependency to our myname.drv, it\'s the coreutils.drv.
+Aha! Nix added a dependency to our myname.drv, it's the coreutils.drv.
 Before doing our build, Nix should build the coreutils.drv. But since
-coreutils is already in our nix store, no build is needed, it\'s already
+coreutils is already in our nix store, no build is needed, it's already
 there with out path
 `/nix/store/qrxs7sabhqcr3j9ai0j0cp58zfnny0jz-coreutils-8.29`.
 
 ## When is the derivation built
 
 Nix does not build derivations **during evaluation** of Nix expressions.
-In fact, that\'s why we have to do \":b drv\" in `nix repl`, or use
+In fact, that's why we have to do \":b drv\" in `nix repl`, or use
 nix-store -r in the first place.
 
 An important separation is made in Nix:
@@ -362,17 +362,17 @@ relative out paths.
 
 ## Conclusion
 
-Is it that complicated to create a package for Nix? No, it\'s not.
+Is it that complicated to create a package for Nix? No, it's not.
 
-We\'re walking through the fundamentals of Nix derivations, to
+We're walking through the fundamentals of Nix derivations, to
 understand how they work, how they are represented. Packaging in Nix is
-certainly easier than that, but we\'re not there yet in this post. More
+certainly easier than that, but we're not there yet in this post. More
 Nix pills are needed.
 
 With the derivation function we provide a set of information on how to
 build a package, and we get back the information about where the package
-was built. Nix converts a set to a string when there\'s an `outPath`;
-that\'s very convenient. With that, it\'s easy to refer to other
+was built. Nix converts a set to a string when there's an `outPath`;
+that's very convenient. With that, it's easy to refer to other
 derivations.
 
 When Nix builds a derivation, it first creates a .drv file from a

@@ -1,16 +1,16 @@
 # Basic Dependencies and Hooks
 
 Welcome to the 20th Nix pill. In the previous
-[19th](19-fundamentals-of-stdenv.md) pill we introduced Nixpkgs\' stdenv,
+[19th](19-fundamentals-of-stdenv.md) pill we introduced Nixpkgs' stdenv,
 including `setup.sh` script, `default-builder.sh` helper script, and
 `stdenv.mkDerivation` builder. We focused on how stdenv is put together,
-and how it\'s used, and a bit about the phases of `genericBuild`.
+and how it's used, and a bit about the phases of `genericBuild`.
 
-This time, we\'ll focus on the interaction of packages built with
+This time, we'll focus on the interaction of packages built with
 `stdenv.mkDerivation`. Packages need to depend on each other, of course.
 For this we have `buildInputs` and `propagatedBuildInputs` attributes.
-We\'ve also found that dependencies sometimes need to influence their
-dependents in ways the dependents can\'t or shouldn\'t predict. For this
+We've also found that dependencies sometimes need to influence their
+dependents in ways the dependents can't or shouldn't predict. For this
 we have setup hooks and env hooks. Together, these 4 concepts support
 almost all build-time package interactions.
 
@@ -27,7 +27,7 @@ the last version of stdenv without cross-compilation complexity.
 
 For the simplest dependencies where the current package directly needs
 another, we use the `buildInputs` attribute. This is exactly the pattern
-used in our builder in [Pill 8](08-generic-builders.md). To demo this, let\'s
+used in our builder in [Pill 8](08-generic-builders.md). To demo this, let's
 build GNU Hello, and then another package which provides a shell script
 that `exec`s it.
 
@@ -182,7 +182,7 @@ dependency, but the wrapper only needs a `buildInputs` dependency on the
 intermediary.
 
 How does this work? You might think we do something in Nix, but actually
-it\'s done not at eval time but at build time in bash. let\'s look at
+it's done not at eval time but at build time in bash. let's look at
 part of the `fixupPhase` of stdenv:
 
     fixupPhase() {
@@ -215,7 +215,7 @@ bottom we elided before:
     }
 
 See how `findInputs` is actually recursive, looking at the propagated
-build inputs of each dependency, and those dependencies\' propagated
+build inputs of each dependency, and those dependencies' propagated
 build inputs, etc.
 
 We actually simplified the `findInputs` call site from before;
@@ -227,7 +227,7 @@ We actually simplified the `findInputs` call site from before;
     done
 
 This demonstrates an important point. For the *current* package alone,
-it doesn\'t matter whether a dependency is propagated or not. It will be
+it doesn't matter whether a dependency is propagated or not. It will be
 processed the same way: called with `findInputs` and `addToEnv`. (The
 packages discovered by `findInputs`, which are also accumulated in
 `pkgs` and passed to `addToEnv`, are also the same in both cases.)
@@ -249,7 +249,7 @@ not arbitrary interactions.
 
 Setup hooks are the basic building block we have for this. In nixpkgs, a
 \"hook\" is basically a bash callback, and a setup hook is no exception.
-Let\'s look at the last part of `findInputs` we haven\'t covered:
+Let's look at the last part of `findInputs` we haven't covered:
 
     findInputs() {
         local pkg=$1
@@ -270,9 +270,9 @@ sourced by any stdenv-based build including that as a dependency.
 This is strictly more general than any of the other mechanisms
 introduced in this chapter. For example, try writing a setup hook that
 has the same effect as a *propagatedBuildInputs* entry. One can almost
-think of this as an escape hatch around Nix\'s normal isolation
+think of this as an escape hatch around Nix's normal isolation
 guarantees, and the principle that dependencies are immutable and inert.
-We\'re not actually doing something unsafe or modifying dependencies,
+We're not actually doing something unsafe or modifying dependencies,
 but we are allowing arbitrary ad-hoc behavior. For this reason,
 setup-hooks should only be used as a last resort.
 
@@ -285,12 +285,12 @@ prepared the `PATH`. One point of ugliness was how anti-modular this
 was. It makes sense to build the `PATH` in a generic builder, because
 the `PATH` is used by the shell, and the generic builder is
 intrinsically tied to the shell. But `-I` and `-L` flags are only
-relevant to the C compiler. The stdenv isn\'t wedded to including a C
+relevant to the C compiler. The stdenv isn't wedded to including a C
 compiler (though it does by default), and there are other compilers too
 which may take completely different flags.
 
 As a first step, we can move that logic to a setup hook on the C
-compiler; indeed that\'s just what we do in CC Wrapper. [^2] But this
+compiler; indeed that's just what we do in CC Wrapper. [^2] But this
 pattern comes up fairly often, so somebody decided to add some helper
 support to reduce boilerplate.
 
@@ -324,7 +324,7 @@ dependencies is exactly what compilers need.
 
 ## Next pill\...
 
-\...I\'m not sure! We could talk about the additional dependency types
+\...I'm not sure! We could talk about the additional dependency types
 and hooks which cross compilation necessitates, building on our
 knowledge here to cover stdenv as it works today. We could talk about
 how nixpkgs is bootstrapped. Or we could talk about how `localSystem`
@@ -339,4 +339,4 @@ Let us know which most interests you!
 [^2]: It was called [GCC
     Wrapper](https://github.com/NixOS/nixpkgs/tree/6675f0a52c0962042a1000c7f20e887d0d26ae25/pkgs/build-support/gcc-wrapper)
     in the version of nixpkgs suggested for following along in this
-    pill; Darwin and Clang support hadn\'t yet motivated the rename.
+    pill; Darwin and Clang support hadn't yet motivated the rename.

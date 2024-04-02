@@ -151,7 +151,7 @@ After building, `graphviz` can now create `png`s.
 ## The repository expression
 
 Now that we have two packages, we want to combine them into a single
-repository. To do so, we\'ll mimic what `nixpkgs` does: we will create a
+repository. To do so, we'll mimic what `nixpkgs` does: we will create a
 single attribute set containing derivations. This attribute set can then
 be imported, and derivations can be selected by accessing the top-level
 attribute set.
@@ -213,17 +213,17 @@ derivations into a single, top-level attribute set.
 
 ## The inputs pattern
 
-The approach we\'ve taken so far has a few problems:
+The approach we've taken so far has a few problems:
 
 -   First, `hello.nix` and `graphviz.nix` are dependent on `nixpkgs`,
     which they import directly. A better approach would be to pass in
     `nixpkgs` as an argument, as we did in `autotools.nix`.
 
--   Second, we don\'t have a straightforward way to compile different
+-   Second, we don't have a straightforward way to compile different
     variants of the same software, such as `graphviz` with or without
     `libgd` support.
 
--   Third, we don\'t have a way to test `graphviz` with a particular
+-   Third, we don't have a way to test `graphviz` with a particular
     `libgd` version.
 
 Until now, our approach to addressing the above problems has been
@@ -239,7 +239,7 @@ the set of derivations needed to build that expression. In this case:
 
 -   `libgd` and its dependencies.
 
-The `./src` directory is also an input, but we wouldn\'t change the
+The `./src` directory is also an input, but we wouldn't change the
 source from the caller. In `nixpkgs` we prefer to write another
 expression for version bumps (e.g. because patches or different inputs
 are needed).
@@ -315,7 +315,7 @@ would suffice to pass `gd = ...;`.
 If we wanted to change the toolchain, we would simply pass a different
 `mkDerivation` function.
 
-Let\'s talk a closer look at the snippet and dissect the syntax:
+Let's talk a closer look at the snippet and dissect the syntax:
 
 -   The entire expression in `default.nix` returns an attribute set with
     the keys `hello`, `graphviz`, and `graphvizCore`.

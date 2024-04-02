@@ -7,7 +7,7 @@ and also introduced fixed-output store paths.
 This time we will instead look into `nixpkgs`, in particular one of its
 core derivations: `stdenv`.
 
-The `stdenv` is not treated as a special derivation by Nix, but it\'s
+The `stdenv` is not treated as a special derivation by Nix, but it's
 very important for the `nixpkgs` repository. It serves as a base for
 packaging software. It is used to pull in dependencies such as the GCC
 toolchain, GNU make, core utilities, patch and diff utilities, and so
@@ -16,7 +16,7 @@ present in `nixpkgs`.
 
 ## What is stdenv?
 
-First of all, `stdenv` is a derivation, and it\'s a very simple one:
+First of all, `stdenv` is a derivation, and it's a very simple one:
 
     $ nix-build '<nixpkgs>' -A stdenv
     /nix/store/k4jklkcag4zq4xkqhkpy156mgfm34ipn-stdenv
@@ -28,11 +28,11 @@ First of all, `stdenv` is a derivation, and it\'s a very simple one:
     propagated-user-env-packages
 
 It has just two files: `/setup` and
-`/nix-support/propagated-user-env-packages`. Don\'t worry about the
-latter. It\'s empty, in fact. The important file is `/setup`.
+`/nix-support/propagated-user-env-packages`. Don't worry about the
+latter. It's empty, in fact. The important file is `/setup`.
 
 How can this simple derivation pull in all of the toolchain and basic
-tools needed to compile packages? Let\'s look at the runtime
+tools needed to compile packages? Let's look at the runtime
 dependencies:
 
     $ nix-store -q --references result
@@ -63,7 +63,7 @@ and creates some helper bash functions to build a package. I invite you
 to read it.
 
 The hardcoded toolchain and utilities are used to initially fill up the
-environment variables so that it\'s more pleasant to run common
+environment variables so that it's more pleasant to run common
 commands, similar to what we did with our builder with `baseInputs` and
 `buildInputs`.
 
@@ -76,7 +76,7 @@ What `genericBuild` does is just run these phases. Default phases are
 just bash functions. You can easily read them.
 
 Every phase has hooks to run commands before and after the phase has
-been executed. Phases can be overwritten, reordered, whatever, it\'s
+been executed. Phases can be overwritten, reordered, whatever, it's
 just bash code.
 
 How to use this file? Like our old builder. To test it, we enter a fake
@@ -106,14 +106,14 @@ read the code in the `setup` file.
 Until now we worked with plain bash scripts. What about the Nix side?
 The `nixpkgs` repository offers a useful function, like we did with our
 old builder. It is a wrapper around the raw derivation function which
-pulls in the `stdenv` for us, and runs `genericBuild`. It\'s
+pulls in the `stdenv` for us, and runs `genericBuild`. It's
 [stdenv.mkDerivation](https://github.com/NixOS/nixpkgs/blob/master/pkgs/stdenv/generic/make-derivation.nix).
 
-Note how `stdenv` is a derivation but it\'s also an attribute set which
+Note how `stdenv` is a derivation but it's also an attribute set which
 contains some other attributes, like `mkDerivation`. Nothing fancy here,
 just convenience.
 
-Let\'s write a `hello.nix` expression using this newly discovered
+Let's write a `hello.nix` expression using this newly discovered
 `stdenv`:
 
     with import <nixpkgs> { };
@@ -122,7 +122,7 @@ Let\'s write a `hello.nix` expression using this newly discovered
       src = ./hello-2.10.tar.gz;
     }
 
-Don\'t be scared by the `with` expression. It pulls the `nixpkgs`
+Don't be scared by the `with` expression. It pulls the `nixpkgs`
 repository into scope, so we can directly use `stdenv`. It looks very
 similar to the hello expression in [Pill 8](08-generic-builders.md).
 
@@ -136,7 +136,7 @@ It builds, and runs fine:
 
 ## The stdenv.mkDerivation builder
 
-Let\'s take a look at the builder used by `mkDerivation`. You can read
+Let's take a look at the builder used by `mkDerivation`. You can read
 the code [here in
 nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/stdenv/generic/make-derivation.nix):
 
@@ -164,7 +164,7 @@ and see what it does:
     source $stdenv/setup
     genericBuild
 
-It\'s what we did in [Pill 10](10-developing-with-nix-shell.md) to make the
+It's what we did in [Pill 10](10-developing-with-nix-shell.md) to make the
 derivations `nix-shell` friendly. When entering the shell, the setup
 file only sets up the environment without building anything. When doing
 `nix-build`, it actually runs the build process.
@@ -225,7 +225,7 @@ warning: you did not specify '--add-root'; the result might be removed by the ga
 }
 ```
 
-It\'s so short I decided to paste it entirely above. The builder is
+It's so short I decided to paste it entirely above. The builder is
 bash, with `-e default-builder.sh` arguments. Then you can see the `src`
 and `stdenv` environment variables.
 
@@ -249,11 +249,11 @@ The overall process is simple:
 
 -   `genericBuild`
 
-That\'s it. Everything you need to know about the stdenv phases is in
+That's it. Everything you need to know about the stdenv phases is in
 the [setup
 file](https://github.com/NixOS/nixpkgs/blob/master/pkgs/stdenv/generic/setup.sh).
 
-Really, take your time to read that file. Don\'t forget that juicy docs
+Really, take your time to read that file. Don't forget that juicy docs
 are also available in the [nixpkgs
 manual](http://nixos.org/nixpkgs/manual/#chap-stdenv).
 

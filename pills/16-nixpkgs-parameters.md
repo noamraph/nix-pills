@@ -1,7 +1,7 @@
 # Nixpkgs Parameters
 
 Welcome to the 16th Nix pill. In the previous [15th](15-nix-search-paths.md)
-pill we\'ve realized how nix finds expressions with the angular brackets
+pill we've realized how nix finds expressions with the angular brackets
 syntax, so that we finally know where `<nixpkgs>` is located on our
 system.
 
@@ -31,7 +31,7 @@ The `all-packages.nix` is then the file that composes all the packages.
 Note the `pkgs/` subdirectory, while nixos is in the `nixos/`
 subdirectory.
 
-The `all-packages.nix` is a bit contrived. First of all, it\'s a
+The `all-packages.nix` is a bit contrived. First of all, it's a
 function. It accepts a couple of interesting parameters:
 
 -   `system`: defaults to the current system
@@ -40,7 +40,7 @@ function. It accepts a couple of interesting parameters:
 
 -   others\...
 
-The **system** parameter, as per comment in the expression, it\'s the
+The **system** parameter, as per comment in the expression, it's the
 system for which the packages will be built. It allows for example to
 install i686 packages on amd64 machines.
 
@@ -61,7 +61,7 @@ through the value of system. E.g.:
     let pkgs = import <nixpkgs> { inherit system; };
     ...
 
-Why is it useful? With this parameter it\'s very easy to select a set of
+Why is it useful? With this parameter it's very easy to select a set of
 packages for a particular system. For example:
 
     nix-build -A psmisc --argstr system i686-linux
@@ -69,24 +69,24 @@ packages for a particular system. For example:
 This will build the psmisc derivation for i686-linux instead of
 x86_64-linux. This concept is very similar to multi-arch of Debian.
 
-The setup for cross compiling is also in `nixpkgs`, however it\'s a
-little contrived to talk about it and I don\'t know much of it either.
+The setup for cross compiling is also in `nixpkgs`, however it's a
+little contrived to talk about it and I don't know much of it either.
 
 ## The config parameter
 
-I\'m sure on the wiki or other manuals you\'ve read about
+I'm sure on the wiki or other manuals you've read about
 `~/.config/nixpkgs/config.nix` (previously `~/.nixpkgs/config.nix`) and
-I\'m sure you\'ve wondered whether that\'s hardcoded in nix. It\'s not,
-it\'s in
+I'm sure you've wondered whether that's hardcoded in nix. It's not,
+it's in
 [nixpkgs](https://github.com/NixOS/nixpkgs/blob/32c523914fdb8bf9cc7912b1eba023a8daaae2e8/pkgs/top-level/impure.nix#L28).
 
 The `all-packages.nix` expression accepts the `config` parameter. If
-it\'s `null`, then it reads the `NIXPKGS_CONFIG` environment variable.
+it's `null`, then it reads the `NIXPKGS_CONFIG` environment variable.
 If not specified, `nixpkgs` will pick
 `$HOME/.config/nixpkgs/config.nix`.
 
 After determining `config.nix`, it will be imported as a nix expression,
-and that will be the value of `config` (in case it hasn\'t been passed
+and that will be the value of `config` (in case it hasn't been passed
 as parameter to import `<nixpkgs>`).
 
 The `config` is available in the resulting repository:
@@ -111,8 +111,8 @@ where applicable and when the derivation obeys to the setting.
 
 A `.nix` file contains a nix expression. Thus it can also be a function.
 I remind you that `nix-build` expects the expression to return a
-derivation. Therefore it\'s natural to return straight a derivation from
-a `.nix` file. However, it\'s also very natural for the `.nix` file to
+derivation. Therefore it's natural to return straight a derivation from
+a `.nix` file. However, it's also very natural for the `.nix` file to
 accept some parameters, in order to tweak the derivation being returned.
 
 In this case, nix does a trick:
@@ -137,15 +137,15 @@ derivation? No, Nix only calls the function it encounters once.
 
 ## Conclusion
 
-We\'ve unleashed the `<nixpkgs>` repository. It\'s a function that
+We've unleashed the `<nixpkgs>` repository. It's a function that
 accepts some parameters, and returns the set of all packages. Due to
 laziness, only the accessed derivations will be built.
 
-You can use this repository to build your own packages as we\'ve seen in
+You can use this repository to build your own packages as we've seen in
 the previous pill when creating our own repository.
 
-Lately I\'m a little busy with the NixOS 14.11 release and other stuff,
-and I\'m also looking toward migrating from blogger to a more
+Lately I'm a little busy with the NixOS 14.11 release and other stuff,
+and I'm also looking toward migrating from blogger to a more
 coder-oriented blogging platform. So sorry for the delayed and shorter
 pills :)
 

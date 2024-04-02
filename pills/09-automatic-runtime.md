@@ -11,7 +11,7 @@ runtime dependencies.
 
 ## Build dependencies
 
-Let\'s start analyzing build dependencies for our GNU `hello` package:
+Let's start analyzing build dependencies for our GNU `hello` package:
 
     $ nix-instantiate hello.nix
     /nix/store/z77vn965a59irqnrrjvbspiyl2rph0jp-hello.drv
@@ -55,7 +55,7 @@ Thus the `NAR` format was developed as a simple, deterministic archive
 format. `NAR`s are used extensively within Nix, as we will see below.
 
 For more rationale and implementation details behind `NAR` see
-[Dolstra\'s PhD Thesis](http://nixos.org/~eelco/pubs/phd-thesis.pdf).
+[Dolstra's PhD Thesis](http://nixos.org/~eelco/pubs/phd-thesis.pdf).
 
 To create NAR archives from store paths, we can use `nix-store --dump`
 and `nix-store --restore`.
@@ -79,7 +79,7 @@ steps:
 2.  For each build dependency `.drv` and its relative out path, search
     the contents of the NAR for this out path.
 
-3.  If the path is found, then it\'s a runtime dependency.
+3.  If the path is found, then it's a runtime dependency.
 
 The snippet below shows the dependencies for `hello`.
 
@@ -93,7 +93,7 @@ The snippet below shows the dependencies for `hello`.
     /nix/store/a42k52zwv6idmf50r9lps1nzwq9khvpf-hello
 
 We see that `glibc` and `gcc` are runtime dependencies. Intuitively,
-`gcc` shouldn\'t be in this list! Displaying the printable strings in
+`gcc` shouldn't be in this list! Displaying the printable strings in
 the `hello` binary shows that the out path of `gcc` does indeed appear:
 
     $ strings result/bin/hello|grep gcc
@@ -107,14 +107,14 @@ usually not abused. But in Nix, we have to refer to particular versions
 of libraries, and thus the rpath has an important role.
 
 The build process adds the `gcc` lib path thinking it may be useful at
-runtime, but this isn\'t necessary. To address issues like these, Nix
+runtime, but this isn't necessary. To address issues like these, Nix
 provides a tool called [patchelf](https://nixos.org/patchelf.html),
 which reduces the rpath to the paths that are actually used by the
 binary.
 
 Even after reducing the rpath, the `hello` binary would still depend
 upon `gcc` because of some debugging information. This unnecessarily
-increases the size of our runtime dependencies. We\'ll explore how
+increases the size of our runtime dependencies. We'll explore how
 `strip` can help us with that in the next section.
 
 ## Another phase in the builder
@@ -190,7 +190,7 @@ cloud](https://nixos.org/manual/nix/stable/introduction.html).
 
 ## Next pill
 
-The next pill will introduce `nix-shell`. With `nix-build`, we\'ve
+The next pill will introduce `nix-shell`. With `nix-build`, we've
 always built derivations from scratch: the source gets unpacked,
 configured, built, and installed. But this can take a long time for
 large packages. What if we want to apply some small changes and compile

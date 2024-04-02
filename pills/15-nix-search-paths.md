@@ -14,26 +14,26 @@ used by nix tools.
 
 The [NIX_PATH environment
 variable](https://nixos.org/manual/nix/stable/command-ref/env-common.html)
-is very important. It\'s very similar to the `PATH` environment
+is very important. It's very similar to the `PATH` environment
 variable. The syntax is similar, several paths are separated by a colon
 `:`. Nix will then search for something in those paths from left to
 right.
 
 Who uses `NIX_PATH`? The nix expressions! Yes, `NIX_PATH` is not of much
-use by the nix tools themselves, rather it\'s used when writing nix
+use by the nix tools themselves, rather it's used when writing nix
 expressions.
 
-In the shell for example, when you execute the command `ping`, it\'s
+In the shell for example, when you execute the command `ping`, it's
 being searched in the `PATH` directories. The first one found is the one
 being used.
 
-In nix it\'s exactly the same, however the syntax is different. Instead
+In nix it's exactly the same, however the syntax is different. Instead
 of just typing `ping` you have to type `<ping>`. Yes, I know\... you are
-already thinking of `<nixpkgs>`. However, don\'t stop reading here,
-let\'s keep going.
+already thinking of `<nixpkgs>`. However, don't stop reading here,
+let's keep going.
 
-What\'s `NIX_PATH` good for? Nix expressions may refer to an
-\"abstract\" path such as `<nixpkgs>`, and it\'s possible to override it
+What's `NIX_PATH` good for? Nix expressions may refer to an
+\"abstract\" path such as `<nixpkgs>`, and it's possible to override it
 from the command line.
 
 For ease we will use `nix-instantiate --eval` to do our tests. I remind
@@ -45,9 +45,9 @@ can be used for one-shot expressions.
 
 ## Fake it a little
 
-It\'s useless from a nix view point, but I think it\'s useful for your
-own understanding. Let\'s use `PATH` itself as `NIX_PATH`, and try to
-locate `ping` (or another binary if you don\'t have it).
+It's useless from a nix view point, but I think it's useful for your
+own understanding. Let's use `PATH` itself as `NIX_PATH`, and try to
+locate `ping` (or another binary if you don't have it).
 
     $ nix-instantiate --eval -E '<ping>'
     error: file `ping' was not found in the Nix search path (add it using $NIX_PATH or -I)
@@ -81,14 +81,14 @@ You are out of curiosity, right?
     nixpkgs=/home/nix/.nix-defexpr/channels/nixpkgs
 
 You may have a different path, depending on how you added channels etc..
-Anyway that\'s the whole point. The `<nixpkgs>` stranger that we used in
+Anyway that's the whole point. The `<nixpkgs>` stranger that we used in
 our nix expressions, is referring to a path in the filesystem specified
 by `NIX_PATH`.
 
-You can list that directory and realize it\'s simply a checkout of the
+You can list that directory and realize it's simply a checkout of the
 nixpkgs repository at a specific commit (hint: `.version-suffix`).
 
-The `NIX_PATH` variable is exported by `nix.sh`, and that\'s the reason
+The `NIX_PATH` variable is exported by `nix.sh`, and that's the reason
 why I always asked you to [source
 nix.sh](https://nixos.org/manual/nix/stable/installation/env-variables.html)
 at the beginning of my posts.
@@ -96,9 +96,9 @@ at the beginning of my posts.
 You may wonder: then I can also specify a different
 [nixpkgs](https://github.com/NixOS/nixpkgs) path to, e.g., a
 `git checkout` of `nixpkgs`? Yes, you can and I encourage doing that.
-We\'ll talk about this in the next pill.
+We'll talk about this in the next pill.
 
-Let\'s define a path for our repository, then! Let\'s say all the
+Let's define a path for our repository, then! Let's say all the
 `default.nix`, `graphviz.nix` etc. are under `/home/nix/mypkgs`:
 
     $ export NIX_PATH=mypkgs=/home/nix/mypkgs:$NIX_PATH
@@ -118,11 +118,11 @@ Whereas `nix-instantiate` and `nix-build` require a starting nix
 expression, `nix-env` does not.
 
 You may be crippled by this concept at the beginning, you may think
-`nix-env` uses `NIX_PATH` to find the `nixpkgs` repository. But that\'s
+`nix-env` uses `NIX_PATH` to find the `nixpkgs` repository. But that's
 not it.
 
 The `nix-env` command uses `~/.nix-defexpr`, which is also part of
-`NIX_PATH` by default, but that\'s only a coincidence. If you empty
+`NIX_PATH` by default, but that's only a coincidence. If you empty
 `NIX_PATH`, `nix-env` will still be able to find derivations because of
 `~/.nix-defexpr`.
 
@@ -130,7 +130,7 @@ So if you run `nix-env -i graphviz` inside your repository, it will
 install the nixpkgs one. Same if you set `NIX_PATH` to point to your
 repository.
 
-In order to specify an alternative to `~/.nix-defexpr` it\'s possible to
+In order to specify an alternative to `~/.nix-defexpr` it's possible to
 use the -f option:
 
     $ nix-env -f '<mypkgs>' -i graphviz
@@ -138,7 +138,7 @@ use the -f option:
     replacing old `graphviz'
     installing `graphviz'
 
-Oh why did it say there\'s another derivation named graphviz? Because
+Oh why did it say there's another derivation named graphviz? Because
 both `graphviz` and `graphvizCore` attributes in our repository have the
 name \"graphviz\" for the derivation:
 
@@ -156,18 +156,18 @@ use -A to specify an attribute name instead of a derivation name:
     replacing old `graphviz'
     installing `graphviz'
 
-This form, other than being more precise, it\'s also faster because
+This form, other than being more precise, it's also faster because
 `nix-env` does not have to parse all the derivations.
 
 For completeness: you must install `graphvizCore` with -A, since without
-the -A switch it\'s ambiguous.
+the -A switch it's ambiguous.
 
 In summary, it may happen when playing with nix that `nix-env` picks a
 different derivation than `nix-build`. In that case you probably
 specified `NIX_PATH`, but `nix-env` is instead looking into
 `~/.nix-defexpr`.
 
-Why is `nix-env` having this different behavior? I don\'t know
+Why is `nix-env` having this different behavior? I don't know
 specifically by myself either, but the answers could be:
 
 -   `nix-env` tries to be generic, thus it does not look for `nixpkgs`
@@ -181,24 +181,24 @@ installing**, because of the derivation name vs -A switch described
 above. Maybe `nix-env` wanted to be more friendly in this case for
 default user setups.
 
-It may or may not make sense for you, or it\'s like that for historical
-reasons, but that\'s how it works currently, unless somebody comes up
+It may or may not make sense for you, or it's like that for historical
+reasons, but that's how it works currently, unless somebody comes up
 with a better idea.
 
 ## Conclusion
 
 The `NIX_PATH` variable is the search path used by nix when using the
-angular brackets syntax. It\'s possible to refer to \"abstract\" paths
+angular brackets syntax. It's possible to refer to \"abstract\" paths
 inside nix expressions and define the \"concrete\" path by means of
 `NIX_PATH`, or the usual -I flag in nix tools.
 
-We\'ve also explained some of the uncommon `nix-env` behaviors for
+We've also explained some of the uncommon `nix-env` behaviors for
 newcomers. The `nix-env` tool does not use `NIX_PATH` to search for
 packages, but rather for `~/.nix-defexpr`. Beware of that!
 
 In general do not abuse `NIX_PATH`, when possible use relative paths
 when writing your own nix expressions. Of course, in the case of
-`<nixpkgs>` in our repository, that\'s a perfectly fine usage of
+`<nixpkgs>` in our repository, that's a perfectly fine usage of
 `NIX_PATH`. Instead, inside our repository itself, refer to expressions
 with relative paths like `./hello.nix`.
 

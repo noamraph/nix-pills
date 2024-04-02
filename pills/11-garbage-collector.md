@@ -21,13 +21,13 @@ operations.
 ## How does garbage collection work?
 
 Programming languages with garbage collectors use the concept of a set
-of \"garbage collector (or \'GC\') roots\" to keep track of \"live\"
+of \"garbage collector (or 'GC') roots\" to keep track of \"live\"
 objects. A GC root is an object that is always considered \"live\"
 (unless explicitly removed as GC root). The garbage collection process
 starts from the GC roots and proceeds by recursively marking object
 references as \"live\". All other objects can be collected and deleted.
 
-Instead of objects, Nix\'s garbage collection operates on store paths,
+Instead of objects, Nix's garbage collection operates on store paths,
 [with the GC roots themselves being store
 paths](https://nixos.org/manual/nix/stable/package-management/garbage-collector-roots.html).
 . This approach is much more principled than traditional package
@@ -62,7 +62,7 @@ so that we have a clean setup for our experiments:
     note: currently hard linking saves -0.00 MiB
     1169 store paths deleted, 228.43 MiB freed
 
-If we run the garbage collector again it won\'t find anything new to
+If we run the garbage collector again it won't find anything new to
 delete, as we expect. After running the garbage collector, the nix store
 only contains paths with references from the GC roots.
 
@@ -214,8 +214,8 @@ destructive deletion and upgrade operations.
 ## Next pill
 
 In the next pill, we will package another project and introduce the
-\"inputs\" design pattern. We\'ve only played with a single derivation
-until now; however we\'d like to start organizing a small repository of
+\"inputs\" design pattern. We've only played with a single derivation
+until now; however we'd like to start organizing a small repository of
 software. The \"inputs\" pattern is widely used in nixpkgs; it allows us
 to decouple derivations from the repository itself and increase
 customization opportunities.
