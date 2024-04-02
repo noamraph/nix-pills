@@ -28,7 +28,7 @@ being searched in the `PATH` directories. The first one found is the one
 being used.
 
 In nix it's exactly the same, however the syntax is different. Instead
-of just typing `ping` you have to type `<ping>`. Yes, I know\... you are
+of just typing `ping` you have to type `<ping>`. Yes, I know... you are
 already thinking of `<nixpkgs>`. However, don't stop reading here,
 let's keep going.
 
@@ -204,7 +204,7 @@ with relative paths like `./hello.nix`.
 
 ## Next pill
 
-\...we will finally dive into `nixpkgs`. Most of the techniques we have
+...we will finally dive into `nixpkgs`. Most of the techniques we have
 developed in this series are already in `nixpkgs`, like `mkDerivation`,
 `callPackage`, `override`, etc., but of course better. With time, those
 base utilities get enhanced by the community with more features in order

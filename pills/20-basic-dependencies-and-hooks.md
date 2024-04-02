@@ -322,9 +322,9 @@ and if one dependency has that setup hook then all of them will be so
 `echo`ed. Allowing dependencies to learn about their *sibling*
 dependencies is exactly what compilers need.
 
-## Next pill\...
+## Next pill...
 
-\...I'm not sure! We could talk about the additional dependency types
+...I'm not sure! We could talk about the additional dependency types
 and hooks which cross compilation necessitates, building on our
 knowledge here to cover stdenv as it works today. We could talk about
 how nixpkgs is bootstrapped. Or we could talk about how `localSystem`

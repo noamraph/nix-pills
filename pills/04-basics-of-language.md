@@ -304,6 +304,6 @@ packages very quickly.
 
 ## Next pill
 
-\...we will talk about functions and imports. In this pill I've tried
+...we will talk about functions and imports. In this pill I've tried
 to avoid function calls as much as possible, otherwise the post would
 have been too long.

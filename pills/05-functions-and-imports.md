@@ -26,7 +26,7 @@ the body of the function.
 
 So here we defined a function that takes a parameter `x`, and returns
 `x*2`. The problem is that we cannot use it in any way, because it's
-unnamed\... joke!
+unnamed... joke!
 
 We can store functions in variables.
 
@@ -241,4 +241,4 @@ So when is the message shown? Only when it needs to be evaluated.
 
 ## Next pill
 
-\...we will finally write our first derivation.
+...we will finally write our first derivation.

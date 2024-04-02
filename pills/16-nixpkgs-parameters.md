@@ -38,7 +38,7 @@ function. It accepts a couple of interesting parameters:
 
 -   `config`: defaults to null
 
--   others\...
+-   others...
 
 The **system** parameter, as per comment in the expression, it's the
 system for which the packages will be built. It allows for example to
@@ -151,7 +151,7 @@ pills :)
 
 ## Next pill
 
-\...we will talk about overriding packages in the `nixpkgs` repository.
+...we will talk about overriding packages in the `nixpkgs` repository.
 What if you want to change some options of a library and let all other
 packages pick the new library? One possibility is to use, like described
 above, the `config` parameter when applicable. The other possibility is

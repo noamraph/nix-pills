@@ -318,7 +318,7 @@ to other derivations.
 
 ## Next pill
 
-\...we will talk a little about runtime dependencies. Is the GNU hello
+...we will talk a little about runtime dependencies. Is the GNU hello
 world package self-contained? What are its runtime dependencies? We only
 specified build dependencies by means of using other derivations in the
 "hello" derivation.

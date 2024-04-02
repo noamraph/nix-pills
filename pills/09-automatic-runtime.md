@@ -148,7 +148,7 @@ must be added to our derivation.
 **Exercise:** Add `findutils` and `patchelf` to the `baseInputs` of
 `autotools.nix`.
 
-Now, we rebuild `hello.nix`\...
+Now, we rebuild `hello.nix`...
 
     $ nix-build hello.nix
     [...]

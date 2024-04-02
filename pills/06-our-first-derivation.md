@@ -132,7 +132,7 @@ That's it, the minimum necessary information to build our derivation.
 
 Important note: the environment variables passed to the
 builder are just those you see in the .drv plus some other Nix related
-configuration (number of cores, temp dir, \...). The builder will not
+configuration (number of cores, temp dir, ...). The builder will not
 inherit any variable from your running shell, otherwise builds would
 suffer from
 [non-determinism](https://wiki.debian.org/ReproducibleBuilds).
@@ -382,6 +382,6 @@ files like a machine. Not much magic after all.
 
 ## Next pill
 
-\...we will finally write our first **working** derivation. Yes, this
+...we will finally write our first **working** derivation. Yes, this
 post is about "our first derivation", but I never said it was a
 working one ;)

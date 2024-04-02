@@ -287,7 +287,7 @@ suggestive metaphor, but will it be the right path?
 
 ## Next pill
 
-\...we will learn the basics of the Nix language. The Nix language is
+...we will learn the basics of the Nix language. The Nix language is
 used to describe how to build derivations, and it's the basis for
 everything else, including NixOS. Therefore it's very important to
 understand both the syntax and the semantics of the language.

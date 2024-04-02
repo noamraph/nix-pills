@@ -257,9 +257,9 @@ Really, take your time to read that file. Don't forget that juicy docs
 are also available in the [nixpkgs
 manual](http://nixos.org/nixpkgs/manual/#chap-stdenv).
 
-## Next pill\...
+## Next pill...
 
-\...we will talk about how to add dependencies to our packages with
+...we will talk about how to add dependencies to our packages with
 `buildInputs` and `propagatedBuildInputs`, and influence downstream
 builds with setup hooks and env hooks. These concepts are crucial to how
 `nixpkgs` packages are composed.

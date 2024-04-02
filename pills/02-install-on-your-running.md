@@ -217,7 +217,7 @@ I hope I left nothing uncovered so that you think there's some kind of
 magic going on behind the scenes. It's all about putting components in
 the store and symlinking these components together.
 
-## Next pill\...
+## Next pill...
 
-\...we will enter the Nix environment and learn how to interact with the
+...we will enter the Nix environment and learn how to interact with the
 store.
