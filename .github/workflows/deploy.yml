@@ -21,6 +21,14 @@ jobs:
         mkdir mdbook
         curl -sSL $url | tar -xz --directory=./mdbook
         echo `pwd`/mdbook >> $GITHUB_PATH
+    - name: Install mdbook-linkcheck
+      run: |
+        mkdir -p mdbook-linkcheck && cd "$_" && \
+        curl -L https://github.com/Michael-F-Bryan/mdbook-linkcheck/releases/latest/download/mdbook-linkcheck.x86_64-unknown-linux-gnu.zip -o mdbook-linkcheck.zip && \
+        unzip "$_" && \
+        chmod +x mdbook-linkcheck && \
+        echo `pwd` >> $GITHUB_PATH
+        
     - name: Deploy GitHub Pages
       run: |
         # This assumes your book is in the root of your repository.
