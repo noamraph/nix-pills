@@ -24,14 +24,14 @@ On the other hand, the same syntax is great for describing packages, so
 learning the language itself will pay off when writing package
 expressions.
 
-::: important
-In Nix, everything is an expression, there are no statements. This is
+<div class="info">
+Important: In Nix, everything is an expression, there are no statements. This is
 common in functional languages.
-:::
+</div>
 
-::: important
-Values in Nix are immutable.
-:::
+<div class="info">
+Important: Values in Nix are immutable.
+</div>
 
 ## Value types
 
