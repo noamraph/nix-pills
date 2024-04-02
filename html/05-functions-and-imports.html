@@ -1,0 +1,438 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Functions and Imports - Nix Pills</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="00-preface.html">Preface</a></li><li class="chapter-item expanded "><a href="01-why-you-should-give-it-try.html"><strong aria-hidden="true">1.</strong> Why You Should Give it a Try</a></li><li class="chapter-item expanded "><a href="02-install-on-your-running.html"><strong aria-hidden="true">2.</strong> Install on Your Running System</a></li><li class="chapter-item expanded "><a href="03-enter-environment.html"><strong aria-hidden="true">3.</strong> Enter the Environment</a></li><li class="chapter-item expanded "><a href="04-basics-of-language.html"><strong aria-hidden="true">4.</strong> The Basics of the Language</a></li><li class="chapter-item expanded "><a href="05-functions-and-imports.html" class="active"><strong aria-hidden="true">5.</strong> Functions and Imports</a></li><li class="chapter-item expanded "><a href="06-our-first-derivation.html"><strong aria-hidden="true">6.</strong> Our First Derivation</a></li><li class="chapter-item expanded "><a href="07-working-derivation.html"><strong aria-hidden="true">7.</strong> Working Derivation</a></li><li class="chapter-item expanded "><a href="08-generic-builders.html"><strong aria-hidden="true">8.</strong> Generic Builders</a></li><li class="chapter-item expanded "><a href="09-automatic-runtime.html"><strong aria-hidden="true">9.</strong> Automatic Runtime Dependencies</a></li><li class="chapter-item expanded "><a href="10-developing-with-nix-shell.html"><strong aria-hidden="true">10.</strong> Developing with nix-shell</a></li><li class="chapter-item expanded "><a href="11-garbage-collector.html"><strong aria-hidden="true">11.</strong> The Garbage Collector</a></li><li class="chapter-item expanded "><a href="12-inputs-design-pattern.html"><strong aria-hidden="true">12.</strong> Package Repositories and the Inputs Design Pattern</a></li><li class="chapter-item expanded "><a href="13-callpackage-design-pattern.html"><strong aria-hidden="true">13.</strong> Callpackage Design Pattern</a></li><li class="chapter-item expanded "><a href="14-override-design-pattern.html"><strong aria-hidden="true">14.</strong> Override Design Pattern</a></li><li class="chapter-item expanded "><a href="15-nix-search-paths.html"><strong aria-hidden="true">15.</strong> Nix Search Paths</a></li><li class="chapter-item expanded "><a href="16-nixpkgs-parameters.html"><strong aria-hidden="true">16.</strong> Nixpkgs Parameters</a></li><li class="chapter-item expanded "><a href="17-nixpkgs-overriding-packages.html"><strong aria-hidden="true">17.</strong> Nixpkgs Overriding Packages</a></li><li class="chapter-item expanded "><a href="18-nix-store-paths.html"><strong aria-hidden="true">18.</strong> Nix Store Paths</a></li><li class="chapter-item expanded "><a href="19-fundamentals-of-stdenv.html"><strong aria-hidden="true">19.</strong> Fundamentals of Stdenv</a></li><li class="chapter-item expanded "><a href="20-basic-dependencies-and-hooks.html"><strong aria-hidden="true">20.</strong> Basic Dependencies and Hooks</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Nix Pills</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="functions-and-imports"><a class="header" href="#functions-and-imports">Functions and Imports</a></h1>
+<p>Welcome to the fifth Nix pill. In the previous <a href="04-basics-of-language.html">fourth
+pill</a> we touched the Nix language for a moment. We
+introduced basic types and values of the Nix language, and basic
+expressions such as <code>if</code>, <code>with</code> and <code>let</code>. I invite you to re-read
+about these expressions and play with them in the repl.</p>
+<p>Functions help to build reusable components in a big repository like
+<a href="https://github.com/NixOS/nixpkgs/">nixpkgs</a>. The Nix manual has a
+<a href="https://nixos.org/manual/nix/stable/expressions/language-constructs.html#functions">great explanation of
+functions</a>.
+Let's go: pill on one hand, Nix manual on the other hand.</p>
+<p>I remind you how to enter the Nix environment:
+<code>source ~/.nix-profile/etc/profile.d/nix.sh</code></p>
+<h2 id="nameless-and-single-parameter"><a class="header" href="#nameless-and-single-parameter">Nameless and single parameter</a></h2>
+<p>Functions are anonymous (lambdas), and only have a single parameter. The
+syntax is extremely simple. Type the parameter name, then "<code>:</code>", then
+the body of the function.</p>
+<pre><code>nix-repl&gt; x: x*2
+«lambda»
+</code></pre>
+<p>So here we defined a function that takes a parameter <code>x</code>, and returns
+<code>x*2</code>. The problem is that we cannot use it in any way, because it's
+unnamed... joke!</p>
+<p>We can store functions in variables.</p>
+<pre><code>nix-repl&gt; double = x: x*2
+nix-repl&gt; double
+«lambda»
+nix-repl&gt; double 3
+6
+</code></pre>
+<p>As usual, please ignore the special syntax for assignments inside
+<code>nix repl</code>. So, we defined a function <code>x: x*2</code> that takes one parameter
+<code>x</code>, and returns <code>x*2</code>. This function is then assigned to the variable
+<code>double</code>. Finally we did our first function call: <code>double 3</code>.</p>
+<p>Big note: it's not like many other programming languages
+where you write <code>double(3)</code>. It really is <code>double 3</code>.</p>
+<p>In summary: to call a function, name the variable, then space, then the
+argument. Nothing else to say, it's as easy as that.</p>
+<h2 id="more-than-one-parameter"><a class="header" href="#more-than-one-parameter">More than one parameter</a></h2>
+<p>How do we create a function that accepts more than one parameter? For
+people not used to functional programming, this may take a while to
+grasp. Let's do it step by step.</p>
+<pre><code>nix-repl&gt; mul = a: (b: a*b)
+nix-repl&gt; mul
+«lambda»
+nix-repl&gt; mul 3
+«lambda»
+nix-repl&gt; (mul 3) 4
+12
+</code></pre>
+<p>We defined a function that takes the parameter <code>a</code>, the body returns
+another function. This other function takes a parameter <code>b</code> and returns
+<code>a*b</code>. Therefore, calling <code>mul 3</code> returns this kind of function:
+<code>b: 3*b</code>. In turn, we call the returned function with <code>4</code>, and get the
+expected result.</p>
+<p>You don't have to use parentheses at all, Nix has sane priorities when
+parsing the code:</p>
+<pre><code>nix-repl&gt; mul = a: b: a*b
+nix-repl&gt; mul
+«lambda»
+nix-repl&gt; mul 3
+«lambda»
+nix-repl&gt; mul 3 4
+12
+nix-repl&gt; mul (6+7) (8+9)
+221
+</code></pre>
+<p>Much more readable, you don't even notice that functions only receive
+one argument. Since the argument is separated by a space, to pass more
+complex expressions you need parentheses. In other common languages you
+would write <code>mul(6+7, 8+9)</code>.</p>
+<p>Given that functions have only one parameter, it is straightforward to
+use <strong>partial application</strong>:</p>
+<pre><code>nix-repl&gt; foo = mul 3
+nix-repl&gt; foo 4
+12
+nix-repl&gt; foo 5
+15
+</code></pre>
+<p>We stored the function returned by <code>mul 3</code> into a variable foo, then
+reused it.</p>
+<h2 id="argument-set"><a class="header" href="#argument-set">Argument set</a></h2>
+<p>Now this is a very cool feature of Nix. It is possible to pattern match
+over a set in the parameter. We write an alternative version of
+<code>mul = a: b: a*b</code> first by using a set as argument, then using pattern
+matching.</p>
+<pre><code>nix-repl&gt; mul = s: s.a*s.b
+nix-repl&gt; mul { a = 3; b = 4; }
+12
+nix-repl&gt; mul = { a, b }: a*b
+nix-repl&gt; mul { a = 3; b = 4; }
+12
+</code></pre>
+<p>In the first case we defined a function that accepts a single parameter.
+We then access attributes <code>a</code> and <code>b</code> from the given set. Note how the
+parentheses-less syntax for function calls is very elegant in this case,
+instead of doing <code>mul({ a=3; b=4; })</code> in other languages.</p>
+<p>In the second case we defined an argument set. It's like defining a
+set, except without values. We require that the passed set contains the
+keys <code>a</code> and <code>b</code>. Then we can use those <code>a</code> and <code>b</code> in the function body
+directly.</p>
+<pre><code>nix-repl&gt; mul = { a, b }: a*b
+nix-repl&gt; mul { a = 3; b = 4; c = 6; }
+error: anonymous function at (string):1:2 called with unexpected argument `c', at (string):1:1
+nix-repl&gt; mul { a = 3; }
+error: anonymous function at (string):1:2 called without required argument `b', at (string):1:1
+</code></pre>
+<p>Only a set with exactly the attributes required by the function is
+accepted, nothing more, nothing less.</p>
+<h2 id="default-and-variadic-attributes"><a class="header" href="#default-and-variadic-attributes">Default and variadic attributes</a></h2>
+<p>It is possible to specify <strong>default values</strong> of attributes in the
+argument set:</p>
+<pre><code>nix-repl&gt; mul = { a, b ? 2 }: a*b
+nix-repl&gt; mul { a = 3; }
+6
+nix-repl&gt; mul { a = 3; b = 4; }
+12
+</code></pre>
+<p>Also you can allow passing more attributes (<strong>variadic</strong>) than the
+expected ones:</p>
+<pre><code>nix-repl&gt; mul = { a, b, ... }: a*b
+nix-repl&gt; mul { a = 3; b = 4; c = 2; }
+</code></pre>
+<p>However, in the function body you cannot access the "c" attribute. The
+solution is to give a name to the given set with the <strong>@-pattern</strong>:</p>
+<pre><code>nix-repl&gt; mul = s@{ a, b, ... }: a*b*s.c
+nix-repl&gt; mul { a = 3; b = 4; c = 2; }
+24
+</code></pre>
+<p>That's it, you give a name to the whole parameter with name@ before the
+set pattern.</p>
+<p>Advantages of using argument sets:</p>
+<ul>
+<li>
+<p>Named unordered arguments: you don't have to remember the order of
+the arguments.</p>
+</li>
+<li>
+<p>You can pass sets, that adds a whole new layer of flexibility and
+convenience.</p>
+</li>
+</ul>
+<p>Disadvantages:</p>
+<ul>
+<li>Partial application does not work with argument sets. You have to
+specify the whole attribute set, not part of it.</li>
+</ul>
+<p>You may find similarities with <a href="https://docs.python.org/3/faq/programming.html#how-can-i-pass-optional-or-keyword-parameters-from-one-function-to-another">Python
+**kwargs</a>.</p>
+<h2 id="imports"><a class="header" href="#imports">Imports</a></h2>
+<p>The <code>import</code> function is built-in and provides a way to parse a <code>.nix</code>
+file. The natural approach is to define each component in a <code>.nix</code> file,
+then compose by importing these files.</p>
+<p>Let's start with the bare metal.</p>
+<p><code>a.nix</code>:</p>
+<pre><code>3
+</code></pre>
+<p><code>b.nix</code>:</p>
+<pre><code>4
+</code></pre>
+<p><code>mul.nix</code>:</p>
+<pre><code>a: b: a*b
+
+nix-repl&gt; a = import ./a.nix
+nix-repl&gt; b = import ./b.nix
+nix-repl&gt; mul = import ./mul.nix
+nix-repl&gt; mul a b
+12
+</code></pre>
+<p>Yes it's really that simple. You import a file, and it gets parsed as
+an expression. Note that the scope of the imported file does not inherit
+the scope of the importer.</p>
+<p><code>test.nix</code>:</p>
+<pre><code>x
+
+nix-repl&gt; let x = 5; in import ./test.nix
+error: undefined variable `x' at /home/lethal/test.nix:1:1
+</code></pre>
+<p>So how do we pass information to the module? Use functions, like we did
+with <code>mul.nix</code>. A more complex example:</p>
+<p><code>test.nix</code>:</p>
+<pre><code>{ a, b ? 3, trueMsg ? "yes", falseMsg ? "no" }:
+if a &gt; b
+  then builtins.trace trueMsg true
+  else builtins.trace falseMsg false
+
+nix-repl&gt; import ./test.nix { a = 5; trueMsg = "ok"; }
+trace: ok
+true
+</code></pre>
+<p>Explaining:</p>
+<ul>
+<li>
+<p>In <code>test.nix</code> we return a function. It accepts a set, with default
+attributes <code>b</code>, <code>trueMsg</code> and <code>falseMsg</code>.</p>
+</li>
+<li>
+<p><code>builtins.trace</code> is a <a href="https://nixos.org/manual/nix/stable/expressions/builtins.html">built-in
+function</a>
+that takes two arguments. The first is the message to display, the
+second is the value to return. It's usually used for debugging
+purposes.</p>
+</li>
+<li>
+<p>Then we import <code>test.nix</code>, and call the function with that set.</p>
+</li>
+</ul>
+<p>So when is the message shown? Only when it needs to be evaluated.</p>
+<h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
+<p>...we will finally write our first derivation.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="04-basics-of-language.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="06-our-first-derivation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="04-basics-of-language.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="06-our-first-derivation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

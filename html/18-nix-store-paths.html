@@ -1,0 +1,394 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Nix Store Paths - Nix Pills</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="00-preface.html">Preface</a></li><li class="chapter-item expanded "><a href="01-why-you-should-give-it-try.html"><strong aria-hidden="true">1.</strong> Why You Should Give it a Try</a></li><li class="chapter-item expanded "><a href="02-install-on-your-running.html"><strong aria-hidden="true">2.</strong> Install on Your Running System</a></li><li class="chapter-item expanded "><a href="03-enter-environment.html"><strong aria-hidden="true">3.</strong> Enter the Environment</a></li><li class="chapter-item expanded "><a href="04-basics-of-language.html"><strong aria-hidden="true">4.</strong> The Basics of the Language</a></li><li class="chapter-item expanded "><a href="05-functions-and-imports.html"><strong aria-hidden="true">5.</strong> Functions and Imports</a></li><li class="chapter-item expanded "><a href="06-our-first-derivation.html"><strong aria-hidden="true">6.</strong> Our First Derivation</a></li><li class="chapter-item expanded "><a href="07-working-derivation.html"><strong aria-hidden="true">7.</strong> Working Derivation</a></li><li class="chapter-item expanded "><a href="08-generic-builders.html"><strong aria-hidden="true">8.</strong> Generic Builders</a></li><li class="chapter-item expanded "><a href="09-automatic-runtime.html"><strong aria-hidden="true">9.</strong> Automatic Runtime Dependencies</a></li><li class="chapter-item expanded "><a href="10-developing-with-nix-shell.html"><strong aria-hidden="true">10.</strong> Developing with nix-shell</a></li><li class="chapter-item expanded "><a href="11-garbage-collector.html"><strong aria-hidden="true">11.</strong> The Garbage Collector</a></li><li class="chapter-item expanded "><a href="12-inputs-design-pattern.html"><strong aria-hidden="true">12.</strong> Package Repositories and the Inputs Design Pattern</a></li><li class="chapter-item expanded "><a href="13-callpackage-design-pattern.html"><strong aria-hidden="true">13.</strong> Callpackage Design Pattern</a></li><li class="chapter-item expanded "><a href="14-override-design-pattern.html"><strong aria-hidden="true">14.</strong> Override Design Pattern</a></li><li class="chapter-item expanded "><a href="15-nix-search-paths.html"><strong aria-hidden="true">15.</strong> Nix Search Paths</a></li><li class="chapter-item expanded "><a href="16-nixpkgs-parameters.html"><strong aria-hidden="true">16.</strong> Nixpkgs Parameters</a></li><li class="chapter-item expanded "><a href="17-nixpkgs-overriding-packages.html"><strong aria-hidden="true">17.</strong> Nixpkgs Overriding Packages</a></li><li class="chapter-item expanded "><a href="18-nix-store-paths.html" class="active"><strong aria-hidden="true">18.</strong> Nix Store Paths</a></li><li class="chapter-item expanded "><a href="19-fundamentals-of-stdenv.html"><strong aria-hidden="true">19.</strong> Fundamentals of Stdenv</a></li><li class="chapter-item expanded "><a href="20-basic-dependencies-and-hooks.html"><strong aria-hidden="true">20.</strong> Basic Dependencies and Hooks</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Nix Pills</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="nix-store-paths"><a class="header" href="#nix-store-paths">Nix Store Paths</a></h1>
+<p>Welcome to the 18th Nix pill. In the previous
+<a href="17-nixpkgs-overriding-packages.html">17th</a> pill we have scratched the surface
+of the <code>nixpkgs</code> repository structure. It is a set of packages, and
+it's possible to override such packages so that all other packages will
+use the overrides.</p>
+<p>Before reading existing derivations, I'd like to talk about store paths
+and how they are computed. In particular we are interested in fixed
+store paths that depend on an integrity hash (e.g. a sha256), which is
+usually applied to source tarballs.</p>
+<p>The way store paths are computed is a little contrived, mostly due to
+historical reasons. Our reference will be the <a href="https://github.com/NixOS/nix/blob/07f992a74b64f4376d5b415d0042babc924772f3/src/libstore/store-api.cc#L197">Nix source
+code</a>.</p>
+<h2 id="source-paths"><a class="header" href="#source-paths">Source paths</a></h2>
+<p>Let's start simple. You know nix allows relative paths to be used, such
+that the file or directory is stored in the nix store, that is
+<code>./myfile</code> gets stored into <code>/nix/store/.......</code> We want to understand
+how is the store path generated for such a file:</p>
+<pre><code>$ echo mycontent &gt; myfile
+</code></pre>
+<p>I remind you, the simplest derivation you can write has a <code>name</code>, a
+<code>builder</code> and the <code>system</code>:</p>
+<pre><code>$ nix repl
+nix-repl&gt; derivation { system = "x86_64-linux"; builder = ./myfile; name = "foo"; }
+«derivation /nix/store/y4h73bmrc9ii5bxg6i7ck6hsf5gqv8ck-foo.drv»
+</code></pre>
+<p>Now inspect the .drv to see where is <code>./myfile</code> being stored:</p>
+<pre><code>$ nix derivation show /nix/store/y4h73bmrc9ii5bxg6i7ck6hsf5gqv8ck-foo.drv
+{
+  "/nix/store/y4h73bmrc9ii5bxg6i7ck6hsf5gqv8ck-foo.drv": {
+    "outputs": {
+      "out": {
+        "path": "/nix/store/hs0yi5n5nw6micqhy8l1igkbhqdkzqa1-foo"
+      }
+    },
+    "inputSrcs": [
+      "/nix/store/xv2iccirbrvklck36f1g7vldn5v58vck-myfile"
+    ],
+    "inputDrvs": {},
+    "platform": "x86_64-linux",
+    "builder": "/nix/store/xv2iccirbrvklck36f1g7vldn5v58vck-myfile",
+    "args": [],
+    "env": {
+      "builder": "/nix/store/xv2iccirbrvklck36f1g7vldn5v58vck-myfile",
+      "name": "foo",
+      "out": "/nix/store/hs0yi5n5nw6micqhy8l1igkbhqdkzqa1-foo",
+      "system": "x86_64-linux"
+    }
+  }
+}
+</code></pre>
+<p>Great, how did nix decide to use <code>xv2iccirbrvklck36f1g7vldn5v58vck</code> ?
+Keep looking at the nix comments.</p>
+<p><strong>Note:</strong> doing <code>nix-store --add myfile</code> will store the file in the same
+store path.</p>
+<h3 id="step-1-compute-the-hash-of-the-file"><a class="header" href="#step-1-compute-the-hash-of-the-file">Step 1, compute the hash of the file</a></h3>
+<p>The comments tell us to first compute the sha256 of the NAR
+serialization of the file. Can be done in two ways:</p>
+<pre><code>$ nix-hash --type sha256 myfile
+2bfef67de873c54551d884fdab3055d84d573e654efa79db3c0d7b98883f9ee3
+</code></pre>
+<p>Or:</p>
+<pre><code>$ nix-store --dump myfile|sha256sum
+2bfef67de873c54551d884fdab3055d84d573e654efa79db3c0d7b98883f9ee3
+</code></pre>
+<p>In general, Nix understands two contents: flat for regular files, or
+recursive for NAR serializations which can be anything.</p>
+<h3 id="step-2-build-the-string-description"><a class="header" href="#step-2-build-the-string-description">Step 2, build the string description</a></h3>
+<p>Then nix uses a special string which includes the hash, the path type
+and the file name. We store this in another file:</p>
+<pre><code>$ echo -n "source:sha256:2bfef67de873c54551d884fdab3055d84d573e654efa79db3c0d7b98883f9ee3:/nix/store:myfile" &gt; myfile.str
+</code></pre>
+<h3 id="step-3-compute-the-final-hash"><a class="header" href="#step-3-compute-the-final-hash">Step 3, compute the final hash</a></h3>
+<p>Finally the comments tell us to compute the base-32 representation of
+the first 160 bits (truncation) of a sha256 of the above string:</p>
+<pre><code>$ nix-hash --type sha256 --truncate --base32 --flat myfile.str
+xv2iccirbrvklck36f1g7vldn5v58vck
+</code></pre>
+<h2 id="output-paths"><a class="header" href="#output-paths">Output paths</a></h2>
+<p>Output paths are usually generated for derivations. We use the above
+example because it's simple. Even if we didn't build the derivation,
+nix knows the out path <code>hs0yi5n5nw6micqhy8l1igkbhqdkzqa1</code>. This is
+because the out path only depends on inputs.</p>
+<p>It's computed in a similar way to source paths, except that the .drv is
+hashed and the type of derivation is <code>output:out</code>. In case of multiple
+outputs, we may have different <code>output:&lt;id&gt;</code>.</p>
+<p>At the time nix computes the out path, the .drv contains an empty string
+for each out path. So what we do is getting our .drv and replacing the
+out path with an empty string:</p>
+<pre><code>$ cp -f /nix/store/y4h73bmrc9ii5bxg6i7ck6hsf5gqv8ck-foo.drv myout.drv
+$ sed -i 's,/nix/store/hs0yi5n5nw6micqhy8l1igkbhqdkzqa1-foo,,g' myout.drv
+</code></pre>
+<p>The <code>myout.drv</code> is the .drv state in which nix is when computing the out
+path for our derivation:</p>
+<pre><code>$ sha256sum myout.drv
+1bdc41b9649a0d59f270a92d69ce6b5af0bc82b46cb9d9441ebc6620665f40b5  myout.drv
+$ echo -n "output:out:sha256:1bdc41b9649a0d59f270a92d69ce6b5af0bc82b46cb9d9441ebc6620665f40b5:/nix/store:foo" &gt; myout.str
+$ nix-hash --type sha256 --truncate --base32 --flat myout.str
+hs0yi5n5nw6micqhy8l1igkbhqdkzqa1
+</code></pre>
+<p>Then nix puts that out path in the .drv, and that's it.</p>
+<p>In case the .drv has input derivations, that is it references other
+.drv, then such .drv paths are replaced by this same algorithm which
+returns a hash.</p>
+<p>In other words, you get a final .drv where every other .drv path is
+replaced by its hash.</p>
+<h2 id="fixed-output-paths"><a class="header" href="#fixed-output-paths">Fixed-output paths</a></h2>
+<p>Finally, the other most used kind of path is when we know beforehand an
+integrity hash of a file. This is usual for tarballs.</p>
+<p>A derivation can take three special attributes: <code>outputHashMode</code>,
+<code>outputHash</code> and <code>outputHashAlgo</code> which are well documented in the <a href="https://nixos.org/manual/nix/stable/expressions/advanced-attributes.html">nix
+manual</a>.</p>
+<p>The builder must create the out path and make sure its hash is the same
+as the one declared with <code>outputHash</code>.</p>
+<p>Let's say our builder should create a file whose contents is
+<code>mycontent</code>:</p>
+<pre><code>$ echo mycontent &gt; myfile
+$ sha256sum myfile
+f3f3c4763037e059b4d834eaf68595bbc02ba19f6d2a500dce06d124e2cd99bb  myfile
+nix-repl&gt; derivation { name = "bar"; system = "x86_64-linux"; builder = "none"; outputHashMode = "flat"; outputHashAlgo = "sha256"; outputHash = "f3f3c4763037e059b4d834eaf68595bbc02ba19f6d2a500dce06d124e2cd99bb"; }
+«derivation /nix/store/ymsf5zcqr9wlkkqdjwhqllgwa97rff5i-bar.drv»
+</code></pre>
+<p>Inspect the .drv and see that it also stored the fact that it's a
+fixed-output derivation with sha256 algorithm, compared to the previous
+examples:</p>
+<pre><code>$ nix derivation show /nix/store/ymsf5zcqr9wlkkqdjwhqllgwa97rff5i-bar.drv
+{
+  "/nix/store/ymsf5zcqr9wlkkqdjwhqllgwa97rff5i-bar.drv": {
+    "outputs": {
+      "out": {
+        "path": "/nix/store/a00d5f71k0vp5a6klkls0mvr1f7sx6ch-bar",
+        "hashAlgo": "sha256",
+        "hash": "f3f3c4763037e059b4d834eaf68595bbc02ba19f6d2a500dce06d124e2cd99bb"
+      }
+    },
+[...]
+}
+</code></pre>
+<p>It doesn't matter which input derivations are being used, the final out
+path must only depend on the declared hash.</p>
+<p>What nix does is to create an intermediate string representation of the
+fixed-output content:</p>
+<pre><code>$ echo -n "fixed:out:sha256:f3f3c4763037e059b4d834eaf68595bbc02ba19f6d2a500dce06d124e2cd99bb:" &gt; mycontent.str
+$ sha256sum mycontent.str 
+423e6fdef56d53251c5939359c375bf21ea07aaa8d89ca5798fb374dbcfd7639  myfile.str
+</code></pre>
+<p>Then proceed as it was a normal derivation output path:</p>
+<pre><code>$ echo -n "output:out:sha256:423e6fdef56d53251c5939359c375bf21ea07aaa8d89ca5798fb374dbcfd7639:/nix/store:bar" &gt; myfile.str
+$ nix-hash --type sha256 --truncate --base32 --flat myfile.str
+a00d5f71k0vp5a6klkls0mvr1f7sx6ch
+</code></pre>
+<p>Hence, the store path only depends on the declared fixed-output hash.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>There are other types of store paths, but you get the idea. Nix first
+hashes the contents, then creates a string description, and the final
+store path is the hash of this string.</p>
+<p>Also we've introduced some fundamentals, in particular the fact that
+Nix knows beforehand the out path of a derivation since it only depends
+on the inputs. We've also introduced fixed-output derivations which are
+especially used by the nixpkgs repository for downloading and verifying
+source tarballs.</p>
+<h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
+<p>...we will introduce <code>stdenv</code>. In the previous pills we rolled our own
+<code>mkDerivation</code> convenience function for wrapping the builtin derivation,
+but the <code>nixpkgs</code> repository also has its own convenience functions for
+dealing with autotools projects and other build systems.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="17-nixpkgs-overriding-packages.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="19-fundamentals-of-stdenv.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="17-nixpkgs-overriding-packages.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="19-fundamentals-of-stdenv.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

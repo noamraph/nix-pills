@@ -1,0 +1,360 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Nixpkgs Parameters - Nix Pills</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="00-preface.html">Preface</a></li><li class="chapter-item expanded "><a href="01-why-you-should-give-it-try.html"><strong aria-hidden="true">1.</strong> Why You Should Give it a Try</a></li><li class="chapter-item expanded "><a href="02-install-on-your-running.html"><strong aria-hidden="true">2.</strong> Install on Your Running System</a></li><li class="chapter-item expanded "><a href="03-enter-environment.html"><strong aria-hidden="true">3.</strong> Enter the Environment</a></li><li class="chapter-item expanded "><a href="04-basics-of-language.html"><strong aria-hidden="true">4.</strong> The Basics of the Language</a></li><li class="chapter-item expanded "><a href="05-functions-and-imports.html"><strong aria-hidden="true">5.</strong> Functions and Imports</a></li><li class="chapter-item expanded "><a href="06-our-first-derivation.html"><strong aria-hidden="true">6.</strong> Our First Derivation</a></li><li class="chapter-item expanded "><a href="07-working-derivation.html"><strong aria-hidden="true">7.</strong> Working Derivation</a></li><li class="chapter-item expanded "><a href="08-generic-builders.html"><strong aria-hidden="true">8.</strong> Generic Builders</a></li><li class="chapter-item expanded "><a href="09-automatic-runtime.html"><strong aria-hidden="true">9.</strong> Automatic Runtime Dependencies</a></li><li class="chapter-item expanded "><a href="10-developing-with-nix-shell.html"><strong aria-hidden="true">10.</strong> Developing with nix-shell</a></li><li class="chapter-item expanded "><a href="11-garbage-collector.html"><strong aria-hidden="true">11.</strong> The Garbage Collector</a></li><li class="chapter-item expanded "><a href="12-inputs-design-pattern.html"><strong aria-hidden="true">12.</strong> Package Repositories and the Inputs Design Pattern</a></li><li class="chapter-item expanded "><a href="13-callpackage-design-pattern.html"><strong aria-hidden="true">13.</strong> Callpackage Design Pattern</a></li><li class="chapter-item expanded "><a href="14-override-design-pattern.html"><strong aria-hidden="true">14.</strong> Override Design Pattern</a></li><li class="chapter-item expanded "><a href="15-nix-search-paths.html"><strong aria-hidden="true">15.</strong> Nix Search Paths</a></li><li class="chapter-item expanded "><a href="16-nixpkgs-parameters.html" class="active"><strong aria-hidden="true">16.</strong> Nixpkgs Parameters</a></li><li class="chapter-item expanded "><a href="17-nixpkgs-overriding-packages.html"><strong aria-hidden="true">17.</strong> Nixpkgs Overriding Packages</a></li><li class="chapter-item expanded "><a href="18-nix-store-paths.html"><strong aria-hidden="true">18.</strong> Nix Store Paths</a></li><li class="chapter-item expanded "><a href="19-fundamentals-of-stdenv.html"><strong aria-hidden="true">19.</strong> Fundamentals of Stdenv</a></li><li class="chapter-item expanded "><a href="20-basic-dependencies-and-hooks.html"><strong aria-hidden="true">20.</strong> Basic Dependencies and Hooks</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Nix Pills</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="nixpkgs-parameters"><a class="header" href="#nixpkgs-parameters">Nixpkgs Parameters</a></h1>
+<p>Welcome to the 16th Nix pill. In the previous <a href="15-nix-search-paths.html">15th</a>
+pill we've realized how nix finds expressions with the angular brackets
+syntax, so that we finally know where <code>&lt;nixpkgs&gt;</code> is located on our
+system.</p>
+<p>We can start diving into the <a href="https://github.com/NixOS/nixpkgs">nixpkgs
+repository</a>, through all the various
+tools and design patterns. Please note that also <code>nixpkgs</code> has its own
+manual, underlying the difference between the general <code>nix</code> language and
+the <code>nixpkgs</code> repository.</p>
+<h2 id="the-defaultnix-expression"><a class="header" href="#the-defaultnix-expression">The default.nix expression</a></h2>
+<p>We will not start inspecting packages at the beginning, rather the
+general structure of <code>nixpkgs</code>.</p>
+<p>In our custom repository we created a <code>default.nix</code> which composed the
+expressions of the various packages.</p>
+<p>Also <code>nixpkgs</code> has its own
+<a href="https://github.com/NixOS/nixpkgs/blob/master/default.nix">default.nix</a>,
+which is the one being loaded when referring to <code>&lt;nixpkgs&gt;</code>. It does a
+simple thing: check whether the <code>nix</code> version is at least 1.7 (at the
+time of writing this blog post). Then import
+<a href="https://github.com/NixOS/nixpkgs/blob/master/pkgs/top-level/all-packages.nix">pkgs/top-level/all-packages.nix</a>.
+From now on, we will refer to this set of packages as <strong>pkgs</strong>.</p>
+<p>The <code>all-packages.nix</code> is then the file that composes all the packages.
+Note the <code>pkgs/</code> subdirectory, while nixos is in the <code>nixos/</code>
+subdirectory.</p>
+<p>The <code>all-packages.nix</code> is a bit contrived. First of all, it's a
+function. It accepts a couple of interesting parameters:</p>
+<ul>
+<li>
+<p><code>system</code>: defaults to the current system</p>
+</li>
+<li>
+<p><code>config</code>: defaults to null</p>
+</li>
+<li>
+<p>others...</p>
+</li>
+</ul>
+<p>The <strong>system</strong> parameter, as per comment in the expression, it's the
+system for which the packages will be built. It allows for example to
+install i686 packages on amd64 machines.</p>
+<p>The <strong>config</strong> parameter is a simple attribute set. Packages can read
+some of its values and change the behavior of some derivations.</p>
+<h2 id="the-system-parameter"><a class="header" href="#the-system-parameter">The system parameter</a></h2>
+<p>You will find this parameter in many other .nix expressions (e.g.
+release expressions). The reason is that, given pkgs accepts a system
+parameter, then whenever you want to import pkgs you also want to pass
+through the value of system. E.g.:</p>
+<p><code>myrelease.nix</code>:</p>
+<pre><code>{ system ? builtins.currentSystem }:
+
+let pkgs = import &lt;nixpkgs&gt; { inherit system; };
+...
+</code></pre>
+<p>Why is it useful? With this parameter it's very easy to select a set of
+packages for a particular system. For example:</p>
+<pre><code>nix-build -A psmisc --argstr system i686-linux
+</code></pre>
+<p>This will build the psmisc derivation for i686-linux instead of
+x86_64-linux. This concept is very similar to multi-arch of Debian.</p>
+<p>The setup for cross compiling is also in <code>nixpkgs</code>, however it's a
+little contrived to talk about it and I don't know much of it either.</p>
+<h2 id="the-config-parameter"><a class="header" href="#the-config-parameter">The config parameter</a></h2>
+<p>I'm sure on the wiki or other manuals you've read about
+<code>~/.config/nixpkgs/config.nix</code> (previously <code>~/.nixpkgs/config.nix</code>) and
+I'm sure you've wondered whether that's hardcoded in nix. It's not,
+it's in
+<a href="https://github.com/NixOS/nixpkgs/blob/32c523914fdb8bf9cc7912b1eba023a8daaae2e8/pkgs/top-level/impure.nix#L28">nixpkgs</a>.</p>
+<p>The <code>all-packages.nix</code> expression accepts the <code>config</code> parameter. If
+it's <code>null</code>, then it reads the <code>NIXPKGS_CONFIG</code> environment variable.
+If not specified, <code>nixpkgs</code> will pick
+<code>$HOME/.config/nixpkgs/config.nix</code>.</p>
+<p>After determining <code>config.nix</code>, it will be imported as a nix expression,
+and that will be the value of <code>config</code> (in case it hasn't been passed
+as parameter to import <code>&lt;nixpkgs&gt;</code>).</p>
+<p>The <code>config</code> is available in the resulting repository:</p>
+<pre><code>$ nix repl
+nix-repl&gt; pkgs = import &lt;nixpkgs&gt; {}
+nix-repl&gt; pkgs.config
+{ }
+nix-repl&gt; pkgs = import &lt;nixpkgs&gt; { config = { foo = "bar"; }; }
+nix-repl&gt; pkgs.config
+{ foo = "bar"; }
+</code></pre>
+<p>What attributes go in <code>config</code> is a matter of convenience and
+conventions.</p>
+<p>For example, <code>config.allowUnfree</code> is an attribute that forbids building
+packages that have an unfree license by default. The <code>config.pulseaudio</code>
+setting tells whether to build packages with pulseaudio support or not
+where applicable and when the derivation obeys to the setting.</p>
+<h2 id="about-nix-functions"><a class="header" href="#about-nix-functions">About .nix functions</a></h2>
+<p>A <code>.nix</code> file contains a nix expression. Thus it can also be a function.
+I remind you that <code>nix-build</code> expects the expression to return a
+derivation. Therefore it's natural to return straight a derivation from
+a <code>.nix</code> file. However, it's also very natural for the <code>.nix</code> file to
+accept some parameters, in order to tweak the derivation being returned.</p>
+<p>In this case, nix does a trick:</p>
+<ul>
+<li>
+<p>If the expression is a derivation, build it.</p>
+</li>
+<li>
+<p>If the expression is a function, call it and build the resulting
+derivation.</p>
+</li>
+</ul>
+<p>For example you can nix-build the <code>.nix</code> file below:</p>
+<pre><code>{ pkgs ? import &lt;nixpkgs&gt; {} }:
+
+pkgs.psmisc
+</code></pre>
+<p>Nix is able to call the function because the pkgs parameter has a
+default value. This allows you to pass a different value for pkgs using
+the <code>--arg</code> option.</p>
+<p>Does it work if you have a function returning a function that returns a
+derivation? No, Nix only calls the function it encounters once.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>We've unleashed the <code>&lt;nixpkgs&gt;</code> repository. It's a function that
+accepts some parameters, and returns the set of all packages. Due to
+laziness, only the accessed derivations will be built.</p>
+<p>You can use this repository to build your own packages as we've seen in
+the previous pill when creating our own repository.</p>
+<p>Lately I'm a little busy with the NixOS 14.11 release and other stuff,
+and I'm also looking toward migrating from blogger to a more
+coder-oriented blogging platform. So sorry for the delayed and shorter
+pills :)</p>
+<h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
+<p>...we will talk about overriding packages in the <code>nixpkgs</code> repository.
+What if you want to change some options of a library and let all other
+packages pick the new library? One possibility is to use, like described
+above, the <code>config</code> parameter when applicable. The other possibility is
+to override derivations.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="15-nix-search-paths.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="17-nixpkgs-overriding-packages.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="15-nix-search-paths.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="17-nixpkgs-overriding-packages.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

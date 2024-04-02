@@ -1,0 +1,551 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Package Repositories and the Inputs Design Pattern - Nix Pills</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="00-preface.html">Preface</a></li><li class="chapter-item expanded "><a href="01-why-you-should-give-it-try.html"><strong aria-hidden="true">1.</strong> Why You Should Give it a Try</a></li><li class="chapter-item expanded "><a href="02-install-on-your-running.html"><strong aria-hidden="true">2.</strong> Install on Your Running System</a></li><li class="chapter-item expanded "><a href="03-enter-environment.html"><strong aria-hidden="true">3.</strong> Enter the Environment</a></li><li class="chapter-item expanded "><a href="04-basics-of-language.html"><strong aria-hidden="true">4.</strong> The Basics of the Language</a></li><li class="chapter-item expanded "><a href="05-functions-and-imports.html"><strong aria-hidden="true">5.</strong> Functions and Imports</a></li><li class="chapter-item expanded "><a href="06-our-first-derivation.html"><strong aria-hidden="true">6.</strong> Our First Derivation</a></li><li class="chapter-item expanded "><a href="07-working-derivation.html"><strong aria-hidden="true">7.</strong> Working Derivation</a></li><li class="chapter-item expanded "><a href="08-generic-builders.html"><strong aria-hidden="true">8.</strong> Generic Builders</a></li><li class="chapter-item expanded "><a href="09-automatic-runtime.html"><strong aria-hidden="true">9.</strong> Automatic Runtime Dependencies</a></li><li class="chapter-item expanded "><a href="10-developing-with-nix-shell.html"><strong aria-hidden="true">10.</strong> Developing with nix-shell</a></li><li class="chapter-item expanded "><a href="11-garbage-collector.html"><strong aria-hidden="true">11.</strong> The Garbage Collector</a></li><li class="chapter-item expanded "><a href="12-inputs-design-pattern.html" class="active"><strong aria-hidden="true">12.</strong> Package Repositories and the Inputs Design Pattern</a></li><li class="chapter-item expanded "><a href="13-callpackage-design-pattern.html"><strong aria-hidden="true">13.</strong> Callpackage Design Pattern</a></li><li class="chapter-item expanded "><a href="14-override-design-pattern.html"><strong aria-hidden="true">14.</strong> Override Design Pattern</a></li><li class="chapter-item expanded "><a href="15-nix-search-paths.html"><strong aria-hidden="true">15.</strong> Nix Search Paths</a></li><li class="chapter-item expanded "><a href="16-nixpkgs-parameters.html"><strong aria-hidden="true">16.</strong> Nixpkgs Parameters</a></li><li class="chapter-item expanded "><a href="17-nixpkgs-overriding-packages.html"><strong aria-hidden="true">17.</strong> Nixpkgs Overriding Packages</a></li><li class="chapter-item expanded "><a href="18-nix-store-paths.html"><strong aria-hidden="true">18.</strong> Nix Store Paths</a></li><li class="chapter-item expanded "><a href="19-fundamentals-of-stdenv.html"><strong aria-hidden="true">19.</strong> Fundamentals of Stdenv</a></li><li class="chapter-item expanded "><a href="20-basic-dependencies-and-hooks.html"><strong aria-hidden="true">20.</strong> Basic Dependencies and Hooks</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Nix Pills</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="inputs-design-pattern"><a class="header" href="#inputs-design-pattern">Package Repositories and the Inputs Design Pattern</a></h1>
+<p>Welcome to the 12th Nix pill. In the previous <a href="11-garbage-collector.html">11th
+pill</a>, we stopped packaging and cleaned up the
+system with the garbage collector.</p>
+<p>This time, we will resume packaging and improve different aspects of it.
+We will also demonstrate how to create a repository of multiple
+packages.</p>
+<h2 id="repositories-in-nix"><a class="header" href="#repositories-in-nix">Repositories in Nix</a></h2>
+<p>Package repositories in Nix arose naturally from the need to organize
+packages. There is no preset directory structure or packaging policy
+prescribed by Nix itself; Nix, as a full, functional programming
+language, is powerful enough to support multiple different repository
+formats.</p>
+<p>Over time, the <code>nixpkgs</code> repository evolved a particular structure. This
+structure reflects the history of Nix as well as the design patterns
+adopted by its users as useful tools in building and organizing
+packages. Below, we will examine some of these patterns in detail.</p>
+<h2 id="the-single-repository-pattern"><a class="header" href="#the-single-repository-pattern">The single repository pattern</a></h2>
+<p>Different operating system distributions have different opinions about
+how package repositories should be organized. Systems like Debian
+scatter packages in several small repositories (which tends to make
+tracking interdependent changes more difficult, and hinders
+contributions to the repositories), while systems like Gentoo put all
+package descriptions in a single repository.</p>
+<p>Nix follows the "single repository" pattern by placing all
+descriptions of all packages into
+<a href="https://github.com/NixOS/nixpkgs">nixpkgs</a>. This approach has proven
+natural and attractive for new contributions.</p>
+<p>For the rest of this pill, we will adopt the single repository pattern.
+The natural implementation in Nix is to create a top-level Nix
+expression, followed by one expression for each package. The top-level
+expression imports and combines all package expressions in an attribute
+set mapping names to packages.</p>
+<p>In some programming languages, such an approach -- including every
+possible package description in a single data structure -- would be
+untenable due to the language needing to load the entire data structure
+into memory before operating on it. Nix, however, is a lazy language and
+only evaluates what is needed.</p>
+<h2 id="packaging-graphviz"><a class="header" href="#packaging-graphviz">Packaging <code>graphviz</code></a></h2>
+<p>We have already packaged GNU <code>hello</code>. Next, we will package a
+graph-drawing program called <code>graphviz</code> so that we can create a
+repository containing multiple packages. The <code>graphviz</code> package was
+selected because it uses the standard autotools build system and
+requires no patching. It also has optional dependencies, which will give
+us an opportunity to illustrate a technique to configure builds to a
+particular situation.</p>
+<p>First, we download <code>graphviz</code> from
+<a href="https://gitlab.com/api/v4/projects/4207231/packages/generic/graphviz-releases/2.49.3/graphviz-2.49.3.tar.gz">gitlab</a>.
+The <code>graphviz.nix</code> expression is straightforward:</p>
+<pre><code>let
+  pkgs = import &lt;nixpkgs&gt; { };
+  mkDerivation = import ./autotools.nix pkgs;
+in
+mkDerivation {
+  name = "graphviz";
+  src = ./graphviz-2.49.3.tar.gz;
+}
+</code></pre>
+<p>If we build the project with <code>nix-build graphviz.nix</code>, we will get
+runnable binaries under <code>result/bin</code>. Notice how we reused the same
+<code>autotools.nix</code> of <code>hello.nix.</code></p>
+<p>By default, <code>graphviz</code> does not compile with the ability to produce
+<code>png</code> files. Thus, the derivation above will build a binary supporting
+only the native output formats, as we see below:</p>
+<pre><code>$ echo 'graph test { a -- b }'|result/bin/dot -Tpng -o test.png
+Format: "png" not recognized. Use one of: canon cmap [...]
+</code></pre>
+<p>If we want to produce a <code>png</code> file with <code>graphviz</code>, we must add it to
+our derivation. The place to do so is in <code>autotools.nix</code>, where we
+created a <code>buildInputs</code> variable that gets concatenated to <code>baseInputs</code>.
+This is the exact reason for this variable: to allow users of
+<code>autotools.nix</code> to add additional inputs from package expressions.</p>
+<p>Version 2.49 of <code>graphviz</code> has several plugins to output <code>png</code>. For
+simplicity, we will use <code>libgd</code>.</p>
+<h2 id="passing-library-information-to-pkg-config-via-environment-variables"><a class="header" href="#passing-library-information-to-pkg-config-via-environment-variables">Passing library information to <code>pkg-config</code> via environment variables</a></h2>
+<p>The <code>graphviz</code> configuration script uses <code>pkg-config</code> to specify which
+flags are passed to the compiler. Since there is no global location for
+libraries, we need to tell <code>pkg-config</code> where to find its description
+files, which tell the configuration script where to find headers and
+libraries.</p>
+<p>In classic POSIX systems, <code>pkg-config</code> just finds the <code>.pc</code> files of all
+installed libraries in system folders like <code>/usr/lib/pkgconfig</code>.
+However, these files are not present in the isolated environments
+presented to Nix.</p>
+<p>As an alternative, we can inform <code>pkg-config</code> about the location of
+libraries via the <code>PKG_CONFIG_PATH</code> environment variable. We can
+populate this environment variable using the same trick we used for
+<code>PATH</code>: automatically filling the variables from <code>buildInputs</code>. This is
+the relevant snippet of <code>setup.sh</code>:</p>
+<pre><code>for p in $baseInputs $buildInputs; do
+  if [ -d $p/bin ]; then
+    export PATH="$p/bin${PATH:+:}$PATH"
+  fi
+  if [ -d $p/lib/pkgconfig ]; then
+    export PKG_CONFIG_PATH="$p/lib/pkgconfig${PKG_CONFIG_PATH:+:}$PKG_CONFIG_PATH"
+  fi
+done
+</code></pre>
+<p>Now if we add derivations to <code>buildInputs</code>, their <code>lib/pkgconfig</code> and
+<code>bin</code> paths are automatically added in <code>setup.sh</code>.</p>
+<h2 id="completing-graphviz-with-gd"><a class="header" href="#completing-graphviz-with-gd">Completing graphviz with <code>gd</code></a></h2>
+<p>Below, we finish the expression for <code>graphviz</code> with <code>gd</code> support. Note
+the use of the <code>with</code> expression in <code>buildInputs</code> to avoid repeating
+<code>pkgs</code>:</p>
+<pre><code>let
+  pkgs = import &lt;nixpkgs&gt; { };
+  mkDerivation = import ./autotools.nix pkgs;
+in
+mkDerivation {
+  name = "graphviz";
+  src = ./graphviz-2.49.3.tar.gz;
+  buildInputs = with pkgs; [
+    pkg-config
+    (pkgs.lib.getLib gd)
+    (pkgs.lib.getDev gd)
+  ];
+}
+</code></pre>
+<p>We add <code>pkg-config</code> to the derivation to make this tool available for
+the configure script. As <code>gd</code> is a package with <a href="https://nixos.org/manual/nixpkgs/stable/#sec-multiple-outputs-">split
+outputs</a>,
+we need to add both the library and development outputs.</p>
+<p>After building, <code>graphviz</code> can now create <code>png</code>s.</p>
+<h2 id="the-repository-expression"><a class="header" href="#the-repository-expression">The repository expression</a></h2>
+<p>Now that we have two packages, we want to combine them into a single
+repository. To do so, we'll mimic what <code>nixpkgs</code> does: we will create a
+single attribute set containing derivations. This attribute set can then
+be imported, and derivations can be selected by accessing the top-level
+attribute set.</p>
+<p>Using this technique we are able to abstract from the file names.
+Instead of referring to a package by <code>REPO/some/sub/dir/package.nix</code>,
+this technique allows us to select a derivation as
+<code>importedRepo.package</code> (or <code>pkgs.package</code> in our examples).</p>
+<p>To begin, create a default.nix in the current directory:</p>
+<pre><code>{
+  hello = import ./hello.nix;
+  graphviz = import ./graphviz.nix;
+}
+</code></pre>
+<p>This file is ready to use with <code>nix repl</code>:</p>
+<pre><code>$ nix repl
+nix-repl&gt; :l default.nix
+Added 2 variables.
+nix-repl&gt; hello
+«derivation /nix/store/dkib02g54fpdqgpskswgp6m7bd7mgx89-hello.drv»
+nix-repl&gt; graphviz
+«derivation /nix/store/zqv520v9mk13is0w980c91z7q1vkhhil-graphviz.drv»
+</code></pre>
+<p>With <code>nix-build</code>, we can pass the -A option to access an attribute of
+the set from the given <code>.nix</code> expression:</p>
+<pre><code>$ nix-build default.nix -A hello
+[...]
+$ result/bin/hello
+Hello, world!
+</code></pre>
+<p>The <code>default.nix</code> file is special. When a directory contains a
+<code>default.nix</code> file, it is used as the implicit nix expression of the
+directory. This, for example, allows us to run <code>nix-build -A hello</code>
+without specifying <code>default.nix</code> explicitly.</p>
+<p>We can now use <code>nix-env</code> to install the package into our user
+environment:</p>
+<pre><code>$ nix-env -f . -iA graphviz
+[...]
+$ dot -V
+</code></pre>
+<p>Taking a closer look at the above command, we see the following options:</p>
+<ul>
+<li>
+<p>The -f option is used to specify the expression to use. In this
+case, the expression is the <code>./default.nix</code> of the current
+directory.</p>
+</li>
+<li>
+<p>The -i option stands for "installation".</p>
+</li>
+<li>
+<p>The -A is the same as above for <code>nix-build</code>.</p>
+</li>
+</ul>
+<p>We reproduced the very basic behavior of <code>nixpkgs</code>: combining multiple
+derivations into a single, top-level attribute set.</p>
+<h2 id="the-inputs-pattern"><a class="header" href="#the-inputs-pattern">The inputs pattern</a></h2>
+<p>The approach we've taken so far has a few problems:</p>
+<ul>
+<li>
+<p>First, <code>hello.nix</code> and <code>graphviz.nix</code> are dependent on <code>nixpkgs</code>,
+which they import directly. A better approach would be to pass in
+<code>nixpkgs</code> as an argument, as we did in <code>autotools.nix</code>.</p>
+</li>
+<li>
+<p>Second, we don't have a straightforward way to compile different
+variants of the same software, such as <code>graphviz</code> with or without
+<code>libgd</code> support.</p>
+</li>
+<li>
+<p>Third, we don't have a way to test <code>graphviz</code> with a particular
+<code>libgd</code> version.</p>
+</li>
+</ul>
+<p>Until now, our approach to addressing the above problems has been
+inadequate and required changing the nix expression to match our needs.
+With the <code>inputs</code> pattern, we provide another answer: let the user
+change the <code>inputs</code> of the expression.</p>
+<p>When we talk about "the inputs of an expression", we are referring to
+the set of derivations needed to build that expression. In this case:</p>
+<ul>
+<li>
+<p><code>mkDerivation</code> from <code>autotools</code>. Recall that <code>mkDerivation</code> has an
+implicit dependency on the toolchain.</p>
+</li>
+<li>
+<p><code>libgd</code> and its dependencies.</p>
+</li>
+</ul>
+<p>The <code>./src</code> directory is also an input, but we wouldn't change the
+source from the caller. In <code>nixpkgs</code> we prefer to write another
+expression for version bumps (e.g. because patches or different inputs
+are needed).</p>
+<p>Our goal is to make package expressions independent of the repository.
+To achieve this, we use functions to declare inputs for a derivation.
+For example, with <code>graphviz.nix</code>, we make the following changes to make
+the derivation independent of the repository and customizable:</p>
+<pre><code>{ mkDerivation, lib, gdSupport ? true, gd, pkg-config }:
+
+mkDerivation {
+  name = "graphviz";
+  src = ./graphviz-2.49.3.tar.gz;
+  buildInputs =
+    if gdSupport
+      then [
+          pkg-config
+          (lib.getLib gd)
+          (lib.getDev gd)
+        ]
+      else [];
+}
+</code></pre>
+<p>Recall that "<code>{...}: ...</code>" is the syntax for defining functions
+accepting an attribute set as argument; the above snippet just defines a
+function.</p>
+<p>We made <code>gd</code> and its dependencies optional. If <code>gdSupport</code> is true
+(which it is by default), we will fill <code>buildInputs</code> and <code>graphviz</code> will
+be built with <code>gd</code> support. Otherwise, if an attribute set is passed
+with <code>gdSupport = false;</code>, the build will be completed without <code>gd</code>
+support.</p>
+<p>Going back to back to <code>default.nix</code>, we modify our expression to utilize
+the inputs pattern:</p>
+<pre><code>let
+  pkgs = import &lt;nixpkgs&gt; { };
+  mkDerivation = import ./autotools.nix pkgs;
+in
+with pkgs;
+{
+  hello = import ./hello.nix { inherit mkDerivation; };
+  graphviz = import ./graphviz.nix {
+    inherit
+      mkDerivation
+      lib
+      gd
+      pkg-config
+      ;
+  };
+  graphvizCore = import ./graphviz.nix {
+    inherit
+      mkDerivation
+      lib
+      gd
+      pkg-config
+      ;
+    gdSupport = false;
+  };
+}
+</code></pre>
+<p>We factorized the import of <code>nixpkgs</code> and <code>mkDerivation</code>, and also added
+a variant of <code>graphviz</code> with <code>gd</code> support disabled. The result is that
+both <code>hello.nix</code> (left as an exercise for the reader) and <code>graphviz.nix</code>
+are independent of the repository and customizable by passing specific
+inputs.</p>
+<p>If we wanted to build <code>graphviz</code> with a specific version of <code>gd</code>, it
+would suffice to pass <code>gd = ...;</code>.</p>
+<p>If we wanted to change the toolchain, we would simply pass a different
+<code>mkDerivation</code> function.</p>
+<p>Let's talk a closer look at the snippet and dissect the syntax:</p>
+<ul>
+<li>
+<p>The entire expression in <code>default.nix</code> returns an attribute set with
+the keys <code>hello</code>, <code>graphviz</code>, and <code>graphvizCore</code>.</p>
+</li>
+<li>
+<p>With "<code>let</code>", we define some local variables.</p>
+</li>
+<li>
+<p>We bring <code>pkgs</code> into the scope when defining the package set. This
+saves us from having to type <code>pkgs</code>" repeatedly.</p>
+</li>
+<li>
+<p>We import <code>hello.nix</code> and <code>graphviz.nix</code>, which each return a
+function. We call the functions with a set of inputs to get back the
+derivation.</p>
+</li>
+<li>
+<p>The "<code>inherit x</code>" syntax is equivalent to "<code>x = x</code>". This means
+that the "<code>inherit gd</code>" here, combined with the above
+"<code>with pkgs;</code>", is equivalent to "<code>gd = pkgs.gd</code>".</p>
+</li>
+</ul>
+<p>The entire repository of this can be found at the <a href="https://gist.github.com/tfc/ca800a444b029e85a14e530c25f8e872">pill
+12</a> gist.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>The "<code>inputs</code>" pattern allows our expressions to be easily
+customizable through a set of arguments. These arguments could be flags,
+derivations, or any other customizations enabled by the nix language.
+Our package expressions are simply functions: there is no extra magic
+present.</p>
+<p>The "<code>inputs</code>" pattern also makes the expressions independent of the
+repository. Given that we pass all needed information through arguments,
+it is possible to use these expressions in any other context.</p>
+<h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
+<p>In the next pill, we will talk about the "<code>callPackage</code>" design
+pattern. This removes the tedium of specifying the names of the inputs
+twice: once in the top-level <code>default.nix</code>, and once in the package
+expression. With <code>callPackage</code>, we will implicitly pass the necessary
+inputs from the top-level expression.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="11-garbage-collector.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="13-callpackage-design-pattern.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="11-garbage-collector.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="13-callpackage-design-pattern.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Fundamentals of Stdenv - Nix Pills</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="00-preface.html">Preface</a></li><li class="chapter-item expanded "><a href="01-why-you-should-give-it-try.html"><strong aria-hidden="true">1.</strong> Why You Should Give it a Try</a></li><li class="chapter-item expanded "><a href="02-install-on-your-running.html"><strong aria-hidden="true">2.</strong> Install on Your Running System</a></li><li class="chapter-item expanded "><a href="03-enter-environment.html"><strong aria-hidden="true">3.</strong> Enter the Environment</a></li><li class="chapter-item expanded "><a href="04-basics-of-language.html"><strong aria-hidden="true">4.</strong> The Basics of the Language</a></li><li class="chapter-item expanded "><a href="05-functions-and-imports.html"><strong aria-hidden="true">5.</strong> Functions and Imports</a></li><li class="chapter-item expanded "><a href="06-our-first-derivation.html"><strong aria-hidden="true">6.</strong> Our First Derivation</a></li><li class="chapter-item expanded "><a href="07-working-derivation.html"><strong aria-hidden="true">7.</strong> Working Derivation</a></li><li class="chapter-item expanded "><a href="08-generic-builders.html"><strong aria-hidden="true">8.</strong> Generic Builders</a></li><li class="chapter-item expanded "><a href="09-automatic-runtime.html"><strong aria-hidden="true">9.</strong> Automatic Runtime Dependencies</a></li><li class="chapter-item expanded "><a href="10-developing-with-nix-shell.html"><strong aria-hidden="true">10.</strong> Developing with nix-shell</a></li><li class="chapter-item expanded "><a href="11-garbage-collector.html"><strong aria-hidden="true">11.</strong> The Garbage Collector</a></li><li class="chapter-item expanded "><a href="12-inputs-design-pattern.html"><strong aria-hidden="true">12.</strong> Package Repositories and the Inputs Design Pattern</a></li><li class="chapter-item expanded "><a href="13-callpackage-design-pattern.html"><strong aria-hidden="true">13.</strong> Callpackage Design Pattern</a></li><li class="chapter-item expanded "><a href="14-override-design-pattern.html"><strong aria-hidden="true">14.</strong> Override Design Pattern</a></li><li class="chapter-item expanded "><a href="15-nix-search-paths.html"><strong aria-hidden="true">15.</strong> Nix Search Paths</a></li><li class="chapter-item expanded "><a href="16-nixpkgs-parameters.html"><strong aria-hidden="true">16.</strong> Nixpkgs Parameters</a></li><li class="chapter-item expanded "><a href="17-nixpkgs-overriding-packages.html"><strong aria-hidden="true">17.</strong> Nixpkgs Overriding Packages</a></li><li class="chapter-item expanded "><a href="18-nix-store-paths.html"><strong aria-hidden="true">18.</strong> Nix Store Paths</a></li><li class="chapter-item expanded "><a href="19-fundamentals-of-stdenv.html" class="active"><strong aria-hidden="true">19.</strong> Fundamentals of Stdenv</a></li><li class="chapter-item expanded "><a href="20-basic-dependencies-and-hooks.html"><strong aria-hidden="true">20.</strong> Basic Dependencies and Hooks</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Nix Pills</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="fundamentals-of-stdenv"><a class="header" href="#fundamentals-of-stdenv">Fundamentals of Stdenv</a></h1>
+<p>Welcome to the 19th Nix pill. In the previous <a href="18-nix-store-paths.html">18th</a>
+pill we dived into the algorithm used by Nix to compute the store paths,
+and also introduced fixed-output store paths.</p>
+<p>This time we will instead look into <code>nixpkgs</code>, in particular one of its
+core derivations: <code>stdenv</code>.</p>
+<p>The <code>stdenv</code> is not treated as a special derivation by Nix, but it's
+very important for the <code>nixpkgs</code> repository. It serves as a base for
+packaging software. It is used to pull in dependencies such as the GCC
+toolchain, GNU make, core utilities, patch and diff utilities, and so
+on: basic tools needed to compile a huge pile of software currently
+present in <code>nixpkgs</code>.</p>
+<h2 id="what-is-stdenv"><a class="header" href="#what-is-stdenv">What is stdenv?</a></h2>
+<p>First of all, <code>stdenv</code> is a derivation, and it's a very simple one:</p>
+<pre><code>$ nix-build '&lt;nixpkgs&gt;' -A stdenv
+/nix/store/k4jklkcag4zq4xkqhkpy156mgfm34ipn-stdenv
+$ ls -R result/
+result/:
+nix-support/  setup
+
+result/nix-support:
+propagated-user-env-packages
+</code></pre>
+<p>It has just two files: <code>/setup</code> and
+<code>/nix-support/propagated-user-env-packages</code>. Don't worry about the
+latter. It's empty, in fact. The important file is <code>/setup</code>.</p>
+<p>How can this simple derivation pull in all of the toolchain and basic
+tools needed to compile packages? Let's look at the runtime
+dependencies:</p>
+<pre><code>$ nix-store -q --references result
+/nix/store/3a45nb37s0ndljp68228snsqr3qsyp96-bzip2-1.0.6
+/nix/store/a457ywa1haa0sgr9g7a1pgldrg3s798d-coreutils-8.24
+/nix/store/zmd4jk4db5lgxb8l93mhkvr3x92g2sx2-bash-4.3-p39
+/nix/store/47sfpm2qclpqvrzijizimk4md1739b1b-gcc-wrapper-4.9.3
+...
+</code></pre>
+<p>How can it be? The package must be referring to those other packages
+somehow. In fact, they are hardcoded in the <code>/setup</code> file:</p>
+<pre><code>$ head result/setup
+export SHELL=/nix/store/zmd4jk4db5lgxb8l93mhkvr3x92g2sx2-bash-4.3-p39/bin/bash
+initialPath="/nix/store/a457ywa1haa0sgr9g7a1pgldrg3s798d-coreutils-8.24 ..."
+defaultNativeBuildInputs="/nix/store/sgwq15xg00xnm435gjicspm048rqg9y6-patchelf-0.8 ..."
+</code></pre>
+<h2 id="the-setup-file"><a class="header" href="#the-setup-file">The setup file</a></h2>
+<p>Remember our generic <code>builder.sh</code> in <a href="08-generic-builders.html">Pill 8</a>? It
+sets up a basic <code>PATH</code>, unpacks the source and runs the usual autotools
+commands for us.</p>
+<p>The <a href="https://github.com/NixOS/nixpkgs/blob/master/pkgs/stdenv/generic/setup.sh">stdenv setup
+file</a>
+is exactly that. It sets up several environment variables like <code>PATH</code>
+and creates some helper bash functions to build a package. I invite you
+to read it.</p>
+<p>The hardcoded toolchain and utilities are used to initially fill up the
+environment variables so that it's more pleasant to run common
+commands, similar to what we did with our builder with <code>baseInputs</code> and
+<code>buildInputs</code>.</p>
+<p>The build with <code>stdenv</code> works in phases. Phases are like <code>unpackPhase</code>,
+<code>configurePhase</code>, <code>buildPhase</code>, <code>checkPhase</code>, <code>installPhase</code>,
+<code>fixupPhase</code>. You can see the default list in the <code>genericBuild</code>
+function.</p>
+<p>What <code>genericBuild</code> does is just run these phases. Default phases are
+just bash functions. You can easily read them.</p>
+<p>Every phase has hooks to run commands before and after the phase has
+been executed. Phases can be overwritten, reordered, whatever, it's
+just bash code.</p>
+<p>How to use this file? Like our old builder. To test it, we enter a fake
+empty derivation, source the <code>stdenv</code> <code>setup</code>, unpack the hello sources
+and build it:</p>
+<pre><code>$ nix-shell -E 'derivation { name = "fake"; builder = "fake"; system = "x86_64-linux"; }'
+nix-shell$ unset PATH
+nix-shell$ source /nix/store/k4jklkcag4zq4xkqhkpy156mgfm34ipn-stdenv/setup
+nix-shell$ tar -xf hello-2.10.tar.gz
+nix-shell$ cd hello-2.10
+nix-shell$ configurePhase
+...
+nix-shell$ buildPhase
+...
+</code></pre>
+<p><em>I unset <code>PATH</code> to further show that the <code>stdenv</code> is sufficiently
+self-contained to build autotools packages that have no other
+dependencies.</em></p>
+<p>So we ran the <code>configurePhase</code> function and <code>buildPhase</code> function and
+they worked. These bash functions should be self-explanatory. You can
+read the code in the <code>setup</code> file.</p>
+<h2 id="how-the-setup-file-is-built"><a class="header" href="#how-the-setup-file-is-built">How the setup file is built</a></h2>
+<p>Until now we worked with plain bash scripts. What about the Nix side?
+The <code>nixpkgs</code> repository offers a useful function, like we did with our
+old builder. It is a wrapper around the raw derivation function which
+pulls in the <code>stdenv</code> for us, and runs <code>genericBuild</code>. It's
+<a href="https://github.com/NixOS/nixpkgs/blob/master/pkgs/stdenv/generic/make-derivation.nix">stdenv.mkDerivation</a>.</p>
+<p>Note how <code>stdenv</code> is a derivation but it's also an attribute set which
+contains some other attributes, like <code>mkDerivation</code>. Nothing fancy here,
+just convenience.</p>
+<p>Let's write a <code>hello.nix</code> expression using this newly discovered
+<code>stdenv</code>:</p>
+<pre><code>with import &lt;nixpkgs&gt; { };
+stdenv.mkDerivation {
+  name = "hello";
+  src = ./hello-2.10.tar.gz;
+}
+</code></pre>
+<p>Don't be scared by the <code>with</code> expression. It pulls the <code>nixpkgs</code>
+repository into scope, so we can directly use <code>stdenv</code>. It looks very
+similar to the hello expression in <a href="08-generic-builders.html">Pill 8</a>.</p>
+<p>It builds, and runs fine:</p>
+<pre><code>$ nix-build hello.nix
+...
+/nix/store/6y0mzdarm5qxfafvn2zm9nr01d1j0a72-hello
+$ result/bin/hello
+Hello, world!
+</code></pre>
+<h2 id="the-stdenvmkderivation-builder"><a class="header" href="#the-stdenvmkderivation-builder">The stdenv.mkDerivation builder</a></h2>
+<p>Let's take a look at the builder used by <code>mkDerivation</code>. You can read
+the code <a href="https://github.com/NixOS/nixpkgs/blob/master/pkgs/stdenv/generic/make-derivation.nix">here in
+nixpkgs</a>:</p>
+<pre><code>{
+  # ...
+  builder = attrs.realBuilder or shell;
+  args =
+    attrs.args or [
+      "-e"
+      (attrs.builder or ./default-builder.sh)
+    ];
+  stdenv = result;
+  # ...
+}
+</code></pre>
+<p>Also take a look at our old derivation wrapper in previous pills! The
+builder is bash (that shell variable), the argument to the builder
+(bash) is <code>default-builder.sh</code>, and then we add the environment variable
+<code>$stdenv</code> in the derivation which is the <code>stdenv</code> derivation.</p>
+<p>You can open
+<a href="https://github.com/NixOS/nixpkgs/blob/master/pkgs/stdenv/generic/default-builder.sh">default-builder.sh</a>
+and see what it does:</p>
+<pre><code>source $stdenv/setup
+genericBuild
+</code></pre>
+<p>It's what we did in <a href="10-developing-with-nix-shell.html">Pill 10</a> to make the
+derivations <code>nix-shell</code> friendly. When entering the shell, the setup
+file only sets up the environment without building anything. When doing
+<code>nix-build</code>, it actually runs the build process.</p>
+<p>To get a clear understanding of the environment variables, look at the
+.drv of the hello derivation:</p>
+<pre><code>$ nix derivation show $(nix-instantiate hello.nix)
+warning: you did not specify '--add-root'; the result might be removed by the garbage collector
+{
+  "/nix/store/abwj50lycl0m515yblnrvwyydlhhqvj2-hello.drv": {
+    "outputs": {
+      "out": {
+        "path": "/nix/store/6y0mzdarm5qxfafvn2zm9nr01d1j0a72-hello"
+      }
+    },
+    "inputSrcs": [
+      "/nix/store/9krlzvny65gdc8s7kpb6lkx8cd02c25b-default-builder.sh",
+      "/nix/store/svc70mmzrlgq42m9acs0prsmci7ksh6h-hello-2.10.tar.gz"
+    ],
+    "inputDrvs": {
+      "/nix/store/hcgwbx42mcxr7ksnv0i1fg7kw6jvxshb-bash-4.4-p19.drv": [
+        "out"
+      ],
+      "/nix/store/sfxh3ybqh97cgl4s59nrpi78kgcc8f3d-stdenv-linux.drv": [
+        "out"
+      ]
+    },
+    "platform": "x86_64-linux",
+    "builder": "/nix/store/q1g0rl8zfmz7r371fp5p42p4acmv297d-bash-4.4-p19/bin/bash",
+    "args": [
+      "-e",
+      "/nix/store/9krlzvny65gdc8s7kpb6lkx8cd02c25b-default-builder.sh"
+    ],
+    "env": {
+      "buildInputs": "",
+      "builder": "/nix/store/q1g0rl8zfmz7r371fp5p42p4acmv297d-bash-4.4-p19/bin/bash",
+      "configureFlags": "",
+      "depsBuildBuild": "",
+      "depsBuildBuildPropagated": "",
+      "depsBuildTarget": "",
+      "depsBuildTargetPropagated": "",
+      "depsHostBuild": "",
+      "depsHostBuildPropagated": "",
+      "depsTargetTarget": "",
+      "depsTargetTargetPropagated": "",
+      "name": "hello",
+      "nativeBuildInputs": "",
+      "out": "/nix/store/6y0mzdarm5qxfafvn2zm9nr01d1j0a72-hello",
+      "propagatedBuildInputs": "",
+      "propagatedNativeBuildInputs": "",
+      "src": "/nix/store/svc70mmzrlgq42m9acs0prsmci7ksh6h-hello-2.10.tar.gz",
+      "stdenv": "/nix/store/6kz2vbh98s2r1pfshidkzhiy2s2qdw0a-stdenv-linux",
+      "system": "x86_64-linux"
+    }
+  }
+}
+</code></pre>
+<p>It's so short I decided to paste it entirely above. The builder is
+bash, with <code>-e default-builder.sh</code> arguments. Then you can see the <code>src</code>
+and <code>stdenv</code> environment variables.</p>
+<p>The last bit, the <code>unpackPhase</code> in the setup, is used to unpack the
+sources and enter the directory. Again, like we did in our old builder.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>The <code>stdenv</code> is the core of the <code>nixpkgs</code> repository. All packages use
+the <code>stdenv.mkDerivation</code> wrapper instead of the raw derivation. It does
+a bunch of operations for us and also sets up a pleasant build
+environment.</p>
+<p>The overall process is simple:</p>
+<ul>
+<li>
+<p><code>nix-build</code></p>
+</li>
+<li>
+<p><code>bash -e default-builder.sh</code></p>
+</li>
+<li>
+<p><code>source $stdenv/setup</code></p>
+</li>
+<li>
+<p><code>genericBuild</code></p>
+</li>
+</ul>
+<p>That's it. Everything you need to know about the stdenv phases is in
+the <a href="https://github.com/NixOS/nixpkgs/blob/master/pkgs/stdenv/generic/setup.sh">setup
+file</a>.</p>
+<p>Really, take your time to read that file. Don't forget that juicy docs
+are also available in the <a href="http://nixos.org/nixpkgs/manual/#chap-stdenv">nixpkgs
+manual</a>.</p>
+<h2 id="next-pill"><a class="header" href="#next-pill">Next pill...</a></h2>
+<p>...we will talk about how to add dependencies to our packages with
+<code>buildInputs</code> and <code>propagatedBuildInputs</code>, and influence downstream
+builds with setup hooks and env hooks. These concepts are crucial to how
+<code>nixpkgs</code> packages are composed.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="18-nix-store-paths.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="20-basic-dependencies-and-hooks.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="18-nix-store-paths.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="20-basic-dependencies-and-hooks.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

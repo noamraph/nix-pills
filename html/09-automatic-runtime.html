@@ -1,0 +1,406 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Automatic Runtime Dependencies - Nix Pills</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="00-preface.html">Preface</a></li><li class="chapter-item expanded "><a href="01-why-you-should-give-it-try.html"><strong aria-hidden="true">1.</strong> Why You Should Give it a Try</a></li><li class="chapter-item expanded "><a href="02-install-on-your-running.html"><strong aria-hidden="true">2.</strong> Install on Your Running System</a></li><li class="chapter-item expanded "><a href="03-enter-environment.html"><strong aria-hidden="true">3.</strong> Enter the Environment</a></li><li class="chapter-item expanded "><a href="04-basics-of-language.html"><strong aria-hidden="true">4.</strong> The Basics of the Language</a></li><li class="chapter-item expanded "><a href="05-functions-and-imports.html"><strong aria-hidden="true">5.</strong> Functions and Imports</a></li><li class="chapter-item expanded "><a href="06-our-first-derivation.html"><strong aria-hidden="true">6.</strong> Our First Derivation</a></li><li class="chapter-item expanded "><a href="07-working-derivation.html"><strong aria-hidden="true">7.</strong> Working Derivation</a></li><li class="chapter-item expanded "><a href="08-generic-builders.html"><strong aria-hidden="true">8.</strong> Generic Builders</a></li><li class="chapter-item expanded "><a href="09-automatic-runtime.html" class="active"><strong aria-hidden="true">9.</strong> Automatic Runtime Dependencies</a></li><li class="chapter-item expanded "><a href="10-developing-with-nix-shell.html"><strong aria-hidden="true">10.</strong> Developing with nix-shell</a></li><li class="chapter-item expanded "><a href="11-garbage-collector.html"><strong aria-hidden="true">11.</strong> The Garbage Collector</a></li><li class="chapter-item expanded "><a href="12-inputs-design-pattern.html"><strong aria-hidden="true">12.</strong> Package Repositories and the Inputs Design Pattern</a></li><li class="chapter-item expanded "><a href="13-callpackage-design-pattern.html"><strong aria-hidden="true">13.</strong> Callpackage Design Pattern</a></li><li class="chapter-item expanded "><a href="14-override-design-pattern.html"><strong aria-hidden="true">14.</strong> Override Design Pattern</a></li><li class="chapter-item expanded "><a href="15-nix-search-paths.html"><strong aria-hidden="true">15.</strong> Nix Search Paths</a></li><li class="chapter-item expanded "><a href="16-nixpkgs-parameters.html"><strong aria-hidden="true">16.</strong> Nixpkgs Parameters</a></li><li class="chapter-item expanded "><a href="17-nixpkgs-overriding-packages.html"><strong aria-hidden="true">17.</strong> Nixpkgs Overriding Packages</a></li><li class="chapter-item expanded "><a href="18-nix-store-paths.html"><strong aria-hidden="true">18.</strong> Nix Store Paths</a></li><li class="chapter-item expanded "><a href="19-fundamentals-of-stdenv.html"><strong aria-hidden="true">19.</strong> Fundamentals of Stdenv</a></li><li class="chapter-item expanded "><a href="20-basic-dependencies-and-hooks.html"><strong aria-hidden="true">20.</strong> Basic Dependencies and Hooks</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Nix Pills</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="automatic-runtime-dependencies"><a class="header" href="#automatic-runtime-dependencies">Automatic Runtime Dependencies</a></h1>
+<p>Welcome to the 9th Nix pill. In the previous <a href="08-generic-builders.html">8th
+pill</a> we wrote a generic builder for autotools
+projects. We fed in build dependencies and a source tarball, and we
+received a Nix derivation as a result.</p>
+<p>Today we stop by the GNU <code>hello</code> program to analyze build and runtime
+dependencies, and we enhance our builder to eliminate unnecessary
+runtime dependencies.</p>
+<h2 id="build-dependencies"><a class="header" href="#build-dependencies">Build dependencies</a></h2>
+<p>Let's start analyzing build dependencies for our GNU <code>hello</code> package:</p>
+<pre><code>$ nix-instantiate hello.nix
+/nix/store/z77vn965a59irqnrrjvbspiyl2rph0jp-hello.drv
+$ nix-store -q --references /nix/store/z77vn965a59irqnrrjvbspiyl2rph0jp-hello.drv
+/nix/store/0q6pfasdma4as22kyaknk4kwx4h58480-hello-2.10.tar.gz
+/nix/store/1zcs1y4n27lqs0gw4v038i303pb89rw6-coreutils-8.21.drv
+/nix/store/2h4b30hlfw4fhqx10wwi71mpim4wr877-gnused-4.2.2.drv
+/nix/store/39bgdjissw9gyi4y5j9wanf4dbjpbl07-gnutar-1.27.1.drv
+/nix/store/7qa70nay0if4x291rsjr7h9lfl6pl7b1-builder.sh
+/nix/store/g6a0shr58qvx2vi6815acgp9lnfh9yy8-gnugrep-2.14.drv
+/nix/store/jdggv3q1sb15140qdx0apvyrps41m4lr-bash-4.2-p45.drv
+/nix/store/pglhiyp1zdbmax4cglkpz98nspfgbnwr-gnumake-3.82.drv
+/nix/store/q9l257jn9lndbi3r9ksnvf4dr8cwxzk7-gawk-4.1.0.drv
+/nix/store/rgyrqxz1ilv90r01zxl0sq5nq0cq7v3v-binutils-2.23.1.drv
+/nix/store/qzxhby795niy6wlagfpbja27dgsz43xk-gcc-wrapper-4.8.3.drv
+/nix/store/sk590g7fv53m3zp0ycnxsc41snc2kdhp-gzip-1.6.drv
+</code></pre>
+<p>It has precisely the derivations referenced in the <code>derivation</code>
+function; nothing more, nothing less. Of course, we may not use some of
+them at all. However, given that our generic <code>mkDerivation</code> function
+always pulls such dependencies (think of it like
+<a href="https://packages.debian.org/unstable/build-essential">build-essential</a>
+from Debian), we will already have these packages in the nix store for
+any future packages that need them.</p>
+<p>Why are we looking at <code>.drv</code> files? Because the <code>hello.drv</code> file is the
+representation of the build action that builds the <code>hello</code> out path. As
+such, it contains the input derivations needed before building <code>hello</code>.</p>
+<h2 id="digression-about-nar-files"><a class="header" href="#digression-about-nar-files">Digression about NAR files</a></h2>
+<p>The <code>NAR</code> format is the "Nix ARchive". This format was designed due to
+existing archive formats, such as <code>tar</code>, being insufficient. Nix
+benefits from deterministic build tools, but commonly used archivers
+lack this property: they add padding, they do not sort files, they add
+timestamps, and so on. This can result in directories containing
+bit-identical files turning into non-bit-identical archives, which leads
+to different hashes.</p>
+<p>Thus the <code>NAR</code> format was developed as a simple, deterministic archive
+format. <code>NAR</code>s are used extensively within Nix, as we will see below.</p>
+<p>For more rationale and implementation details behind <code>NAR</code> see
+<a href="http://nixos.org/~eelco/pubs/phd-thesis.pdf">Dolstra's PhD Thesis</a>.</p>
+<p>To create NAR archives from store paths, we can use <code>nix-store --dump</code>
+and <code>nix-store --restore</code>.</p>
+<h2 id="runtime-dependencies"><a class="header" href="#runtime-dependencies">Runtime dependencies</a></h2>
+<p>We now note that Nix automatically recognized build dependencies once
+our <code>derivation</code> call referred to them, but we never specified the
+runtime dependencies.</p>
+<p>Nix handles runtime dependencies for us automatically. The technique it
+uses to do so may seem fragile at first glance, but it works so well
+that the NixOS operating system is built off of it. The underlying
+mechanism relies on the hash of the store paths. It proceeds in three
+steps:</p>
+<ol>
+<li>
+<p>Dump the derivation as a NAR. Recall that this is a serialization of
+the derivation output -- meaning this works fine whether the output
+is a single file or a directory.</p>
+</li>
+<li>
+<p>For each build dependency <code>.drv</code> and its relative out path, search
+the contents of the NAR for this out path.</p>
+</li>
+<li>
+<p>If the path is found, then it's a runtime dependency.</p>
+</li>
+</ol>
+<p>The snippet below shows the dependencies for <code>hello</code>.</p>
+<pre><code>$ nix-instantiate hello.nix
+/nix/store/z77vn965a59irqnrrjvbspiyl2rph0jp-hello.drv
+$ nix-store -r /nix/store/z77vn965a59irqnrrjvbspiyl2rph0jp-hello.drv
+/nix/store/a42k52zwv6idmf50r9lps1nzwq9khvpf-hello
+$ nix-store -q --references /nix/store/a42k52zwv6idmf50r9lps1nzwq9khvpf-hello
+/nix/store/94n64qy99ja0vgbkf675nyk39g9b978n-glibc-2.19
+/nix/store/8jm0wksask7cpf85miyakihyfch1y21q-gcc-4.8.3
+/nix/store/a42k52zwv6idmf50r9lps1nzwq9khvpf-hello
+</code></pre>
+<p>We see that <code>glibc</code> and <code>gcc</code> are runtime dependencies. Intuitively,
+<code>gcc</code> shouldn't be in this list! Displaying the printable strings in
+the <code>hello</code> binary shows that the out path of <code>gcc</code> does indeed appear:</p>
+<pre><code>$ strings result/bin/hello|grep gcc
+/nix/store/94n64qy99ja0vgbkf675nyk39g9b978n-glibc-2.19/lib:/nix/store/8jm0wksask7cpf85miyakihyfch1y21q-gcc-4.8.3/lib64
+</code></pre>
+<p>This is why Nix added <code>gcc</code>. But why is that path present in the first
+place? The answer is that it is the <a href="http://en.wikipedia.org/wiki/Rpath">ld
+rpath</a>: the list of directories
+where libraries can be found at runtime. In other distributions, this is
+usually not abused. But in Nix, we have to refer to particular versions
+of libraries, and thus the rpath has an important role.</p>
+<p>The build process adds the <code>gcc</code> lib path thinking it may be useful at
+runtime, but this isn't necessary. To address issues like these, Nix
+provides a tool called <a href="https://nixos.org/patchelf.html">patchelf</a>,
+which reduces the rpath to the paths that are actually used by the
+binary.</p>
+<p>Even after reducing the rpath, the <code>hello</code> binary would still depend
+upon <code>gcc</code> because of some debugging information. This unnecessarily
+increases the size of our runtime dependencies. We'll explore how
+<code>strip</code> can help us with that in the next section.</p>
+<h2 id="another-phase-in-the-builder"><a class="header" href="#another-phase-in-the-builder">Another phase in the builder</a></h2>
+<p>We will add a new phase to our autotools builder. The builder has six
+phases already:</p>
+<ol>
+<li>
+<p>The "environment setup" phase</p>
+</li>
+<li>
+<p>The "unpack phase": we unpack the sources in the current directory
+(remember, Nix changes to a temporary directory first)</p>
+</li>
+<li>
+<p>The "change directory" phase, where we change source root to the
+directory that has been unpacked</p>
+</li>
+<li>
+<p>The "configure" phase: <code>./configure</code></p>
+</li>
+<li>
+<p>The "build" phase: <code>make</code></p>
+</li>
+<li>
+<p>The "install" phase: <code>make install</code></p>
+</li>
+</ol>
+<p>Now we will add a new phase after the installation phase, which we call
+the "fixup" phase. At the end of the <code>builder.sh</code>, we append:</p>
+<pre><code>find $out -type f -exec patchelf --shrink-rpath '{}' \; -exec strip '{}' \; 2&gt;/dev/null
+</code></pre>
+<p>That is, for each file we run <code>patchelf --shrink-rpath</code> and <code>strip</code>.
+Note that we used two new commands here, <code>find</code> and <code>patchelf</code>. These
+must be added to our derivation.</p>
+<p><strong>Exercise:</strong> Add <code>findutils</code> and <code>patchelf</code> to the <code>baseInputs</code> of
+<code>autotools.nix</code>.</p>
+<p>Now, we rebuild <code>hello.nix</code>...</p>
+<pre><code>$ nix-build hello.nix
+[...]
+$ nix-store -q --references result
+/nix/store/94n64qy99ja0vgbkf675nyk39g9b978n-glibc-2.19
+/nix/store/md4a3zv0ipqzsybhjb8ndjhhga1dj88x-hello
+</code></pre>
+<p>and we see that <code>glibc</code> is a runtime dependency. This is exactly what we
+wanted.</p>
+<p>The package is self-contained. This means that we can copy its closure
+onto another machine and we will be able to run it. Remember, only a
+very few components under the <code>/nix/store</code> are required to <a href="02-install-on-your-running.html">run
+nix</a>. The <code>hello</code> binary will use the
+exact version of <code>glibc</code> library and interpreter referred to in the
+binary, rather than the system one:</p>
+<pre><code>$ ldd result/bin/hello
+ linux-vdso.so.1 (0x00007fff11294000)
+ libc.so.6 =&gt; /nix/store/94n64qy99ja0vgbkf675nyk39g9b978n-glibc-2.19/lib/libc.so.6 (0x00007f7ab7362000)
+ /nix/store/94n64qy99ja0vgbkf675nyk39g9b978n-glibc-2.19/lib/ld-linux-x86-64.so.2 (0x00007f7ab770f000)
+</code></pre>
+<p>Of course, the executable will run fine as long as everything is under
+the <code>/nix/store</code> path.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>We saw some of the tools Nix provides, along with their features. In
+particular, we saw how Nix is able to compute runtime dependencies
+automatically. This is not limited to only shared libraries, but can
+also reference executables, scripts, Python libraries, and so forth.</p>
+<p>Approaching builds in this way makes packages self-contained, ensuring
+(apart from data and configuration) that copying the runtime closure
+onto another machine is sufficient to run the program. This enables us
+to run programs without installation using <code>nix-shell</code>, and forms the
+basis for <a href="https://nixos.org/manual/nix/stable/introduction.html">reliable deployment in the
+cloud</a>.</p>
+<h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
+<p>The next pill will introduce <code>nix-shell</code>. With <code>nix-build</code>, we've
+always built derivations from scratch: the source gets unpacked,
+configured, built, and installed. But this can take a long time for
+large packages. What if we want to apply some small changes and compile
+incrementally instead, yet still want to keep a self-contained
+environment similar to <code>nix-build</code>? <code>nix-shell</code> enables this.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="08-generic-builders.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="10-developing-with-nix-shell.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="08-generic-builders.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="10-developing-with-nix-shell.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

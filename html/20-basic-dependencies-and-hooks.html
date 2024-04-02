@@ -1,0 +1,534 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Basic Dependencies and Hooks - Nix Pills</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="00-preface.html">Preface</a></li><li class="chapter-item expanded "><a href="01-why-you-should-give-it-try.html"><strong aria-hidden="true">1.</strong> Why You Should Give it a Try</a></li><li class="chapter-item expanded "><a href="02-install-on-your-running.html"><strong aria-hidden="true">2.</strong> Install on Your Running System</a></li><li class="chapter-item expanded "><a href="03-enter-environment.html"><strong aria-hidden="true">3.</strong> Enter the Environment</a></li><li class="chapter-item expanded "><a href="04-basics-of-language.html"><strong aria-hidden="true">4.</strong> The Basics of the Language</a></li><li class="chapter-item expanded "><a href="05-functions-and-imports.html"><strong aria-hidden="true">5.</strong> Functions and Imports</a></li><li class="chapter-item expanded "><a href="06-our-first-derivation.html"><strong aria-hidden="true">6.</strong> Our First Derivation</a></li><li class="chapter-item expanded "><a href="07-working-derivation.html"><strong aria-hidden="true">7.</strong> Working Derivation</a></li><li class="chapter-item expanded "><a href="08-generic-builders.html"><strong aria-hidden="true">8.</strong> Generic Builders</a></li><li class="chapter-item expanded "><a href="09-automatic-runtime.html"><strong aria-hidden="true">9.</strong> Automatic Runtime Dependencies</a></li><li class="chapter-item expanded "><a href="10-developing-with-nix-shell.html"><strong aria-hidden="true">10.</strong> Developing with nix-shell</a></li><li class="chapter-item expanded "><a href="11-garbage-collector.html"><strong aria-hidden="true">11.</strong> The Garbage Collector</a></li><li class="chapter-item expanded "><a href="12-inputs-design-pattern.html"><strong aria-hidden="true">12.</strong> Package Repositories and the Inputs Design Pattern</a></li><li class="chapter-item expanded "><a href="13-callpackage-design-pattern.html"><strong aria-hidden="true">13.</strong> Callpackage Design Pattern</a></li><li class="chapter-item expanded "><a href="14-override-design-pattern.html"><strong aria-hidden="true">14.</strong> Override Design Pattern</a></li><li class="chapter-item expanded "><a href="15-nix-search-paths.html"><strong aria-hidden="true">15.</strong> Nix Search Paths</a></li><li class="chapter-item expanded "><a href="16-nixpkgs-parameters.html"><strong aria-hidden="true">16.</strong> Nixpkgs Parameters</a></li><li class="chapter-item expanded "><a href="17-nixpkgs-overriding-packages.html"><strong aria-hidden="true">17.</strong> Nixpkgs Overriding Packages</a></li><li class="chapter-item expanded "><a href="18-nix-store-paths.html"><strong aria-hidden="true">18.</strong> Nix Store Paths</a></li><li class="chapter-item expanded "><a href="19-fundamentals-of-stdenv.html"><strong aria-hidden="true">19.</strong> Fundamentals of Stdenv</a></li><li class="chapter-item expanded "><a href="20-basic-dependencies-and-hooks.html" class="active"><strong aria-hidden="true">20.</strong> Basic Dependencies and Hooks</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Nix Pills</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="basic-dependencies-and-hooks"><a class="header" href="#basic-dependencies-and-hooks">Basic Dependencies and Hooks</a></h1>
+<p>Welcome to the 20th Nix pill. In the previous
+<a href="19-fundamentals-of-stdenv.html">19th</a> pill we introduced Nixpkgs' stdenv,
+including <code>setup.sh</code> script, <code>default-builder.sh</code> helper script, and
+<code>stdenv.mkDerivation</code> builder. We focused on how stdenv is put together,
+and how it's used, and a bit about the phases of <code>genericBuild</code>.</p>
+<p>This time, we'll focus on the interaction of packages built with
+<code>stdenv.mkDerivation</code>. Packages need to depend on each other, of course.
+For this we have <code>buildInputs</code> and <code>propagatedBuildInputs</code> attributes.
+We've also found that dependencies sometimes need to influence their
+dependents in ways the dependents can't or shouldn't predict. For this
+we have setup hooks and env hooks. Together, these 4 concepts support
+almost all build-time package interactions.</p>
+<div class="info">
+Note: The complexity of the dependencies and hooks infrastructure has
+increased, over time, to support cross compilation. Once you learn the
+core concepts, you will be able to understand the extra complexity. As a
+starting point, you might want to refer to nixpkgs commit
+<a href="https://github.com/nixos/nixpkgs/tree/6675f0a52c0962042a1000c7f20e887d0d26ae25">6675f0a5</a>,
+the last version of stdenv without cross-compilation complexity.
+</div>
+<h2 id="the-buildinputs-attribute"><a class="header" href="#the-buildinputs-attribute">The <code>buildInputs</code> Attribute</a></h2>
+<p>For the simplest dependencies where the current package directly needs
+another, we use the <code>buildInputs</code> attribute. This is exactly the pattern
+used in our builder in <a href="08-generic-builders.html">Pill 8</a>. To demo this, let's
+build GNU Hello, and then another package which provides a shell script
+that <code>exec</code>s it.</p>
+<pre><code>let
+
+  nixpkgs = import &lt;nixpkgs&gt; { };
+
+  inherit (nixpkgs) stdenv fetchurl which;
+
+  actualHello = stdenv.mkDerivation {
+    name = "hello-2.3";
+
+    src = fetchurl {
+      url = "mirror://gnu/hello/hello-2.3.tar.bz2";
+      sha256 = "0c7vijq8y68bpr7g6dh1gny0bff8qq81vnp4ch8pjzvg56wb3js1";
+    };
+  };
+
+  wrappedHello = stdenv.mkDerivation {
+    name = "hello-wrapper";
+
+    buildInputs = [
+      actualHello
+      which
+    ];
+
+    unpackPhase = "true";
+
+    installPhase = ''
+      mkdir -p "$out/bin"
+      echo "#! ${stdenv.shell}" &gt;&gt; "$out/bin/hello"
+      echo "exec $(which hello)" &gt;&gt; "$out/bin/hello"
+      chmod 0755 "$out/bin/hello"
+    '';
+  };
+in
+wrappedHello
+</code></pre>
+<p>Notice that the wrappedHello derivation finds the <code>hello</code> binary from
+the <code>PATH</code>. This works because stdenv contains something like:</p>
+<pre><code>pkgs=""
+for i in $buildInputs; do
+    findInputs $i
+done
+</code></pre>
+<p>where <code>findInputs</code> is defined like:</p>
+<pre><code>findInputs() {
+    local pkg=$1
+
+    ## Don't need to repeat already processed package
+    case $pkgs in
+        *\ $pkg\ *)
+            return 0
+            ;;
+    esac
+
+    pkgs="$pkgs $pkg "
+
+    ## More goes here in reality that we can ignore for now.
+}
+</code></pre>
+<p>then after this is run:</p>
+<pre><code>for i in $pkgs; do
+    addToEnv $i
+done
+</code></pre>
+<p>where <code>addToEnv</code> is defined like:</p>
+<pre><code>addToEnv() {
+    local pkg=$1
+
+    if test -d $1/bin; then
+        addToSearchPath _PATH $1/bin
+    fi
+
+    ## More goes here in reality that we can ignore for now.
+}
+</code></pre>
+<p>The <code>addToSearchPath</code> call adds <code>$1/bin</code> to <code>_PATH</code> if the former exists
+(code
+<a href="https://github.com/NixOS/nixpkgs/blob/6675f0a52c0962042a1000c7f20e887d0d26ae25/pkgs/stdenv/generic/setup.sh#L60-L73">here</a>).
+Once all the packages in <code>buildInputs</code> have been processed, then content
+of <code>_PATH</code> is added to <code>PATH</code>, as follows:</p>
+<pre><code>PATH="${_PATH-}${_PATH:+${PATH:+:}}$PATH"
+</code></pre>
+<p>With the real <code>hello</code> on the <code>PATH</code>, the <code>installPhase</code> should hopefully
+make sense.</p>
+<h2 id="the-propagatedbuildinputs-attribute"><a class="header" href="#the-propagatedbuildinputs-attribute">The <code>propagatedBuildInputs</code> Attribute</a></h2>
+<p>The <code>buildInputs</code> covers direct dependencies, but what about indirect
+dependencies where one package needs a second package which needs a
+third? Nix itself handles this just fine, understanding various
+dependency closures as covered in previous builds. But what about the
+conveniences that <code>buildInputs</code> provides, namely accumulating in <code>pkgs</code>
+environment variable and inclusion of <code>pkg/bin</code> directories on the
+<code>PATH</code>? For this, stdenv provides the <code>propagatedBuildInputs</code>:</p>
+<pre><code>let
+
+  nixpkgs = import &lt;nixpkgs&gt; { };
+
+  inherit (nixpkgs) stdenv fetchurl which;
+
+  actualHello = stdenv.mkDerivation {
+    name = "hello-2.3";
+
+    src = fetchurl {
+      url = "mirror://gnu/hello/hello-2.3.tar.bz2";
+      sha256 = "0c7vijq8y68bpr7g6dh1gny0bff8qq81vnp4ch8pjzvg56wb3js1";
+    };
+  };
+
+  intermediary = stdenv.mkDerivation {
+    name = "middle-man";
+
+    propagatedBuildInputs = [ actualHello ];
+
+    unpackPhase = "true";
+
+    installPhase = ''
+      mkdir -p "$out"
+    '';
+  };
+
+  wrappedHello = stdenv.mkDerivation {
+    name = "hello-wrapper";
+
+    buildInputs = [
+      intermediary
+      which
+    ];
+
+    unpackPhase = "true";
+
+    installPhase = ''
+      mkdir -p "$out/bin"
+      echo "#! ${stdenv.shell}" &gt;&gt; "$out/bin/hello"
+      echo "exec $(which hello)" &gt;&gt; "$out/bin/hello"
+      chmod 0755 "$out/bin/hello"
+    '';
+  };
+in
+wrappedHello
+</code></pre>
+<p>See how the intermediate package has a <code>propagatedBuildInputs</code>
+dependency, but the wrapper only needs a <code>buildInputs</code> dependency on the
+intermediary.</p>
+<p>How does this work? You might think we do something in Nix, but actually
+it's done not at eval time but at build time in bash. let's look at
+part of the <code>fixupPhase</code> of stdenv:</p>
+<pre><code>fixupPhase() {
+
+    ## Elided
+
+    if test -n "$propagatedBuildInputs"; then
+        mkdir -p "$out/nix-support"
+        echo "$propagatedBuildInputs" &gt; "$out/nix-support/propagated-build-inputs"
+    fi
+
+    ## Elided
+
+}
+</code></pre>
+<p>This dumps the propagated build inputs in a so-named file in
+<code>$out/nix-support/</code>. Then, back in <code>findInputs</code> look at the lines at the
+bottom we elided before:</p>
+<pre><code>findInputs() {
+    local pkg=$1
+
+    ## More goes here in reality that we can ignore for now.
+
+    if test -f $pkg/nix-support/propagated-build-inputs; then
+        for i in $(cat $pkg/nix-support/propagated-build-inputs); do
+            findInputs $i
+        done
+    fi
+}
+</code></pre>
+<p>See how <code>findInputs</code> is actually recursive, looking at the propagated
+build inputs of each dependency, and those dependencies' propagated
+build inputs, etc.</p>
+<p>We actually simplified the <code>findInputs</code> call site from before;
+<code>propagatedBuildInputs</code> is also looped over in reality:</p>
+<pre><code>pkgs=""
+for i in $buildInputs $propagatedBuildInputs; do
+    findInputs $i
+done
+</code></pre>
+<p>This demonstrates an important point. For the <em>current</em> package alone,
+it doesn't matter whether a dependency is propagated or not. It will be
+processed the same way: called with <code>findInputs</code> and <code>addToEnv</code>. (The
+packages discovered by <code>findInputs</code>, which are also accumulated in
+<code>pkgs</code> and passed to <code>addToEnv</code>, are also the same in both cases.)
+Downstream however, it certainly does matter because only the propagated
+immediate dependencies are put in the
+<code>$out/nix-support/propagated-build-inputs</code>.</p>
+<h2 id="setup-hooks"><a class="header" href="#setup-hooks">Setup Hooks</a></h2>
+<p>As we mentioned above, sometimes dependencies need to influence the
+packages that use them in ways other than just <em>being</em> a dependency.
+<sup class="footnote-reference"><a href="#1">1</a></sup> <code>propagatedBuildInputs</code> can actually be seen as an example of this:
+packages using that are effectively "injecting" those dependencies as
+extra <code>buildInputs</code> in their downstream dependents. But in general, a
+dependency might affect the packages it depends on in arbitrary ways.
+<em>Arbitrary</em> is the key word here. We could teach <code>setup.sh</code> things about
+upstream packages like <code>pkg/nix-support/propagated-build-inputs</code>, but
+not arbitrary interactions.</p>
+<p>Setup hooks are the basic building block we have for this. In nixpkgs, a
+"hook" is basically a bash callback, and a setup hook is no exception.
+Let's look at the last part of <code>findInputs</code> we haven't covered:</p>
+<pre><code>findInputs() {
+    local pkg=$1
+
+    ## More goes here in reality that we can ignore for now.
+
+    if test -f $pkg/nix-support/setup-hook; then
+        source $pkg/nix-support/setup-hook
+    fi
+
+    ## More goes here in reality that we can ignore for now.
+
+}
+</code></pre>
+<p>If a package includes the path <code>pkg/nix-support/setup-hook</code>, it will be
+sourced by any stdenv-based build including that as a dependency.</p>
+<p>This is strictly more general than any of the other mechanisms
+introduced in this chapter. For example, try writing a setup hook that
+has the same effect as a <em>propagatedBuildInputs</em> entry. One can almost
+think of this as an escape hatch around Nix's normal isolation
+guarantees, and the principle that dependencies are immutable and inert.
+We're not actually doing something unsafe or modifying dependencies,
+but we are allowing arbitrary ad-hoc behavior. For this reason,
+setup-hooks should only be used as a last resort.</p>
+<h2 id="environment-hooks"><a class="header" href="#environment-hooks">Environment Hooks</a></h2>
+<p>As a final convenience, we have environment hooks. Recall in <a href="12-inputs-design-pattern.html">Pill
+12</a> how we created <code>NIX_CFLAGS_COMPILE</code> for <code>-I</code>
+flags and <code>NIX_LDFLAGS</code> for <code>-L</code> flags, in a similar manner to how we
+prepared the <code>PATH</code>. One point of ugliness was how anti-modular this
+was. It makes sense to build the <code>PATH</code> in a generic builder, because
+the <code>PATH</code> is used by the shell, and the generic builder is
+intrinsically tied to the shell. But <code>-I</code> and <code>-L</code> flags are only
+relevant to the C compiler. The stdenv isn't wedded to including a C
+compiler (though it does by default), and there are other compilers too
+which may take completely different flags.</p>
+<p>As a first step, we can move that logic to a setup hook on the C
+compiler; indeed that's just what we do in CC Wrapper. <sup class="footnote-reference"><a href="#2">2</a></sup> But this
+pattern comes up fairly often, so somebody decided to add some helper
+support to reduce boilerplate.</p>
+<p>The other half of <code>addToEnv</code> is:</p>
+<pre><code>addToEnv() {
+    local pkg=$1
+
+    ## More goes here in reality that we can ignore for now.
+
+    # Run the package-specific hooks set by the setup-hook scripts.
+    for i in "${envHooks[@]}"; do
+        $i $pkg
+    done
+}
+</code></pre>
+<p>Functions listed in <code>envHooks</code> are applied to every package passed to
+<code>addToEnv</code>. One can write a setup hook like:</p>
+<pre><code>anEnvHook() {
+    local pkg=$1
+
+    echo "I'm depending on \"$pkg\""
+}
+
+envHooks+=(anEnvHook)
+</code></pre>
+<p>and if one dependency has that setup hook then all of them will be so
+<code>echo</code>ed. Allowing dependencies to learn about their <em>sibling</em>
+dependencies is exactly what compilers need.</p>
+<h2 id="next-pill"><a class="header" href="#next-pill">Next pill...</a></h2>
+<p>...I'm not sure! We could talk about the additional dependency types
+and hooks which cross compilation necessitates, building on our
+knowledge here to cover stdenv as it works today. We could talk about
+how nixpkgs is bootstrapped. Or we could talk about how <code>localSystem</code>
+and <code>crossSystem</code> are elaborated into the <code>buildPlatform</code>,
+<code>hostPlatform</code>, and <code>targetPlatform</code> each bootstrapping stage receives.
+Let us know which most interests you!</p>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p>We can now be precise and consider what <code>addToEnv</code> does alone the
+minimal treatment of a dependency: i.e. a package that is <em>just</em> a
+dependency would <em>only</em> have <code>addToEnv</code> applied to it.</p>
+</div>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p>It was called <a href="https://github.com/NixOS/nixpkgs/tree/6675f0a52c0962042a1000c7f20e887d0d26ae25/pkgs/build-support/gcc-wrapper">GCC
+Wrapper</a>
+in the version of nixpkgs suggested for following along in this
+pill; Darwin and Clang support hadn't yet motivated the rename.</p>
+</div>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="19-fundamentals-of-stdenv.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="19-fundamentals-of-stdenv.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

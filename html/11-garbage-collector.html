@@ -1,0 +1,426 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>The Garbage Collector - Nix Pills</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="00-preface.html">Preface</a></li><li class="chapter-item expanded "><a href="01-why-you-should-give-it-try.html"><strong aria-hidden="true">1.</strong> Why You Should Give it a Try</a></li><li class="chapter-item expanded "><a href="02-install-on-your-running.html"><strong aria-hidden="true">2.</strong> Install on Your Running System</a></li><li class="chapter-item expanded "><a href="03-enter-environment.html"><strong aria-hidden="true">3.</strong> Enter the Environment</a></li><li class="chapter-item expanded "><a href="04-basics-of-language.html"><strong aria-hidden="true">4.</strong> The Basics of the Language</a></li><li class="chapter-item expanded "><a href="05-functions-and-imports.html"><strong aria-hidden="true">5.</strong> Functions and Imports</a></li><li class="chapter-item expanded "><a href="06-our-first-derivation.html"><strong aria-hidden="true">6.</strong> Our First Derivation</a></li><li class="chapter-item expanded "><a href="07-working-derivation.html"><strong aria-hidden="true">7.</strong> Working Derivation</a></li><li class="chapter-item expanded "><a href="08-generic-builders.html"><strong aria-hidden="true">8.</strong> Generic Builders</a></li><li class="chapter-item expanded "><a href="09-automatic-runtime.html"><strong aria-hidden="true">9.</strong> Automatic Runtime Dependencies</a></li><li class="chapter-item expanded "><a href="10-developing-with-nix-shell.html"><strong aria-hidden="true">10.</strong> Developing with nix-shell</a></li><li class="chapter-item expanded "><a href="11-garbage-collector.html" class="active"><strong aria-hidden="true">11.</strong> The Garbage Collector</a></li><li class="chapter-item expanded "><a href="12-inputs-design-pattern.html"><strong aria-hidden="true">12.</strong> Package Repositories and the Inputs Design Pattern</a></li><li class="chapter-item expanded "><a href="13-callpackage-design-pattern.html"><strong aria-hidden="true">13.</strong> Callpackage Design Pattern</a></li><li class="chapter-item expanded "><a href="14-override-design-pattern.html"><strong aria-hidden="true">14.</strong> Override Design Pattern</a></li><li class="chapter-item expanded "><a href="15-nix-search-paths.html"><strong aria-hidden="true">15.</strong> Nix Search Paths</a></li><li class="chapter-item expanded "><a href="16-nixpkgs-parameters.html"><strong aria-hidden="true">16.</strong> Nixpkgs Parameters</a></li><li class="chapter-item expanded "><a href="17-nixpkgs-overriding-packages.html"><strong aria-hidden="true">17.</strong> Nixpkgs Overriding Packages</a></li><li class="chapter-item expanded "><a href="18-nix-store-paths.html"><strong aria-hidden="true">18.</strong> Nix Store Paths</a></li><li class="chapter-item expanded "><a href="19-fundamentals-of-stdenv.html"><strong aria-hidden="true">19.</strong> Fundamentals of Stdenv</a></li><li class="chapter-item expanded "><a href="20-basic-dependencies-and-hooks.html"><strong aria-hidden="true">20.</strong> Basic Dependencies and Hooks</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Nix Pills</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="garbage-collector"><a class="header" href="#garbage-collector">The Garbage Collector</a></h1>
+<p>Welcome to the 11th Nix pill. In the previous <a href="10-developing-with-nix-shell.html">10th
+pill</a>, we drew a parallel between the
+isolated build environment provided by <code>nix-build</code> and the isolated
+development shell provided by <code>nix-shell</code>. Using <code>nix-shell</code> allowed us
+to debug, modify, and manually build software using an environment that
+is almost identical to the one provided by <code>nix-build</code>.</p>
+<p>Today, we will stop focusing on packaging and instead look at a critical
+component of Nix: the garbage collector. When we use Nix tools, we are
+often building derivations. This includes <code>.drv</code> files as well as out
+paths. These artifacts go in the Nix store and take up space in our
+storage. Eventually we may wish to free up some space by removing
+derivations we no longer need. This is the focus of the 11th pill. By
+default, Nix takes a relatively conservative approach when automatically
+deciding which derivations are "needed". In this pill, we will also
+see a technique to conduct more destructive upgrade and deletion
+operations.</p>
+<h2 id="how-does-garbage-collection-work"><a class="header" href="#how-does-garbage-collection-work">How does garbage collection work?</a></h2>
+<p>Programming languages with garbage collectors use the concept of a set
+of "garbage collector (or 'GC') roots" to keep track of "live"
+objects. A GC root is an object that is always considered "live"
+(unless explicitly removed as GC root). The garbage collection process
+starts from the GC roots and proceeds by recursively marking object
+references as "live". All other objects can be collected and deleted.</p>
+<p>Instead of objects, Nix's garbage collection operates on store paths,
+<a href="https://nixos.org/manual/nix/stable/package-management/garbage-collector-roots.html">with the GC roots themselves being store
+paths</a>.
+. This approach is much more principled than traditional package
+managers such as <code>dpkg</code> or <code>rpm</code>, which may leave around unused packages
+or dangling files.</p>
+<p>The implementation is very simple and transparent to the user. The
+primary GC roots are stored under <code>/nix/var/nix/gcroots</code>. If there is a
+symlink to a store path, then the linked store path is a GC root.</p>
+<p>Nix allows this directory to have subdirectories: it will simply
+recursively traverse the subdirectories in search of symlinks to store
+paths. When a symlink is encountered, its target is added to the list of
+live store paths.</p>
+<p>In summary, Nix maintains a list of GC roots. These roots can then be
+used to compute a list of all live store paths. Any other store paths
+are considered dead. Deleting these paths is now straightforward. Nix
+first moves dead store paths to <code>/nix/store/trash</code>, which is an atomic
+operation. Afterwards, the trash is emptied.</p>
+<h2 id="playing-with-the-gc"><a class="header" href="#playing-with-the-gc">Playing with the GC</a></h2>
+<p>Before we begin we first run the <a href="https://nixos.org/manual/nix/stable/command-ref/nix-collect-garbage.html">nix garbage
+collector</a>
+so that we have a clean setup for our experiments:</p>
+<pre><code>$ nix-collect-garbage
+finding garbage collector roots...
+[...]
+deleting unused links...
+note: currently hard linking saves -0.00 MiB
+1169 store paths deleted, 228.43 MiB freed
+</code></pre>
+<p>If we run the garbage collector again it won't find anything new to
+delete, as we expect. After running the garbage collector, the nix store
+only contains paths with references from the GC roots.</p>
+<p>We now install a new program, <code>bsd-games</code>, inspect its store path, and
+examine its GC root. The <code>nix-store -q --roots</code> command is used to query
+the GC roots that refer to a given derivation. In this case, our current
+user environment refers to <code>bsd-games</code>:</p>
+<pre><code>$ nix-env -iA nixpkgs.bsdgames
+$ readlink -f `which fortune`
+/nix/store/b3lxx3d3ggxcggvjw5n0m1ya1gcrmbyn-bsd-games-2.17/bin/fortune
+$ nix-store -q --roots `which fortune`
+/nix/var/nix/profiles/default-9-link
+$ nix-env --list-generations
+[...]
+   9   2014-08-20 12:44:14   (current)
+</code></pre>
+<p>Now we remove it and run the garbage collector, and note that
+<code>bsd-games</code> is still in the nix store:</p>
+<pre><code>$ nix-env -e bsd-games
+uninstalling `bsd-games-2.17'
+$ nix-collect-garbage
+[...]
+$ ls /nix/store/b3lxx3d3ggxcggvjw5n0m1ya1gcrmbyn-bsd-games-2.17
+bin  share
+</code></pre>
+<p>The old generation is still in the nix store because it is a GC root. As
+we will see below, all profiles and their generations are automatically
+GC roots.</p>
+<p>Removing a GC root is simple. In our case, we delete the generation that
+refers to <code>bsd-games</code>, run the garbage collector, and note that
+<code>bsd-games</code> is no longer in the nix store:</p>
+<pre><code>$ rm /nix/var/nix/profiles/default-9-link
+$ nix-env --list-generations
+[...]
+   8   2014-07-28 10:23:24
+  10   2014-08-20 12:47:16   (current)
+$ nix-collect-garbage
+[...]
+$ ls /nix/store/b3lxx3d3ggxcggvjw5n0m1ya1gcrmbyn-bsd-games-2.17
+ls: cannot access /nix/store/b3lxx3d3ggxcggvjw5n0m1ya1gcrmbyn-bsd-games-2.17: No such file or directory
+</code></pre>
+<p>Note: <code>nix-env --list-generations</code> does not rely on any
+particular metadata. It is able to list generations based solely on the
+file names under the profiles directory.</p>
+<p>Note that we removed the link from <code>/nix/var/nix/profiles</code>, not from
+<code>/nix/var/nix/gcroots</code>. In addition to the latter, Nix treats
+<code>/nix/var/nix/profiles</code> as a GC root. This is useful because it means
+that any profile and its generations are GC roots. Other paths are
+considered GC roots as well; for example, <code>/run/booted-system</code> on NixOS.
+The command <code>nix-store --gc --print-roots</code> prints all paths considered
+as GC roots when running the garbage collector.</p>
+<h2 id="indirect-roots"><a class="header" href="#indirect-roots">Indirect roots</a></h2>
+<p>Recall that building the GNU <code>hello</code> package with <code>nix-build</code> produces a
+<code>result</code> symlink in the current directory. Despite the garbage
+collection done above, the <code>hello</code> program is still working. Therefore,
+it has not been garbage collected. Since there is no other derivation
+that depends upon the GNU <code>hello</code> package, it must be a GC root.</p>
+<p>In fact, <code>nix-build</code> automatically adds the <code>result</code> symlink as a GC
+root. Note that this is not the built derivation, but the symlink
+itself. These GC roots are added under <code>/nix/var/nix/gcroots/auto</code>.</p>
+<pre><code>$ ls -l /nix/var/nix/gcroots/auto/
+total 8
+drwxr-xr-x 2 nix nix 4096 Aug 20 10:24 ./
+drwxr-xr-x 3 nix nix 4096 Jul 24 10:38 ../
+lrwxrwxrwx 1 nix nix   16 Jul 31 10:51 xlgz5x2ppa0m72z5qfc78b8wlciwvgiz -&gt; /home/nix/result/
+</code></pre>
+<p>The name of the GC root symlink is not important to us at this time.
+What is important is that such a symlink exists and points to
+<code>/home/nix/result</code>. This is called an <strong>indirect GC root</strong>. A GC root is
+considered indirect if its specification is outside of
+<code>/nix/var/nix/gcroots</code>. In this case, this means that the target of the
+<code>result</code> symlink will not be garbage collected.</p>
+<p>To remove a derivation considered "live" by an indirect GC root, there
+are two possibilities:</p>
+<ul>
+<li>
+<p>Remove the indirect GC root from <code>/nix/var/nix/gcroots/auto</code>.</p>
+</li>
+<li>
+<p>Remove the <code>result</code> symlink.</p>
+</li>
+</ul>
+<p>In the first case, the derivation will be deleted from the nix store
+during garbage collection, and <code>result</code> becomes a dangling symlink. In
+the second case, the derivation is removed as well as the indirect root
+in <code>/nix/var/nix/gcroots/auto</code>.</p>
+<p>Running <code>nix-collect-garbage</code> after deleting the GC root or the indirect
+GC root will remove the derivation from the store.</p>
+<h2 id="cleanup-everything"><a class="header" href="#cleanup-everything">Cleanup everything</a></h2>
+<p>The main source of software duplication in the nix store comes from GC
+roots, due to <code>nix-build</code> and profile generations. Running <code>nix-build</code>
+results in a GC root for the build that refers to a specific version of
+specific libraries, such as glibc. After an upgrade, we must delete the
+previous build if we want the garbage collector to remove the
+corresponding derivation, as well as if we want old dependencies cleaned
+up.</p>
+<p>The same holds for profiles. Manipulating the <code>nix-env</code> profile will
+create further generations. Old generations refer to old software, thus
+increasing duplication in the nix store after an upgrade.</p>
+<p>Other systems typically "forget" everything about their previous state
+after an upgrade. With Nix, we can perform this type of upgrade (having
+Nix remove all old derivations, including old generations), but we do so
+manually. There are four steps to doing this:</p>
+<ul>
+<li>
+<p>First, we download a new version of the nixpkgs channel, which holds
+the description of all the software. This is done via
+<code>nix-channel --update</code>.</p>
+</li>
+<li>
+<p>Then we upgrade our installed packages with <code>nix-env -u</code>. This will
+bring us into a new generation with updated software.</p>
+</li>
+<li>
+<p>Then we remove all the indirect roots generated by <code>nix-build</code>:
+beware, as this will result in dangling symlinks. A smarter strategy
+would also remove the target of those symlinks.</p>
+</li>
+<li>
+<p>Finally, the <code>-d</code> option of <code>nix-collect-garbage</code> is used to delete
+old generations of all profiles, then collect garbage. After this,
+you lose the ability to rollback to any previous generation. It is
+important to ensure the new generation is working well before
+running this command.</p>
+</li>
+</ul>
+<p>The four steps are shown below:</p>
+<pre><code>$ nix-channel --update
+$ nix-env -u --always
+$ rm /nix/var/nix/gcroots/auto/*
+$ nix-collect-garbage -d
+</code></pre>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>Garbage collection in Nix is a powerful mechanism to clean up your
+system. The <code>nix-store</code> commands allow us to know why a certain
+derivation is present in the nix store, and whether or not it is
+eligible for garbage collection. We also saw how to conduct more
+destructive deletion and upgrade operations.</p>
+<h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
+<p>In the next pill, we will package another project and introduce the
+"inputs" design pattern. We've only played with a single derivation
+until now; however we'd like to start organizing a small repository of
+software. The "inputs" pattern is widely used in nixpkgs; it allows us
+to decouple derivations from the repository itself and increase
+customization opportunities.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="10-developing-with-nix-shell.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="12-inputs-design-pattern.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="10-developing-with-nix-shell.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="12-inputs-design-pattern.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

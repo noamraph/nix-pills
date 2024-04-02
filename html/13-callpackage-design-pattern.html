@@ -1,0 +1,462 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Callpackage Design Pattern - Nix Pills</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="00-preface.html">Preface</a></li><li class="chapter-item expanded "><a href="01-why-you-should-give-it-try.html"><strong aria-hidden="true">1.</strong> Why You Should Give it a Try</a></li><li class="chapter-item expanded "><a href="02-install-on-your-running.html"><strong aria-hidden="true">2.</strong> Install on Your Running System</a></li><li class="chapter-item expanded "><a href="03-enter-environment.html"><strong aria-hidden="true">3.</strong> Enter the Environment</a></li><li class="chapter-item expanded "><a href="04-basics-of-language.html"><strong aria-hidden="true">4.</strong> The Basics of the Language</a></li><li class="chapter-item expanded "><a href="05-functions-and-imports.html"><strong aria-hidden="true">5.</strong> Functions and Imports</a></li><li class="chapter-item expanded "><a href="06-our-first-derivation.html"><strong aria-hidden="true">6.</strong> Our First Derivation</a></li><li class="chapter-item expanded "><a href="07-working-derivation.html"><strong aria-hidden="true">7.</strong> Working Derivation</a></li><li class="chapter-item expanded "><a href="08-generic-builders.html"><strong aria-hidden="true">8.</strong> Generic Builders</a></li><li class="chapter-item expanded "><a href="09-automatic-runtime.html"><strong aria-hidden="true">9.</strong> Automatic Runtime Dependencies</a></li><li class="chapter-item expanded "><a href="10-developing-with-nix-shell.html"><strong aria-hidden="true">10.</strong> Developing with nix-shell</a></li><li class="chapter-item expanded "><a href="11-garbage-collector.html"><strong aria-hidden="true">11.</strong> The Garbage Collector</a></li><li class="chapter-item expanded "><a href="12-inputs-design-pattern.html"><strong aria-hidden="true">12.</strong> Package Repositories and the Inputs Design Pattern</a></li><li class="chapter-item expanded "><a href="13-callpackage-design-pattern.html" class="active"><strong aria-hidden="true">13.</strong> Callpackage Design Pattern</a></li><li class="chapter-item expanded "><a href="14-override-design-pattern.html"><strong aria-hidden="true">14.</strong> Override Design Pattern</a></li><li class="chapter-item expanded "><a href="15-nix-search-paths.html"><strong aria-hidden="true">15.</strong> Nix Search Paths</a></li><li class="chapter-item expanded "><a href="16-nixpkgs-parameters.html"><strong aria-hidden="true">16.</strong> Nixpkgs Parameters</a></li><li class="chapter-item expanded "><a href="17-nixpkgs-overriding-packages.html"><strong aria-hidden="true">17.</strong> Nixpkgs Overriding Packages</a></li><li class="chapter-item expanded "><a href="18-nix-store-paths.html"><strong aria-hidden="true">18.</strong> Nix Store Paths</a></li><li class="chapter-item expanded "><a href="19-fundamentals-of-stdenv.html"><strong aria-hidden="true">19.</strong> Fundamentals of Stdenv</a></li><li class="chapter-item expanded "><a href="20-basic-dependencies-and-hooks.html"><strong aria-hidden="true">20.</strong> Basic Dependencies and Hooks</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Nix Pills</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="callpackage-design-pattern"><a class="header" href="#callpackage-design-pattern">Callpackage Design Pattern</a></h1>
+<p>Welcome to the 13th Nix pill. In the previous <a href="12-inputs-design-pattern.html">12th
+pill</a>, we introduced the first basic design
+pattern for organizing a repository of software. In addition, we
+packaged graphviz so that we had two packages to bundle into an example
+repository.</p>
+<p>The next design pattern we will examine is called the <code>callPackage</code>
+pattern. This technique is extensively used in
+<a href="https://github.com/NixOS/nixpkgs">nixpkgs</a>, and it's the current de
+facto standard for importing packages in a repository. Its purpose is to
+reduce the duplication of identifiers between package derivation inputs
+and repository derivations.</p>
+<h2 id="the-callpackage-convenience"><a class="header" href="#the-callpackage-convenience">The callPackage convenience</a></h2>
+<p>In the previous pill, we demonstrated how the <code>inputs</code> pattern decouples
+packages from the repository. This allowed us to manually pass the
+inputs to the derivation; the derivation declares its inputs, and the
+caller passes the arguments.</p>
+<p>However, as with usual programming languages, there is some duplication
+of work: we declare parameter names and then we pass arguments,
+typically with the same name. For example, if we define a package
+derivation using the <code>inputs</code> pattern such as:</p>
+<pre><code>{ input1, input2, ... }:
+...
+</code></pre>
+<p>we would likely want to bundle that package derivation into a repository
+via a an attribute set defined as something like:</p>
+<pre><code>rec {
+  lib1 = import package1.nix { inherit input1 input2; };
+  program2 = import package2.nix { inherit inputX inputY lib1; };
+}
+</code></pre>
+<p>There are two things to note. First, that inputs often have the same
+name as attributes in the repository itself. Second, that (due to the
+<code>rec</code> keyword), the inputs to a package derivation may be other packages
+in the repository itself.</p>
+<p>Rather than passing the inputs twice, we would prefer to pass those
+inputs from the repository automatically and allow for manually
+overriding defaults.</p>
+<p>To achieve this, we will define a <code>callPackage</code> function with the
+following calling convention:</p>
+<pre><code>{
+  lib1 = callPackage package1.nix { };
+  program2 = callPackage package2.nix { someoverride = overriddenDerivation; };
+}
+</code></pre>
+<p>We want <code>callPackage</code> to be a function of two arguments, with the
+following behavior:</p>
+<ul>
+<li>
+<p>Import the given expression contained in the file of the first
+argument, and return a function. This function returns a package
+derivation that uses the inputs pattern.</p>
+</li>
+<li>
+<p>Determine the name of the arguments to the function (i.e., the names
+of the inputs to the package derivation).</p>
+</li>
+<li>
+<p>Pass default arguments from the repository set, and let us override
+those arguments if we wish to customize the package derivation.</p>
+</li>
+</ul>
+<h2 id="implementing-callpackage"><a class="header" href="#implementing-callpackage">Implementing <code>callPackage</code></a></h2>
+<p>In this section, we will build up the <code>callPackages</code> pattern from
+scratch. To start, we need a way to obtain the argument names of a
+function (in this case, the function that takes "inputs" and produces
+a package derivation) at runtime. This is because we want to
+automatically pass such arguments.</p>
+<p>Nix provides a builtin function to do this:</p>
+<pre><code>nix-repl&gt; add = { a ? 3, b }: a+b
+nix-repl&gt; builtins.functionArgs add
+{ a = true; b = false; }
+</code></pre>
+<p>In addition to returning the argument names, the attribute set returned
+by <code>functionArgs</code> indicates whether or not the argument has a default
+value. For our purposes, we are only interested in the argument names;
+we do not care about the default values right now.</p>
+<p>The next step is to make <code>callPackage</code> automatically pass inputs to our
+package derivations based on the argument names we've just obtained
+with <code>functionArgs</code>.</p>
+<p>To do this, we need two things:</p>
+<ul>
+<li>
+<p>A package repository set containing package derivations that match
+the arguments names we've obtained</p>
+</li>
+<li>
+<p>A way to obtain an auto-populated attribute set combining the
+package repository and the return value of <code>functionArgs</code>.</p>
+</li>
+</ul>
+<p>The former is easy: we just have to set our package derivation's inputs
+to be package names in a repository, such as <code>nixpkgs</code>. For the latter,
+Nix provides another builtin function:</p>
+<pre><code>nix-repl&gt; values = { a = 3; b = 5; c = 10; }
+nix-repl&gt; builtins.intersectAttrs values (builtins.functionArgs add)
+{ a = true; b = false; }
+nix-repl&gt; builtins.intersectAttrs (builtins.functionArgs add) values
+{ a = 3; b = 5; }
+</code></pre>
+<p>The <code>intersectAttrs</code> returns an attribute set whose names are the
+intersection of both arguments' attribute names, with the attribute
+values taken from the second argument.</p>
+<p>This is all we need to do: we have obtained the argument names from a
+function, and populated these with an existing set of attributes. This
+is our simple implementation of <code>callPackage</code>:</p>
+<pre><code>nix-repl&gt; callPackage = set: f: f (builtins.intersectAttrs (builtins.functionArgs f) set)
+nix-repl&gt; callPackage values add
+8
+nix-repl&gt; with values; add { inherit a b; }
+8
+</code></pre>
+<p>Let's dissect the above snippet:</p>
+<ul>
+<li>
+<p>We define a <code>callPackage</code> variable which is a function.</p>
+</li>
+<li>
+<p>The first parameter to the <code>callPackage</code> function is a set of
+name-value pairs that may appear in the argument set of the function
+we wish to "autocall".</p>
+</li>
+<li>
+<p>The second parameter is the function to "autocall"</p>
+</li>
+<li>
+<p>We take the argument names of the function and intersect with the
+set of all values.</p>
+</li>
+<li>
+<p>Finally, we call the passed function <code>f</code> with the resulting
+intersection.</p>
+</li>
+</ul>
+<p>In the snippet above, we've also demonstrated that the <code>callPackage</code>
+call is equivalent to directly calling <code>add a b</code>.</p>
+<p>We achieved most of what we wanted: to automatically call functions
+given a set of possible arguments. If an argument is not found within
+the set we used to call the function, then we receive an error (unless
+the function has variadic arguments denoted with <code>...</code>, as explained in
+the <a href="05-functions-and-imports.html">5th pill</a>).</p>
+<p>The last missing piece is allowing users to override some of the
+parameters. We may not want to always call functions with values taken
+from the big set. Thus, we add a third parameter which takes a set of
+overrides:</p>
+<pre><code>nix-repl&gt; callPackage = set: f: overrides: f ((builtins.intersectAttrs (builtins.functionArgs f) set) // overrides)
+nix-repl&gt; callPackage values add { }
+8
+nix-repl&gt; callPackage values add { b = 12; }
+15
+</code></pre>
+<p>Apart from the increasing number of parentheses, it should be clear that
+we simply take a set union between the default arguments and the
+overriding set.</p>
+<h2 id="using-callpackage-to-simplify-the-repository"><a class="header" href="#using-callpackage-to-simplify-the-repository">Using callPackage to simplify the repository</a></h2>
+<p>Given our <code>callPackages</code>, we can simplify the repository expression in
+<code>default.nix</code>:</p>
+<pre><code>let
+  nixpkgs = import &lt;nixpkgs&gt; { };
+  allPkgs = nixpkgs // pkgs;
+  callPackage =
+    path: overrides:
+    let
+      f = import path;
+    in
+    f ((builtins.intersectAttrs (builtins.functionArgs f) allPkgs) // overrides);
+  pkgs = with nixpkgs; {
+    mkDerivation = import ./autotools.nix nixpkgs;
+    hello = callPackage ./hello.nix { };
+    graphviz = callPackage ./graphviz.nix { };
+    graphvizCore = callPackage ./graphviz.nix { gdSupport = false; };
+  };
+in
+pkgs
+</code></pre>
+<p>Let's examine this in detail:</p>
+<ul>
+<li>
+<p>The expression above defines our own package repository, which we
+call <code>pkgs</code>, that contains <code>hello</code> along with our two variants of
+<code>graphviz</code>.</p>
+</li>
+<li>
+<p>In the <code>let</code> expression, we import <code>nixpkgs</code>. Note that previously,
+we referred to this import with the variable <code>pkgs</code>, but now that
+name is taken by the repository we are creating ourselves.</p>
+</li>
+<li>
+<p>We needed a way to pass <code>pkgs</code> to <code>callPackage</code> somehow. Instead of
+returning the set of packages directly from <code>default.nix</code>, we first
+assign it to a <code>let</code> variable and reuse it in <code>callPackage</code>.</p>
+</li>
+<li>
+<p>For convenience, in <code>callPackage</code> we first import the file instead
+of calling it directly. Otherwise we would have to write the
+<code>import</code> for each package.</p>
+</li>
+<li>
+<p>Since our expressions use packages from <code>nixpkgs</code>, in <code>callPackage</code>
+we use <code>allPkgs</code>, which is the union of <code>nixpkgs</code> and our packages.</p>
+</li>
+<li>
+<p>We moved <code>mkDerivation</code> into <code>pkgs</code> itself, so that it also gets
+passed automatically.</p>
+</li>
+</ul>
+<p>Note how easily we overrode arguments in the case of <code>graphviz</code> without
+<code>gd</code>. In addition, note how easy it was to merge two repositories:
+<code>nixpkgs</code> and our <code>pkgs</code>!</p>
+<p>The reader should notice a magic thing happening. We're defining <code>pkgs</code>
+in terms of <code>callPackage</code>, and <code>callPackage</code> in terms of <code>pkgs</code>. That
+magic is possible thanks to lazy evaluation: <code>builtins.intersectAttrs</code>
+doesn't need to know the values in <code>allPkgs</code> in order to perform
+intersection, only the keys that do not require <code>callPackage</code>
+evaluation.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>The "<code>callPackage</code>" pattern has simplified our repository
+considerably. We were able to import packages that require named
+arguments and call them automatically, given the set of all packages
+sourced from <code>nixpkgs</code>.</p>
+<p>We've also introduced some useful builtin functions that allows us to
+introspect Nix functions and manipulate attributes. These builtin
+functions are not usually used when packaging software, but rather act
+as tools for packaging. They are documented in the <a href="https://nixos.org/manual/nix/stable/expressions/builtins.html">Nix
+manual</a>.</p>
+<p>Writing a repository in Nix is an evolution of writing convenient
+functions for combining the packages. This pill demonstrates how Nix can
+be a generic tool to build and deploy software, and how suitable it is
+to create software repositories with our own conventions.</p>
+<h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
+<p>In the next pill, we will talk about the "<code>override</code>" design pattern.
+The <code>graphvizCore</code> seems straightforward. It starts from <code>graphviz.nix</code>
+and builds it without gd. In the next pill, we will consider another
+point of view: starting from <code>pkgs.graphviz</code> and disabling gd?</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="12-inputs-design-pattern.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="14-override-design-pattern.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="12-inputs-design-pattern.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="14-override-design-pattern.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

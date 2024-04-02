@@ -1,0 +1,395 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Install on Your Running System - Nix Pills</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="00-preface.html">Preface</a></li><li class="chapter-item expanded "><a href="01-why-you-should-give-it-try.html"><strong aria-hidden="true">1.</strong> Why You Should Give it a Try</a></li><li class="chapter-item expanded "><a href="02-install-on-your-running.html" class="active"><strong aria-hidden="true">2.</strong> Install on Your Running System</a></li><li class="chapter-item expanded "><a href="03-enter-environment.html"><strong aria-hidden="true">3.</strong> Enter the Environment</a></li><li class="chapter-item expanded "><a href="04-basics-of-language.html"><strong aria-hidden="true">4.</strong> The Basics of the Language</a></li><li class="chapter-item expanded "><a href="05-functions-and-imports.html"><strong aria-hidden="true">5.</strong> Functions and Imports</a></li><li class="chapter-item expanded "><a href="06-our-first-derivation.html"><strong aria-hidden="true">6.</strong> Our First Derivation</a></li><li class="chapter-item expanded "><a href="07-working-derivation.html"><strong aria-hidden="true">7.</strong> Working Derivation</a></li><li class="chapter-item expanded "><a href="08-generic-builders.html"><strong aria-hidden="true">8.</strong> Generic Builders</a></li><li class="chapter-item expanded "><a href="09-automatic-runtime.html"><strong aria-hidden="true">9.</strong> Automatic Runtime Dependencies</a></li><li class="chapter-item expanded "><a href="10-developing-with-nix-shell.html"><strong aria-hidden="true">10.</strong> Developing with nix-shell</a></li><li class="chapter-item expanded "><a href="11-garbage-collector.html"><strong aria-hidden="true">11.</strong> The Garbage Collector</a></li><li class="chapter-item expanded "><a href="12-inputs-design-pattern.html"><strong aria-hidden="true">12.</strong> Package Repositories and the Inputs Design Pattern</a></li><li class="chapter-item expanded "><a href="13-callpackage-design-pattern.html"><strong aria-hidden="true">13.</strong> Callpackage Design Pattern</a></li><li class="chapter-item expanded "><a href="14-override-design-pattern.html"><strong aria-hidden="true">14.</strong> Override Design Pattern</a></li><li class="chapter-item expanded "><a href="15-nix-search-paths.html"><strong aria-hidden="true">15.</strong> Nix Search Paths</a></li><li class="chapter-item expanded "><a href="16-nixpkgs-parameters.html"><strong aria-hidden="true">16.</strong> Nixpkgs Parameters</a></li><li class="chapter-item expanded "><a href="17-nixpkgs-overriding-packages.html"><strong aria-hidden="true">17.</strong> Nixpkgs Overriding Packages</a></li><li class="chapter-item expanded "><a href="18-nix-store-paths.html"><strong aria-hidden="true">18.</strong> Nix Store Paths</a></li><li class="chapter-item expanded "><a href="19-fundamentals-of-stdenv.html"><strong aria-hidden="true">19.</strong> Fundamentals of Stdenv</a></li><li class="chapter-item expanded "><a href="20-basic-dependencies-and-hooks.html"><strong aria-hidden="true">20.</strong> Basic Dependencies and Hooks</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Nix Pills</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="install-on-your-running-system"><a class="header" href="#install-on-your-running-system">Install on Your Running System</a></h1>
+<p>Welcome to the second Nix pill. In the
+<a href="01-why-you-should-give-it-try.html">first</a> pill we briefly described Nix.</p>
+<p>Now we'll install Nix on our running system and understand what changed
+in our system after the installation. <strong>If you're using NixOS, Nix is
+already installed; you can skip to the <a href="03-enter-environment.html">next</a>
+pill.</strong></p>
+<p>For installation instructions, please refer to the Nix Reference Manual
+on <a href="https://nixos.org/manual/nix/stable/installation/installing-binary.html"> Installing
+Nix</a>.</p>
+<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
+<p>These articles are not a tutorial on <em>using</em> Nix. Instead, we're going
+to walk through the Nix system to understand the fundamentals.</p>
+<p>The first thing to note: derivations in the Nix store refer to other
+derivations which are themselves in the Nix store. They don't use
+<code>libc</code> from our system or anywhere else. It's a self-contained store of
+all the software we need to bootstrap up to any particular package.</p>
+<div class="info">
+<p>Note: In a multi-user installation, such as the one used in NixOS, the store
+is owned by root and multiple users can install and build software
+through a Nix daemon. You can read more about multi-user installations
+here:
+<a href="https://nixos.org/manual/nix/stable/installation/installing-binary.html#multi-user-installation">https://nixos.org/manual/nix/stable/installation/installing-binary.html#multi-user-installation</a>.</p>
+</div>
+<h2 id="the-beginnings-of-the-nix-store"><a class="header" href="#the-beginnings-of-the-nix-store">The beginnings of the Nix store</a></h2>
+<p>Start looking at the output of the install command:</p>
+<pre><code>copying Nix to /nix/store..........................
+</code></pre>
+<p>That's the <code>/nix/store</code> we were talking about in the first article.
+We're copying in the necessary software to bootstrap a Nix system. You
+can see bash, coreutils, the C compiler toolchain, perl libraries,
+sqlite and Nix itself with its own tools and libnix.</p>
+<p>You may have noticed that <code>/nix/store</code> can contain not only directories,
+but also files, still always in the form &lt;hash-name&gt;.</p>
+<h2 id="the-nix-database"><a class="header" href="#the-nix-database">The Nix database</a></h2>
+<p>Right after copying the store, the installation process initializes a
+database:</p>
+<pre><code>initialising Nix database...
+</code></pre>
+<p>Yes, Nix also has a database. It's stored under <code>/nix/var/nix/db</code>. It
+is a sqlite database that keeps track of the dependencies between
+derivations.</p>
+<p>The schema is very simple: there's a table of valid paths, mapping from
+an auto increment integer to a store path.</p>
+<p>Then there's a dependency relation from path to paths upon which they
+depend.</p>
+<p>You can inspect the database by installing sqlite
+(<code>nix-env -iA sqlite -f '&lt;nixpkgs&gt;'</code>) and then running
+<code>sqlite3 /nix/var/nix/db/db.sqlite</code>.</p>
+<div class="info">
+<p>Note: If this is the first time you're using Nix after the initial
+installation, remember you must close and open your terminals first, so
+that your shell environment will be updated.</p>
+</div>
+<div class="warning">
+<p>Important: Never change <code>/nix/store</code> manually. If you do, then it will no longer be
+in sync with the sqlite db, unless you <em>really</em> know what you are doing.</p>
+</div>
+<h2 id="the-first-profile"><a class="header" href="#the-first-profile">The first profile</a></h2>
+<p>Next in the installation, we encounter the concept of the
+<a href="https://nixos.org/manual/nix/stable/package-management/profiles.html">profile</a>:</p>
+<pre><code class="hljs">creating /home/nix/.nix-profile
+installing 'nix-2.1.3'
+building path(s) `/nix/store/a7p1w3z2h8pl00ywvw6icr3g5l9vm5r7-<b>user-environment</b>'
+created 7 symlinks in user environment
+</code></pre>
+<p>A profile in Nix is a general and convenient concept for realizing
+rollbacks. Profiles are used to compose components that are spread among
+multiple paths under a new unified path. Not only that, but profiles are
+made up of multiple "generations": they are versioned. Whenever you
+change a profile, a new generation is created.</p>
+<p>Generations can be switched and rolled back atomically, which makes them
+convenient for managing changes to your system.</p>
+<p>Let's take a closer look at our profile:</p>
+<pre><code class="hljs">$ ls -l ~/.nix-profile/
+bin -> /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-<b>nix-2.1.3</b>/bin
+[...]
+manifest.nix -> /nix/store/q8b5238akq07lj9gfb3qb5ycq4dxxiwm-<b>env-manifest.nix</b>
+[...]
+share -> /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-<b>nix-2.1.3</b>/share
+</code></pre>
+<p>That nix-2.1.3 derivation in the Nix store is Nix itself, with binaries
+and libraries. The process of "installing" the derivation in the
+profile basically reproduces the hierarchy of the nix-2.1.3 store
+derivation in the profile by means of symbolic links.</p>
+<p>The contents of this profile are special, because only one program has
+been installed in our profile, therefore e.g. the <code>bin</code> directory points
+to the only program which has been installed (Nix itself).</p>
+<p>But that's only the contents of the latest generation of our profile.
+In fact, <code>~/.nix-profile</code> itself is a symbolic link to
+<code>/nix/var/nix/profiles/default</code>.</p>
+<p>In turn, that's a symlink to <code>default-1-link</code> in the same directory.
+Yes, that means it's the first generation of the <code>default</code> profile.</p>
+<p>Finally, <code>default-1-link</code> is a symlink to the nix store
+"user-environment" derivation that you saw printed during the
+installation process.</p>
+<p>We'll talk about <code>manifest.nix</code> more in the next article.</p>
+<h2 id="nixpkgs-expressions"><a class="header" href="#nixpkgs-expressions">Nixpkgs expressions</a></h2>
+<p>More output from the installer:</p>
+<pre><code>downloading Nix expressions from `http://releases.nixos.org/nixpkgs/nixpkgs-14.10pre46060.a1a2851/nixexprs.tar.xz'...
+unpacking channels...
+created 2 symlinks in user environment
+modifying /home/nix/.profile...
+</code></pre>
+<p>Nix expressions are written in the <a href="https://nix.dev/tutorials/nix-language">Nix
+language</a> and used to describe
+packages and how to build them. <a href="https://nixos.org/nixpkgs/">Nixpkgs</a> is
+the repository containing all of the expressions:
+<a href="https://github.com/NixOS/nixpkgs">https://github.com/NixOS/nixpkgs</a>.</p>
+<p>The installer downloaded the package descriptions from commit <code>a1a2851</code>.</p>
+<p>The second profile we discover is the channels profile.
+<code>~/.nix-defexpr/channels</code> points to
+<code>/nix/var/nix/profiles/per-user/nix/channels</code> which points to
+<code>channels-1-link</code> which points to a Nix store directory containing the
+downloaded Nix expressions.</p>
+<p>Channels are a set of packages and expressions available for download.
+Similar to Debian stable and unstable, there's a stable and unstable
+channel. In this installation, we're tracking <code>nixpkgs-unstable</code>.</p>
+<p>Don't worry about Nix expressions yet, we'll get to them later.</p>
+<p>Finally, for your convenience, the installer modified <code>~/.profile</code> to
+automatically enter the Nix environment. What
+<code>~/.nix-profile/etc/profile.d/nix.sh</code> really does is simply to add
+<code>~/.nix-profile/bin</code> to <code>PATH</code> and <code>~/.nix-defexpr/channels/nixpkgs</code> to
+<code>NIX_PATH</code>. We'll discuss <code>NIX_PATH</code> later.</p>
+<p>Read <code>nix.sh</code>, it's short.</p>
+<h2 id="faq-can-i-change-nix-to-something-else"><a class="header" href="#faq-can-i-change-nix-to-something-else">FAQ: Can I change /nix to something else?</a></h2>
+<p>You can, but there's a good reason to keep using <code>/nix</code> instead of a
+different directory. All the derivations depend on other derivations by
+using absolute paths. We saw in the first article that bash referenced a
+glibc under a specific absolute path in <code>/nix/store</code>.</p>
+<p>You can see for yourself, don't worry if you see multiple bash
+derivations:</p>
+<pre><code>$ ldd /nix/store/*bash*/bin/bash
+[...]
+</code></pre>
+<p>Keeping the store in <code>/nix</code> means we can grab the binary cache from
+nixos.org (just like you grab packages from debian mirrors) otherwise:</p>
+<ul>
+<li>
+<p>glibc would be installed under <code>/foo/store</code></p>
+</li>
+<li>
+<p>Thus bash would need to point to glibc under <code>/foo/store</code>, instead
+of under <code>/nix/store</code></p>
+</li>
+<li>
+<p>So the binary cache can't help, because we need a <em>different</em> bash,
+and so we'd have to recompile everything ourselves.</p>
+</li>
+</ul>
+<p>After all <code>/nix</code> is a sensible place for the store.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>We've installed Nix on our system, fully isolated and owned by the
+<code>nix</code> user as we're still coming to terms with this new system.</p>
+<p>We learned some new concepts like profiles and channels. In particular,
+with profiles we're able to manage multiple generations of a
+composition of packages, while with channels we're able to download
+binaries from <code>nixos.org</code>.</p>
+<p>The installation put everything under <code>/nix</code>, and some symlinks in the
+Nix user home. That's because every user is able to install and use
+software in her own environment.</p>
+<p>I hope I left nothing uncovered so that you think there's some kind of
+magic going on behind the scenes. It's all about putting components in
+the store and symlinking these components together.</p>
+<h2 id="next-pill"><a class="header" href="#next-pill">Next pill...</a></h2>
+<p>...we will enter the Nix environment and learn how to interact with the
+store.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="01-why-you-should-give-it-try.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="03-enter-environment.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="01-why-you-should-give-it-try.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="03-enter-environment.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
