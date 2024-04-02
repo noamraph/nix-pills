@@ -136,7 +136,7 @@ What do we do here?
 
 6.  Once we're set up, compile and install.
 
-As you can see, there's no reference to \"hello\" in the builder
+As you can see, there's no reference to "hello" in the builder
 anymore. It still makes several assumptions, but it's certainly more
 generic.
 
@@ -278,7 +278,7 @@ couple of remarks that you may find useful as you're continuing to
 understand the nix language:
 
 -   We assigned to pkgs the import that we did in the previous
-    expressions in the \"with\". Don't be afraid, it's that
+    expressions in the "with". Don't be afraid, it's that
     straightforward.
 
 -   The mkDerivation variable is a nice example of partial application,
@@ -321,4 +321,4 @@ to other derivations.
 \...we will talk a little about runtime dependencies. Is the GNU hello
 world package self-contained? What are its runtime dependencies? We only
 specified build dependencies by means of using other derivations in the
-\"hello\" derivation.
+"hello" derivation.

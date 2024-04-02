@@ -2,8 +2,8 @@
 
 ## Introduction
 
-Welcome to the first post of the \"[Nix](https://nixos.org/nix) in
-pills\" series. Nix is a purely functional package manager and
+Welcome to the first post of the "[Nix](https://nixos.org/nix) in
+pills" series. Nix is a purely functional package manager and
 deployment system for POSIX.
 
 There's a lot of documentation that describes what Nix,

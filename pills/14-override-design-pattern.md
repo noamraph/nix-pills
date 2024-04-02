@@ -81,7 +81,7 @@ and add our overrides like so:
 
 The difference is obvious, as well as the advantages of this approach.
 
-Note: that `.override` is not a \"method\" in the OO sense
+Note: that `.override` is not a "method" in the OO sense
 as you may think. Nix is a functional language. The`.override` is simply
 an attribute of a set.
 
@@ -89,9 +89,9 @@ an attribute of a set.
 
 Recall that the graphviz attribute in the repository is the derivation
 returned by the function imported from `graphviz.nix`. We would like to
-add a further attribute named \"`override`\" to the returned set.
+add a further attribute named "`override`" to the returned set.
 
-Let's start by first creating a function \"`makeOverridable`\". This
+Let's start by first creating a function "`makeOverridable`". This
 function will take two arguments: a function (that must return a set)
 and the set of original arguments to be passed to the function.
 
@@ -178,7 +178,7 @@ This is an exercise for the reader.
 
 ## Conclusion
 
-The \"`override`\" pattern simplifies the way we customize packages
+The "`override`" pattern simplifies the way we customize packages
 starting from an existing set of packages. This opens a world of
 possibilities for using a central repository like `nixpkgs` and defining
 overrides on our local machine without modifying the original package.
@@ -197,6 +197,6 @@ lowest maintenance time, by using predefined composable components.
 
 ## Next pill
 
-In the next pill, we will talk about Nix search paths. By \"search
-path\", we mean a place in the file system where Nix looks for
+In the next pill, we will talk about Nix search paths. By "search
+path", we mean a place in the file system where Nix looks for
 expressions. This answers the question of where `<nixpkgs>` comes from.

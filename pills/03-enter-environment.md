@@ -244,7 +244,7 @@ we use a single channel. The tool to manage channels is
 
 If you're using NixOS, you may not see any output from the above
 command (if you're using the default), or you may see a channel whose
-name begins with \"nixos-\" instead of \"nixpkgs\".
+name begins with "nixos-" instead of "nixpkgs".
 
 That's essentially the contents of `~/.nix-channels`.
 

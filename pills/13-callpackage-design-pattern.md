@@ -70,7 +70,7 @@ following behavior:
 
 In this section, we will build up the `callPackages` pattern from
 scratch. To start, we need a way to obtain the argument names of a
-function (in this case, the function that takes \"inputs\" and produces
+function (in this case, the function that takes "inputs" and produces
 a package derivation) at runtime. This is because we want to
 automatically pass such arguments.
 
@@ -127,9 +127,9 @@ Let's dissect the above snippet:
 
 -   The first parameter to the `callPackage` function is a set of
     name-value pairs that may appear in the argument set of the function
-    we wish to \"autocall\".
+    we wish to "autocall".
 
--   The second parameter is the function to \"autocall\"
+-   The second parameter is the function to "autocall"
 
 -   We take the argument names of the function and intersect with the
     set of all values.
@@ -221,7 +221,7 @@ evaluation.
 
 ## Conclusion
 
-The \"`callPackage`\" pattern has simplified our repository
+The "`callPackage`" pattern has simplified our repository
 considerably. We were able to import packages that require named
 arguments and call them automatically, given the set of all packages
 sourced from `nixpkgs`.
@@ -239,7 +239,7 @@ to create software repositories with our own conventions.
 
 ## Next pill
 
-In the next pill, we will talk about the \"`override`\" design pattern.
+In the next pill, we will talk about the "`override`" design pattern.
 The `graphvizCore` seems straightforward. It starts from `graphviz.nix`
 and builds it without gd. In the next pill, we will consider another
 point of view: starting from `pkgs.graphviz` and disabling gd?

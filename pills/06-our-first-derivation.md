@@ -118,7 +118,7 @@ Many things are empty in that `.drv`, however I'll write a summary of
 the [.drv format](http://nixos.org/~eelco/pubs/phd-thesis.pdf) for you:
 
 1.  The output paths (there can be multiple ones). By default nix
-    creates one out path called \"out\".
+    creates one out path called "out".
 
 2.  The list of input derivations. It's empty because we are not
     referring to any other derivation. Otherwise, there would be a list
@@ -238,7 +238,7 @@ to do a conversion from a derivation set to a string.
     nix-repl> builtins.toString d
     "/nix/store/40s0qmrfb45vlh6610rk29ym318dswdr-myname"
 
-Nix does the \"set to string conversion\" as long as there is the
+Nix does the "set to string conversion" as long as there is the
 `outPath` attribute (much like a toString method in other languages):
 
     nix-repl> builtins.toString { outPath = "foo"; }
@@ -336,7 +336,7 @@ there with out path
 ## When is the derivation built
 
 Nix does not build derivations **during evaluation** of Nix expressions.
-In fact, that's why we have to do \":b drv\" in `nix repl`, or use
+In fact, that's why we have to do ":b drv" in `nix repl`, or use
 nix-store -r in the first place.
 
 An important separation is made in Nix:
@@ -377,11 +377,11 @@ derivations.
 
 When Nix builds a derivation, it first creates a .drv file from a
 derivation expression, and uses it to build the output. It does so
-recursively for all the dependencies (inputs). It \"executes\" the .drv
+recursively for all the dependencies (inputs). It "executes" the .drv
 files like a machine. Not much magic after all.
 
 ## Next pill
 
 \...we will finally write our first **working** derivation. Yes, this
-post is about \"our first derivation\", but I never said it was a
+post is about "our first derivation", but I never said it was a
 working one ;)

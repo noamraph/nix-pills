@@ -97,7 +97,7 @@ created 7 symlinks in user environment
 A profile in Nix is a general and convenient concept for realizing
 rollbacks. Profiles are used to compose components that are spread among
 multiple paths under a new unified path. Not only that, but profiles are
-made up of multiple \"generations\": they are versioned. Whenever you
+made up of multiple "generations": they are versioned. Whenever you
 change a profile, a new generation is created.
 
 Generations can be switched and rolled back atomically, which makes them
@@ -115,7 +115,7 @@ share -> /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-<b>nix-2.1.3</b>/share
 
 
 That nix-2.1.3 derivation in the Nix store is Nix itself, with binaries
-and libraries. The process of \"installing\" the derivation in the
+and libraries. The process of "installing" the derivation in the
 profile basically reproduces the hierarchy of the nix-2.1.3 store
 derivation in the profile by means of symbolic links.
 
@@ -131,7 +131,7 @@ In turn, that's a symlink to `default-1-link` in the same directory.
 Yes, that means it's the first generation of the `default` profile.
 
 Finally, `default-1-link` is a symlink to the nix store
-\"user-environment\" derivation that you saw printed during the
+"user-environment" derivation that you saw printed during the
 installation process.
 
 We'll talk about `manifest.nix` more in the next article.
