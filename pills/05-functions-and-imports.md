@@ -1,7 +1,7 @@
 # Functions and Imports
 
 Welcome to the fifth Nix pill. In the previous [fourth
-pill](#basics-of-language) we touched the Nix language for a moment. We
+pill](04-basics-of-language.md) we touched the Nix language for a moment. We
 introduced basic types and values of the Nix language, and basic
 expressions such as `if`, `with` and `let`. I invite you to re-read
 about these expressions and play with them in the repl.
@@ -41,7 +41,7 @@ As usual, please ignore the special syntax for assignments inside
 `x`, and returns `x*2`. This function is then assigned to the variable
 `double`. Finally we did our first function call: `double 3`.
 
-[Big note:]{.underline} it\'s not like many other programming languages
+Big note: it\'s not like many other programming languages
 where you write `double(3)`. It really is `double 3`.
 
 In summary: to call a function, name the variable, then space, then the

@@ -1,7 +1,7 @@
 # Nix Store Paths
 
 Welcome to the 18th Nix pill. In the previous
-[17th](#nixpkgs-overriding-packages) pill we have scratched the surface
+[17th](17-nixpkgs-overriding-packages.md) pill we have scratched the surface
 of the `nixpkgs` repository structure. It is a set of packages, and
 it\'s possible to override such packages so that all other packages will
 use the overrides.

@@ -3,7 +3,7 @@
 ## Introduction
 
 Welcome to the seventh nix pill. In the previous [sixth
-pill](#our-first-derivation) we introduced the notion of derivation in
+pill](06-our-first-derivation.md) we introduced the notion of derivation in
 the Nix language --- how to define a raw derivation and how to (try to)
 build it.
 
@@ -159,7 +159,7 @@ builder, it\'s also in the input derivations.
 Given that `builder.sh` is a plain file, it has no .drv associated with
 it. The store path is computed based on the filename and on the hash of
 its contents. Store paths are covered in detail in [a later
-pill](#nix-store-paths).
+pill](18-nix-store-paths.md).
 
 ## Packaging a simple C program
 
@@ -260,7 +260,7 @@ Recall that `import` accepts one argument, a nix file to load. In this
 case, the contents of the file evaluate to a function.
 
 Afterwards, we call the function with the empty set. We saw this already
-in [the fifth pill](#functions-and-imports). To reiterate:
+in [the fifth pill](05-functions-and-imports.md). To reiterate:
 `import <nixpkgs> {}` is calling two functions, not one. Reading it as
 `(import <nixpkgs>) {}` makes this clearer.
 

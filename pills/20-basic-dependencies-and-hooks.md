@@ -1,7 +1,7 @@
 # Basic Dependencies and Hooks
 
 Welcome to the 20th Nix pill. In the previous
-[19th](#fundamentals-of-stdenv) pill we introduced Nixpkgs\' stdenv,
+[19th](19-fundamentals-of-stdenv.md) pill we introduced Nixpkgs\' stdenv,
 including `setup.sh` script, `default-builder.sh` helper script, and
 `stdenv.mkDerivation` builder. We focused on how stdenv is put together,
 and how it\'s used, and a bit about the phases of `genericBuild`.
@@ -14,20 +14,20 @@ dependents in ways the dependents can\'t or shouldn\'t predict. For this
 we have setup hooks and env hooks. Together, these 4 concepts support
 almost all build-time package interactions.
 
-::: note
-The complexity of the dependencies and hooks infrastructure has
+<div class="info">
+Note: The complexity of the dependencies and hooks infrastructure has
 increased, over time, to support cross compilation. Once you learn the
 core concepts, you will be able to understand the extra complexity. As a
 starting point, you might want to refer to nixpkgs commit
-[6675f0a5](https://github.com/nixos/nixpkgs/tree/6675f0a52c0962042a1000c7f20e887d0d26ae25),
+<a href="https://github.com/nixos/nixpkgs/tree/6675f0a52c0962042a1000c7f20e887d0d26ae25">6675f0a5</a>,
 the last version of stdenv without cross-compilation complexity.
-:::
+</div>
 
 ## The `buildInputs` Attribute
 
 For the simplest dependencies where the current package directly needs
 another, we use the `buildInputs` attribute. This is exactly the pattern
-used in our builder in [Pill 8](#generic-builders). To demo this, let\'s
+used in our builder in [Pill 8](08-generic-builders.md). To demo this, let\'s
 build GNU Hello, and then another package which provides a shell script
 that `exec`s it.
 
@@ -279,7 +279,7 @@ setup-hooks should only be used as a last resort.
 ## Environment Hooks
 
 As a final convenience, we have environment hooks. Recall in [Pill
-12](#inputs-design-pattern) how we created `NIX_CFLAGS_COMPILE` for `-I`
+12](12-inputs-design-pattern.md) how we created `NIX_CFLAGS_COMPILE` for `-I`
 flags and `NIX_LDFLAGS` for `-L` flags, in a similar manner to how we
 prepared the `PATH`. One point of ugliness was how anti-modular this
 was. It makes sense to build the `PATH` in a generic builder, because

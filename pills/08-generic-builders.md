@@ -1,7 +1,7 @@
 # Generic Builders
 
 Welcome to the 8th Nix pill. In the previous [7th
-pill](#working-derivation) we successfully built a derivation. We wrote
+pill](07-working-derivation.md) we successfully built a derivation. We wrote
 a builder script that compiled a C file and installed the binary under
 the nix store.
 
@@ -54,10 +54,8 @@ And the derivation hello.nix:
       system = builtins.currentSystem;
     }
 
-:::: note
-::: title
-Nix on darwin
-:::
+<div class="info">
+<h4>Nix on darwin</h4>
 
 Darwin (i.e. macOS) builds typically use `clang` rather than `gcc` for a
 C compiler. We can adapt this early example for darwin by using this
@@ -88,7 +86,7 @@ modified version of `hello.nix`:
 Later, we will show how Nix can automatically handle these differences.
 For now, please be just aware that changes similar to the above may be
 needed in what follows.
-::::
+</div>
 
 Now build it with `nix-build hello.nix` and you can launch
 `result/bin/hello`. Nothing easier, but do we have to create a
@@ -96,7 +94,7 @@ builder.sh for each package? Do we always have to pass the dependencies
 to the `derivation` function?
 
 Please note the `--prefix=$out` we were talking about in the [previous
-pill](#working-derivation).
+pill](07-working-derivation.md).
 
 ## A generic builder
 
@@ -225,7 +223,7 @@ Create `autotools.nix`:
     derivation (defaultAttrs // attrs)
 
 Ok now we have to remember a little about [Nix
-functions](#functions-and-imports). The whole nix expression of this
+functions](05-functions-and-imports.md). The whole nix expression of this
 `autotools.nix` file will evaluate to a function. This function accepts
 a parameter `pkgs`, then returns a function which accepts a parameter
 `attrs`.
@@ -310,7 +308,7 @@ in all the packages we would write.
 We are familiarizing ourselves with the way a Nix system grows up: it\'s
 about creating and composing derivations with the Nix language.
 
-[Analogy]{.underline}: in C you create objects in the heap, and then you
+Analogy: in C you create objects in the heap, and then you
 compose them inside new objects. Pointers are used to refer to other
 objects.
 

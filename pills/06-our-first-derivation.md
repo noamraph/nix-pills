@@ -1,7 +1,7 @@
 # Our First Derivation
 
 Welcome to the sixth Nix pill. In the previous [fifth
-pill](#functions-and-imports) we introduced functions and imports.
+pill](05-functions-and-imports.md) we introduced functions and imports.
 Functions and imports are very simple concepts that allow for building
 complex abstractions and composition of modules to build a flexible Nix
 system.
@@ -70,10 +70,10 @@ Both drv paths and out paths are stored in the nix store as you can see.
 What\'s in that `.drv` file? You can read it, but it\'s better to pretty
 print it:
 
-::: note
-If your version of nix doesn\'t have `nix derivation show`, use
+<div class="info">
+Note: If your version of nix doesn\'t have `nix derivation show`, use
 `nix show-derivation` instead.
-:::
+</div>
 
 \<screen xmlns=\"http://docbook.org/ns/docbook\"\>\<prompt\>\$
 \</prompt\>\<userinput\>nix derivation show
@@ -97,7 +97,7 @@ Nix, we would have to wait a long time if it was, say, Firefox. That\'s
 why Nix let us know the path beforehand and kept evaluating the Nix
 expressions, but it\'s still empty because no build was ever made.
 
-[Important]{.underline}: the hash of the out path is based solely on the
+Important: the hash of the out path is based solely on the
 input derivations in the current version of Nix, not on the contents of
 the build product. It\'s possible however to have
 [content-addressable](https://en.wikipedia.org/wiki/Content-addressable_storage)
@@ -119,7 +119,7 @@ the [.drv format](http://nixos.org/~eelco/pubs/phd-thesis.pdf) for you:
 
 That\'s it, the minimum necessary information to build our derivation.
 
-[Important note]{.underline}: the environment variables passed to the
+Important note: the environment variables passed to the
 builder are just those you see in the .drv plus some other Nix related
 configuration (number of cores, temp dir, \...). The builder will not
 inherit any variable from your running shell, otherwise builds would
@@ -282,7 +282,7 @@ always exits with 0 (success).
 Another step forward, it executed the builder (bin/true), but the
 builder did not create the out path of course, it just exited with 0.
 
-[Obvious note]{.underline}: every time we change the derivation, a new
+Obvious note: every time we change the derivation, a new
 hash is created.
 
 Let\'s examine the new `.drv` now that we referred to another

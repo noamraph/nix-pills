@@ -1,7 +1,7 @@
 # Nix Search Paths
 
 Welcome to the 15th Nix pill. In the previous
-[14th](#override-design-pattern) pill we have introduced the
+[14th](14-override-design-pattern.md) pill we have introduced the
 \"override\" pattern, useful for writing variants of derivations by
 passing different inputs.
 

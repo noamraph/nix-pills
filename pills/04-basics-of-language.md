@@ -1,7 +1,7 @@
 # The Basics of the Language {#basics-of-language}
 
 Welcome to the fourth Nix pill. In the [previous
-article](#enter-environment) we learned about Nix environments. We
+article](03-enter-environment.md) we learned about Nix environments. We
 installed software as a user, managed their profile, switched between
 generations, and queried the Nix store. Those are the very basics of
 system administration using Nix.

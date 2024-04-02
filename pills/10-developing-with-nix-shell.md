@@ -1,7 +1,7 @@
 # Developing with `nix-shell`
 
 Welcome to the 10th Nix pill. In the previous [9th
-pill](#automatic-runtime-dependencies) we saw one of the powerful
+pill](09-automatic-runtime.md) we saw one of the powerful
 features of Nix: automatic discovery of runtime dependencies. We also
 finalized the GNU `hello` package.
 

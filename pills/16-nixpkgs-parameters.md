@@ -1,6 +1,6 @@
 # Nixpkgs Parameters
 
-Welcome to the 16th Nix pill. In the previous [15th](#nix-search-paths)
+Welcome to the 16th Nix pill. In the previous [15th](15-nix-search-paths.md)
 pill we\'ve realized how nix finds expressions with the angular brackets
 syntax, so that we finally know where `<nixpkgs>` is located on our
 system.

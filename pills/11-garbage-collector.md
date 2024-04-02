@@ -1,7 +1,7 @@
 # The Garbage Collector {#garbage-collector}
 
 Welcome to the 11th Nix pill. In the previous [10th
-pill](#developing-with-nix-shell), we drew a parallel between the
+pill](10-developing-with-nix-shell.md), we drew a parallel between the
 isolated build environment provided by `nix-build` and the isolated
 development shell provided by `nix-shell`. Using `nix-shell` allowed us
 to debug, modify, and manually build software using an environment that
@@ -108,7 +108,7 @@ refers to `bsd-games`, run the garbage collector, and note that
     $ ls /nix/store/b3lxx3d3ggxcggvjw5n0m1ya1gcrmbyn-bsd-games-2.17
     ls: cannot access /nix/store/b3lxx3d3ggxcggvjw5n0m1ya1gcrmbyn-bsd-games-2.17: No such file or directory
 
-[Note]{.underline}: `nix-env --list-generations` does not rely on any
+Note: `nix-env --list-generations` does not rely on any
 particular metadata. It is able to list generations based solely on the
 file names under the profiles directory.
 

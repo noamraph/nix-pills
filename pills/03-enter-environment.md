@@ -1,7 +1,7 @@
 # Enter the Environment {#enter-environment}
 
 Welcome to the third Nix pill. In the [second
-pill](#install-on-your-running-system) we installed Nix on our running
+pill](02-install-on-your-running.md) we installed Nix on our running
 system. Now we can finally play with it a little, these things also
 apply to NixOS users.
 
@@ -234,7 +234,7 @@ The second option is to install Nix, thus creating a new generation:
 ## Channels
 
 So where are we getting packages from? We said something about this
-already in the [second article](#install-on-your-running-system).
+already in the [second article](02-install-on-your-running.md).
 There\'s a list of channels from which we get packages, although usually
 we use a single channel. The tool to manage channels is
 [nix-channel](https://nixos.org/manual/nix/stable/command-ref/nix-channel.html).
@@ -248,9 +248,11 @@ name begins with \"nixos-\" instead of \"nixpkgs\".
 
 That\'s essentially the contents of `~/.nix-channels`.
 
-::: note
-`~/.nix-channels` is not a symlink to the nix store!
-:::
+<div class="info">
+
+Note: `~/.nix-channels` is not a symlink to the nix store!
+
+</div>
 
 To update the channel run `nix-channel --update`. That will download the
 new Nix expressions (descriptions of the packages), create a new

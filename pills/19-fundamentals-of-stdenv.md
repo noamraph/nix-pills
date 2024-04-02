@@ -1,6 +1,6 @@
 # Fundamentals of Stdenv
 
-Welcome to the 19th Nix pill. In the previous [18th](#nix-store-paths)
+Welcome to the 19th Nix pill. In the previous [18th](18-nix-store-paths.md)
 pill we dived into the algorithm used by Nix to compute the store paths,
 and also introduced fixed-output store paths.
 
@@ -52,7 +52,7 @@ somehow. In fact, they are hardcoded in the `/setup` file:
 
 ## The setup file
 
-Remember our generic `builder.sh` in [Pill 8](#generic-builders)? It
+Remember our generic `builder.sh` in [Pill 8](08-generic-builders.md)? It
 sets up a basic `PATH`, unpacks the source and runs the usual autotools
 commands for us.
 
@@ -124,7 +124,7 @@ Let\'s write a `hello.nix` expression using this newly discovered
 
 Don\'t be scared by the `with` expression. It pulls the `nixpkgs`
 repository into scope, so we can directly use `stdenv`. It looks very
-similar to the hello expression in [Pill 8](#generic-builders).
+similar to the hello expression in [Pill 8](08-generic-builders.md).
 
 It builds, and runs fine:
 
@@ -164,7 +164,7 @@ and see what it does:
     source $stdenv/setup
     genericBuild
 
-It\'s what we did in [Pill 10](#developing-with-nix-shell) to make the
+It\'s what we did in [Pill 10](10-developing-with-nix-shell.md) to make the
 derivations `nix-shell` friendly. When entering the shell, the setup
 file only sets up the environment without building anything. When doing
 `nix-build`, it actually runs the build process.

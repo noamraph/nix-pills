@@ -1,16 +1,16 @@
 # Install on Your Running System
 
 Welcome to the second Nix pill. In the
-[first](#why-you-should-give-it-a-try) pill we briefly described Nix.
+[first](01-why-you-should-give-it-try.md) pill we briefly described Nix.
 
 Now we\'ll install Nix on our running system and understand what changed
 in our system after the installation. **If you\'re using NixOS, Nix is
-already installed; you can skip to the [next](#enter-environment)
+already installed; you can skip to the [next](03-enter-environment.md)
 pill.**
 
 For installation instructions, please refer to the Nix Reference Manual
 on [ Installing
-Nix](https://nixos.org/manual/nix/stable/installation/installation.html).
+Nix](https://nixos.org/manual/nix/stable/installation/installing-binary.html).
 
 ## Installation
 
@@ -22,13 +22,15 @@ derivations which are themselves in the Nix store. They don\'t use
 `libc` from our system or anywhere else. It\'s a self-contained store of
 all the software we need to bootstrap up to any particular package.
 
-::: note
-In a multi-user installation, such as the one used in NixOS, the store
+<div class="info">
+
+Note: In a multi-user installation, such as the one used in NixOS, the store
 is owned by root and multiple users can install and build software
 through a Nix daemon. You can read more about multi-user installations
 here:
 <https://nixos.org/manual/nix/stable/installation/installing-binary.html#multi-user-installation>.
-:::
+
+</div>
 
 ## The beginnings of the Nix store
 
@@ -65,16 +67,21 @@ You can inspect the database by installing sqlite
 (`nix-env -iA sqlite -f '<nixpkgs>'`) and then running
 `sqlite3 /nix/var/nix/db/db.sqlite`.
 
-::: note
-If this is the first time you\'re using Nix after the initial
+<div class="info">
+
+Note: If this is the first time you\'re using Nix after the initial
 installation, remember you must close and open your terminals first, so
 that your shell environment will be updated.
-:::
 
-::: important
-Never change `/nix/store` manually. If you do, then it will no longer be
+</div>
+
+
+<div class="warning">
+
+Important: Never change `/nix/store` manually. If you do, then it will no longer be
 in sync with the sqlite db, unless you *really* know what you are doing.
-:::
+
+</div>
 
 ## The first profile
 

@@ -1,7 +1,7 @@
 # Override Design Pattern
 
 Welcome to the 14th Nix pill. In the previous
-[13th](#callpackage-design-pattern) pill, we introduced the
+[13th](13-callpackage-design-pattern.md) pill, we introduced the
 `callPackage` pattern and used it to simplify the composition of
 software in a repository.
 
@@ -39,7 +39,7 @@ difficult. But we try to do our best.
 
 ## The override pattern
 
-In [pill 12](#inputs-design-pattern) we introduced the inputs design
+In [pill 12](12-inputs-design-pattern.md) we introduced the inputs design
 pattern. We do not return a derivation picking dependencies directly
 from the repository; rather we declare the inputs and let the callers
 pass the necessary arguments.
@@ -81,7 +81,7 @@ and add our overrides like so:
 
 The difference is obvious, as well as the advantages of this approach.
 
-[Note:]{.underline} that `.override` is not a \"method\" in the OO sense
+Note: that `.override` is not a \"method\" in the OO sense
 as you may think. Nix is a functional language. The`.override` is simply
 an attribute of a set.
 
