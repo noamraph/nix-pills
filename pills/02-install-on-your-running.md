@@ -88,11 +88,11 @@ in sync with the sqlite db, unless you *really* know what you are doing.
 Next in the installation, we encounter the concept of the
 [profile](https://nixos.org/manual/nix/stable/package-management/profiles.html):
 
-\<screen\>creating /home/nix/.nix-profile installing \'nix-2.1.3\'
-building path(s)
-\`/nix/store/a7p1w3z2h8pl00ywvw6icr3g5l9vm5r7-\<emphasis
-role=\"strong\"\>user-environment\</emphasis\>\' created 7 symlinks in
-user environment\</screen\>
+<pre><code class="hljs">creating /home/nix/.nix-profile
+installing 'nix-2.1.3'
+building path(s) `/nix/store/a7p1w3z2h8pl00ywvw6icr3g5l9vm5r7-<b>user-environment</b>'
+created 7 symlinks in user environment
+</code></pre>
 
 A profile in Nix is a general and convenient concept for realizing
 rollbacks. Profiles are used to compose components that are spread among
@@ -105,13 +105,14 @@ convenient for managing changes to your system.
 
 Let\'s take a closer look at our profile:
 
-\<screen\>\$ ls -l \~/.nix-profile/ bin -\>
-/nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-\<emphasis
-role=\"strong\"\>nix-2.1.3\</emphasis\>/bin \[\...\] manifest.nix -\>
-/nix/store/q8b5238akq07lj9gfb3qb5ycq4dxxiwm-\<emphasis
-role=\"strong\"\>env-manifest.nix\</emphasis\> \[\...\] share -\>
-/nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-\<emphasis
-role=\"strong\"\>nix-2.1.3\</emphasis\>/share\</screen\>
+<pre><code class="hljs">$ ls -l ~/.nix-profile/
+bin -> /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-<b>nix-2.1.3</b>/bin
+[...]
+manifest.nix -> /nix/store/q8b5238akq07lj9gfb3qb5ycq4dxxiwm-<b>env-manifest.nix</b>
+[...]
+share -> /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-<b>nix-2.1.3</b>/share
+</code></pre>
+
 
 That nix-2.1.3 derivation in the Nix store is Nix itself, with binaries
 and libraries. The process of \"installing\" the derivation in the
