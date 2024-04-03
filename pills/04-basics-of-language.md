@@ -8,13 +8,13 @@ The syntax of Nix is quite unfamiliar, so looking at existing examples may lead 
 
 On the other hand, the same syntax is great for describing packages, so learning the language itself will pay off when writing package expressions.
 
-::: important
-In Nix, everything is an expression, there are no statements. This is common in functional languages.
-:::
+<div class="info">
+Important: In Nix, everything is an expression, there are no statements. This is common in functional languages.
+</div>
 
-::: important
-Values in Nix are immutable.
-:::
+<div class="info">
+Important: Values in Nix are immutable.
+</div>
 
 ## Value types
 
@@ -93,7 +93,7 @@ As said previously, you cannot mix integers and strings. You need to explicitly 
 Using the syntax with two single quotes is useful for writing double quotes inside strings without needing to escape them:
 
     nix-repl> ''test " test''
-    "test " test"
+    "test \" test"
     nix-repl> ''${foo}''
     "strval"
 

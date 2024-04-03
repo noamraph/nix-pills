@@ -235,7 +235,7 @@ Functions listed in `envHooks` are applied to every package passed to `addToEnv`
     anEnvHook() {
         local pkg=$1
 
-        echo "I'm depending on "$pkg""
+        echo "I'm depending on \"$pkg\""
     }
 
     envHooks+=(anEnvHook)
