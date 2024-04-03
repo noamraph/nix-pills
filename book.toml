@@ -1,0 +1,6 @@
+[book]
+authors = ["Luca Bruno"]
+language = "en"
+multilingual = false
+src = "pills"
+title = "Nix Pills"
