@@ -148,6 +148,12 @@
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        <a href="https://github.com/NixOS/nix-pills" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/NixOS/nix-pills/tree/master/pills/17-nixpkgs-overriding-packages.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -175,68 +181,47 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="nixpkgs-overriding-packages"><a class="header" href="#nixpkgs-overriding-packages">Nixpkgs Overriding Packages</a></h1>
-<p>Welcome to the 17th Nix pill. In the previous
-<a href="16-nixpkgs-parameters.html">16th</a> pill we have started to dive into the
-<a href="http://github.com/NixOS/nixpkgs">nixpkgs repository</a>. <code>Nixpkgs</code> is a
-function, and we've looked at some parameters like <code>system</code> and
-<code>config</code>.</p>
-<p>Today we'll talk about a special attribute: <code>config.packageOverrides</code>.
-Overriding packages in a set with fixed point can be considered another
-design pattern in nixpkgs.</p>
+<p>Welcome to the 17th Nix pill. In the previous <a href="16-nixpkgs-parameters.html">16th</a> pill we have started to dive into the <a href="http://github.com/NixOS/nixpkgs">nixpkgs repository</a>. <code>Nixpkgs</code> is a function, and we've looked at some parameters like <code>system</code> and <code>config</code>.</p>
+<p>Today we'll talk about a special attribute: <code>config.packageOverrides</code>. Overriding packages in a set with fixed point can be considered another design pattern in nixpkgs.</p>
 <h2 id="overriding-a-package"><a class="header" href="#overriding-a-package">Overriding a package</a></h2>
-<p>Recall the override design pattern from the <a href="14-override-design-pattern.html">nix pill
-14</a>. Instead of calling a function with
-parameters directly, we make the call (function + parameters)
-overridable.</p>
-<p>We put the override function in the returned attribute set of the
-original function call.</p>
-<p>Take for example graphviz. It has an input parameter xorg. If it's
-null, then graphviz will build without X support.</p>
-<pre><code>$ nix repl
+<p>Recall the override design pattern from the <a href="14-override-design-pattern.html">nix pill 14</a>. Instead of calling a function with parameters directly, we make the call (function + parameters) overridable.</p>
+<p>We put the override function in the returned attribute set of the original function call.</p>
+<p>Take for example graphviz. It has an input parameter xorg. If it's null, then graphviz will build without X support.</p>
+<pre><code class="language-console">$ nix repl
 nix-repl&gt; :l &lt;nixpkgs&gt;
 Added 4360 variables.
 nix-repl&gt; :b graphviz.override { withXorg = false; }
 </code></pre>
 <p>This will build graphviz without X support, it's as simple as that.</p>
-<p>However, let's say a package <code>P</code> depends on graphviz, how do we make
-<code>P</code> depend on the new graphviz without X support?</p>
+<p>However, let's say a package <code>P</code> depends on graphviz, how do we make <code>P</code> depend on the new graphviz without X support?</p>
 <h2 id="in-an-imperative-world"><a class="header" href="#in-an-imperative-world">In an imperative world...</a></h2>
 <p>...you could do something like this:</p>
-<pre><code>pkgs = import &lt;nixpkgs&gt; {};
+<pre><code class="language-nix">pkgs = import &lt;nixpkgs&gt; {};
 pkgs.graphviz = pkgs.graphviz.override { withXorg = false; };
 build(pkgs.P)
 </code></pre>
-<p>Given <code>pkgs.P</code> depends on <code>pkgs.graphviz</code>, it's easy to build <code>P</code> with
-the replaced graphviz. In a pure functional language it's not that easy
-because you can assign to variables only once.</p>
+<p>Given <code>pkgs.P</code> depends on <code>pkgs.graphviz</code>, it's easy to build <code>P</code> with the replaced graphviz. In a pure functional language it's not that easy because you can assign to variables only once.</p>
 <h2 id="fixed-point"><a class="header" href="#fixed-point">Fixed point</a></h2>
-<p>The fixed point with lazy evaluation is crippling but about necessary in
-a language like Nix. It lets us achieve something similar to what we'd
-do imperatively.</p>
-<p>Follows the definition of fixed point in
-<a href="https://github.com/NixOS/nixpkgs/blob/f224a4f1b32b3e813783d22de54e231cd8ea2448/lib/fixed-points.nix#L19">nixpkgs</a>:</p>
-<pre><code>{
-  # Take a function and evaluate it with its own returned value.
-  fix =
+<p>The fixed point with lazy evaluation is crippling but about necessary in a language like Nix. It lets us achieve something similar to what we'd do imperatively.</p>
+<p>Follows the definition of fixed point in <a href="https://github.com/NixOS/nixpkgs/blob/f224a4f1b32b3e813783d22de54e231cd8ea2448/lib/fixed-points.nix#L19">nixpkgs</a>:</p>
+<pre><code class="language-nix">{
+    # Take a function and evaluate it with its own returned value.
+    fix =
     f:
     let
-      result = f result;
+        result = f result;
     in
     result;
 }
 </code></pre>
-<p>It's a function that accepts a function <code>f</code>, calls <code>f result</code> on the
-result just returned by <code>f result</code> and returns it. In other words it's
-<code>f(f(f(....</code></p>
-<p>At first sight, it's an infinite loop. With lazy evaluation it isn't,
-because the call is done only when needed.</p>
-<pre><code>nix-repl&gt; fix = f: let result = f result; in result
+<p>It's a function that accepts a function <code>f</code>, calls <code>f result</code> on the result just returned by <code>f result</code> and returns it. In other words it's <code>f(f(f(....</code></p>
+<p>At first sight, it's an infinite loop. With lazy evaluation it isn't, because the call is done only when needed.</p>
+<pre><code class="language-console">nix-repl&gt; fix = f: let result = f result; in result
 nix-repl&gt; pkgs = self: { a = 3; b = 4; c = self.a+self.b; }
 nix-repl&gt; fix pkgs
 { a = 3; b = 4; c = 7; }
 </code></pre>
-<p>Without the <code>rec</code> keyword, we were able to refer to <code>a</code> and <code>b</code> of the
-same set.</p>
+<p>Without the <code>rec</code> keyword, we were able to refer to <code>a</code> and <code>b</code> of the same set.</p>
 <ul>
 <li>
 <p>First <code>pkgs</code> gets called with an unevaluated thunk <code>(pkgs(pkgs(...)</code></p>
@@ -245,80 +230,49 @@ same set.</p>
 <p>To set the value of <code>c</code> then <code>self.a</code> and <code>self.b</code> are evaluated.</p>
 </li>
 <li>
-<p>The <code>pkgs</code> function gets called again to get the value of <code>a</code> and
-<code>b</code>.</p>
+<p>The <code>pkgs</code> function gets called again to get the value of <code>a</code> and <code>b</code>.</p>
 </li>
 </ul>
-<p>The trick is that <code>c</code> is not needed to be evaluated in the inner call,
-thus it doesn't go in an infinite loop.</p>
-<p>Won't go further with the explanation here. A good post about fixed
-point and Nix can be <a href="http://r6.ca/blog/20140422T142911Z.html">found
-here</a>.</p>
+<p>The trick is that <code>c</code> is not needed to be evaluated in the inner call, thus it doesn't go in an infinite loop.</p>
+<p>Won't go further with the explanation here. A good post about fixed point and Nix can be <a href="http://r6.ca/blog/20140422T142911Z.html">found here</a>.</p>
 <h3 id="overriding-a-set-with-fixed-point"><a class="header" href="#overriding-a-set-with-fixed-point">Overriding a set with fixed point</a></h3>
-<p>Given that <code>self.a</code> and <code>self.b</code> refer to the passed set and not to the
-literal set in the function, we're able to override both <code>a</code> and <code>b</code>
-and get a new value for <code>c</code>:</p>
-<pre><code>nix-repl&gt; overrides = { a = 1; b = 2; }
+<p>Given that <code>self.a</code> and <code>self.b</code> refer to the passed set and not to the literal set in the function, we're able to override both <code>a</code> and <code>b</code> and get a new value for <code>c</code>:</p>
+<pre><code class="language-console">nix-repl&gt; overrides = { a = 1; b = 2; }
 nix-repl&gt; let newpkgs = pkgs (newpkgs // overrides); in newpkgs
 { a = 3; b = 4; c = 3; }
 nix-repl&gt; let newpkgs = pkgs (newpkgs // overrides); in newpkgs // overrides
 { a = 1; b = 2; c = 3; }
 </code></pre>
-<p>In the first case we computed pkgs with the overrides, in the second
-case we also included the overridden attributes in the result.</p>
+<p>In the first case we computed pkgs with the overrides, in the second case we also included the overridden attributes in the result.</p>
 <h2 id="overriding-nixpkgs-packages"><a class="header" href="#overriding-nixpkgs-packages">Overriding nixpkgs packages</a></h2>
-<p>We've seen how to override attributes in a set such that they get
-recursively picked by dependent attributes. This approach can be used
-for derivations too, after all <code>nixpkgs</code> is a giant set of attributes
-that depend on each other.</p>
-<p>To do this, <code>nixpkgs</code> offers <code>config.packageOverrides</code>. So <code>nixpkgs</code>
-returns a fixed point of the package set, and <code>packageOverrides</code> is used
-to inject the overrides.</p>
+<p>We've seen how to override attributes in a set such that they get recursively picked by dependent attributes. This approach can be used for derivations too, after all <code>nixpkgs</code> is a giant set of attributes that depend on each other.</p>
+<p>To do this, <code>nixpkgs</code> offers <code>config.packageOverrides</code>. So <code>nixpkgs</code> returns a fixed point of the package set, and <code>packageOverrides</code> is used to inject the overrides.</p>
 <p>Create a <code>config.nix</code> file like this somewhere:</p>
-<pre><code>{
-  packageOverrides = pkgs: {
+<pre><code class="language-nix">{
+    packageOverrides = pkgs: {
     graphviz = pkgs.graphviz.override {
-      # disable xorg support
-      withXorg = false;
+        # disable xorg support
+        withXorg = false;
     };
-  };
+    };
 }
 </code></pre>
-<p>Now we can build e.g. asciidoc-full and it will automatically use the
-overridden graphviz:</p>
-<pre><code>nix-repl&gt; pkgs = import &lt;nixpkgs&gt; { config = import ./config.nix; }
+<p>Now we can build e.g. asciidoc-full and it will automatically use the overridden graphviz:</p>
+<pre><code class="language-console">nix-repl&gt; pkgs = import &lt;nixpkgs&gt; { config = import ./config.nix; }
 nix-repl&gt; :b pkgs.asciidoc-full
 </code></pre>
-<p>Note how we pass the <code>config</code> with <code>packageOverrides</code> when importing
-<code>nixpkgs</code>. Then <code>pkgs.asciidoc-full</code> is a derivation that has graphviz
-input (<code>pkgs.asciidoc</code> is the lighter version and doesn't use graphviz
-at all).</p>
-<p>Since there's no version of asciidoc with graphviz without X support in
-the binary cache, Nix will recompile the needed stuff for you.</p>
+<p>Note how we pass the <code>config</code> with <code>packageOverrides</code> when importing <code>nixpkgs</code>. Then <code>pkgs.asciidoc-full</code> is a derivation that has graphviz input (<code>pkgs.asciidoc</code> is the lighter version and doesn't use graphviz at all).</p>
+<p>Since there's no version of asciidoc with graphviz without X support in the binary cache, Nix will recompile the needed stuff for you.</p>
 <h2 id="the-confignixpkgsconfignix-file"><a class="header" href="#the-confignixpkgsconfignix-file">The ~/.config/nixpkgs/config.nix file</a></h2>
-<p>In the previous pill we already talked about this file. The above
-<code>config.nix</code> that we just wrote could be the content of
-<code>~/.config/nixpkgs/config.nix</code> (or the deprecated location
-<code>~/.nixpkgs/config.nix</code>).</p>
-<p>Instead of passing it explicitly whenever we import <code>nixpkgs</code>, it will
-be automatically <a href="https://github.com/NixOS/nixpkgs/blob/32c523914fdb8bf9cc7912b1eba023a8daaae2e8/pkgs/top-level/impure.nix#L28">imported by
-nixpkgs</a>.</p>
+<p>In the previous pill we already talked about this file. The above <code>config.nix</code> that we just wrote could be the content of <code>~/.config/nixpkgs/config.nix</code> (or the deprecated location <code>~/.nixpkgs/config.nix</code>).</p>
+<p>Instead of passing it explicitly whenever we import <code>nixpkgs</code>, it will be automatically <a href="https://github.com/NixOS/nixpkgs/blob/32c523914fdb8bf9cc7912b1eba023a8daaae2e8/pkgs/top-level/impure.nix#L28">imported by nixpkgs</a>.</p>
 <h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
-<p>We've learned about a new design pattern: using fixed point for
-overriding packages in a package set.</p>
-<p>Whereas in an imperative setting, like with other package managers, a
-library is installed replacing the old version and applications will use
-it, in Nix it's not that straight and simple. But it's more precise.</p>
-<p>Nix applications will depend on specific versions of libraries, hence
-the reason why we have to recompile asciidoc to use the new graphviz
-library.</p>
-<p>The newly built asciidoc will depend on the new graphviz, and old
-asciidoc will keep using the old graphviz undisturbed.</p>
+<p>We've learned about a new design pattern: using fixed point for overriding packages in a package set.</p>
+<p>Whereas in an imperative setting, like with other package managers, a library is installed replacing the old version and applications will use it, in Nix it's not that straight and simple. But it's more precise.</p>
+<p>Nix applications will depend on specific versions of libraries, hence the reason why we have to recompile asciidoc to use the new graphviz library.</p>
+<p>The newly built asciidoc will depend on the new graphviz, and old asciidoc will keep using the old graphviz undisturbed.</p>
 <h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
-<p>...we will stop studying <code>nixpkgs</code> for a moment and talk about store
-paths. How does Nix compute the path in the store where to place the
-result of builds? How to add files to the store for which we have an
-integrity hash?</p>
+<p>...we will stop studying <code>nixpkgs</code> for a moment and talk about store paths. How does Nix compute the path in the store where to place the result of builds? How to add files to the store for which we have an integrity hash?</p>
 
                     </main>
 

@@ -148,6 +148,12 @@
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        <a href="https://github.com/NixOS/nix-pills" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/NixOS/nix-pills/tree/master/pills/03-enter-environment.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -175,29 +181,18 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="enter-environment"><a class="header" href="#enter-environment">Enter the Environment</a></h1>
-<p>Welcome to the third Nix pill. In the <a href="02-install-on-your-running.html">second
-pill</a> we installed Nix on our running
-system. Now we can finally play with it a little, these things also
-apply to NixOS users.</p>
+<p>Welcome to the third Nix pill. In the <a href="02-install-on-your-running.html">second pill</a> we installed Nix on our running system. Now we can finally play with it a little, these things also apply to NixOS users.</p>
 <h2 id="enter-the-environment"><a class="header" href="#enter-the-environment">Enter the environment</a></h2>
-<p><strong>If you're using NixOS, you can skip to the <a href="#install-something">next</a>
-step.</strong></p>
-<p>In the previous article we created a Nix user, so let's start by
-switching to it with <code>su - nix</code>. If your <code>~/.profile</code> got evaluated,
-then you should now be able to run commands like <code>nix-env</code> and
-<code>nix-store</code>.</p>
+<p><strong>If you're using NixOS, you can skip to the <a href="#install-something">next</a> step.</strong></p>
+<p>In the previous article we created a Nix user, so let's start by switching to it with <code>su - nix</code>. If your <code>~/.profile</code> got evaluated, then you should now be able to run commands like <code>nix-env</code> and <code>nix-store</code>.</p>
 <p>If that's not the case:</p>
-<pre><code>$ source ~/.nix-profile/etc/profile.d/nix.sh
+<pre><code class="language-console">$ source ~/.nix-profile/etc/profile.d/nix.sh
 </code></pre>
-<p>To remind you, <code>~/.nix-profile/etc</code> points to the <code>nix-2.1.3</code>
-derivation. At this point, we are in our Nix user profile.</p>
+<p>To remind you, <code>~/.nix-profile/etc</code> points to the <code>nix-2.1.3</code> derivation. At this point, we are in our Nix user profile.</p>
 <h2 id="install-something"><a class="header" href="#install-something">Install something</a></h2>
-<p>Finally something practical! Installation into the Nix environment is an
-interesting process. Let's install <code>hello</code>, a simple CLI tool which
-prints <code>Hello world</code> and is mainly used to test compilers and package
-installations.</p>
+<p>Finally something practical! Installation into the Nix environment is an interesting process. Let's install <code>hello</code>, a simple CLI tool which prints <code>Hello world</code> and is mainly used to test compilers and package installations.</p>
 <p>Back to the installation:</p>
-<pre><code>$ nix-env -i hello
+<pre><code class="language-console">$ nix-env -i hello
 installing 'hello-2.10'
 [...]
 building '/nix/store/0vqw0ssmh6y5zj48yg34gc6macr883xk-user-environment.drv'...
@@ -209,52 +204,36 @@ created 36 symlinks in user environment
 <p>We installed software as a user, and only for the Nix user.</p>
 </li>
 <li>
-<p>It created a new user environment. That's a new generation of our
-Nix user profile.</p>
+<p>It created a new user environment. That's a new generation of our Nix user profile.</p>
 </li>
 <li>
-<p>The
-<a href="https://nixos.org/manual/nix/stable/command-ref/nix-env.html">nix-env</a>
-tool manages environments, profiles and their generations.</p>
+<p>The <a href="https://nixos.org/manual/nix/stable/command-ref/nix-env.html">nix-env</a> tool manages environments, profiles and their generations.</p>
 </li>
 <li>
-<p>We installed <code>hello</code> by derivation name minus the version. I repeat:
-we specified the <strong>derivation name</strong> (minus the version) to install
-it.</p>
+<p>We installed <code>hello</code> by derivation name minus the version. I repeat: we specified the <strong>derivation name</strong> (minus the version) to install it.</p>
 </li>
 </ul>
 <p>We can list generations without walking through the <code>/nix</code> hierarchy:</p>
-<pre><code>$ nix-env --list-generations
-   1   2014-07-24 09:23:30
-   2   2014-07-25 08:45:01   (current)
+<pre><code class="language-console">$ nix-env --list-generations
+    1   2014-07-24 09:23:30
+    2   2014-07-25 08:45:01   (current)
 </code></pre>
 <p>Listing installed derivations:</p>
-<pre><code>$ nix-env -q
+<pre><code class="language-console">$ nix-env -q
 nix-2.1.3
 hello-2.10
 </code></pre>
-<p>So, where did <code>hello</code> really get installed? <code>which hello</code> is
-<code>~/.nix-profile/bin/hello</code> which points to the store. We can also list
-the derivation paths with <code>nix-env -q --out-path</code>. So that's what those
-derivation paths are called: the <strong>output</strong> of a build.</p>
+<p>So, where did <code>hello</code> really get installed? <code>which hello</code> is <code>~/.nix-profile/bin/hello</code> which points to the store. We can also list the derivation paths with <code>nix-env -q --out-path</code>. So that's what those derivation paths are called: the <strong>output</strong> of a build.</p>
 <h2 id="path-merging"><a class="header" href="#path-merging">Path merging</a></h2>
-<p>At this point you probably want to run <code>man</code> to get some documentation.
-Even if you already have man system-wide outside of the Nix environment,
-you can install and use it within Nix with <code>nix-env -i man-db</code>. As
-usual, a new generation will be created, and <code>~/.nix-profile</code> will point
-to it.</p>
-<p>Let's inspect the
-<a href="https://nixos.org/manual/nix/stable/package-management/profiles.html">profile</a>
-a bit:</p>
-<pre><code>$ ls -l ~/.nix-profile/
+<p>At this point you probably want to run <code>man</code> to get some documentation. Even if you already have man system-wide outside of the Nix environment, you can install and use it within Nix with <code>nix-env -i man-db</code>. As usual, a new generation will be created, and <code>~/.nix-profile</code> will point to it.</p>
+<p>Let's inspect the <a href="https://nixos.org/manual/nix/stable/package-management/profiles.html">profile</a> a bit:</p>
+<pre><code class="language-console">$ ls -l ~/.nix-profile/
 dr-xr-xr-x 2 nix nix 4096 Jan  1  1970 bin
 lrwxrwxrwx 1 nix nix   55 Jan  1  1970 etc -&gt; /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-nix-2.1.3/etc
 [...]
 </code></pre>
-<p>Now that's interesting. When only <code>nix-2.1.3</code> was installed, <code>bin</code> was
-a symlink to <code>nix-2.1.3</code>. Now that we've actually installed some things
-(<code>man</code>, <code>hello</code>), it's a real directory, not a symlink.</p>
-<pre><code>$ ls -l ~/.nix-profile/bin/
+<p>Now that's interesting. When only <code>nix-2.1.3</code> was installed, <code>bin</code> was a symlink to <code>nix-2.1.3</code>. Now that we've actually installed some things (<code>man</code>, <code>hello</code>), it's a real directory, not a symlink.</p>
+<pre><code class="language-console">$ ls -l ~/.nix-profile/bin/
 [...]
 man -&gt; /nix/store/83cn9ing5sc6644h50dqzzfxcs07r2jn-man-1.6g/bin/man
 [...]
@@ -263,152 +242,88 @@ nix-env -&gt; /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-nix-2.1.3/bin/nix-env
 hello -&gt; /nix/store/58r35bqb4f3lxbnbabq718svq9i2pda3-hello-2.10/bin/hello
 [...]
 </code></pre>
-<p>Okay, that's clearer now. <code>nix-env</code> merged the paths from the installed
-derivations. <code>which man</code> points to the Nix profile, rather than the
-system <code>man</code>, because <code>~/.nix-profile/bin</code> is at the head of <code>$PATH</code>.</p>
+<p>Okay, that's clearer now. <code>nix-env</code> merged the paths from the installed derivations. <code>which man</code> points to the Nix profile, rather than the system <code>man</code>, because <code>~/.nix-profile/bin</code> is at the head of <code>$PATH</code>.</p>
 <h2 id="rolling-back-and-switching-generation"><a class="header" href="#rolling-back-and-switching-generation">Rolling back and switching generation</a></h2>
-<p>The last command installed <code>man</code>. We should be at generation 3, unless
-you changed something in the middle. Let's say we want to rollback to
-the old generation:</p>
-<pre><code>$ nix-env --rollback
+<p>The last command installed <code>man</code>. We should be at generation 3, unless you changed something in the middle. Let's say we want to rollback to the old generation:</p>
+<pre><code class="language-console">$ nix-env --rollback
 switching from generation 3 to 2
 </code></pre>
-<p>Now <code>nix-env -q</code> does not list <code>man</code> anymore. <code>ls -l `which man`</code>
-should now be your system copy.</p>
+<p>Now <code>nix-env -q</code> does not list <code>man</code> anymore. <code>ls -l `which man`</code> should now be your system copy.</p>
 <p>Enough with the rollback, let's go back to the most recent generation:</p>
-<pre><code>$ nix-env -G 3
+<pre><code class="language-console">$ nix-env -G 3
 switching from generation 2 to 3
 </code></pre>
-<p>I invite you to read the manpage of <code>nix-env</code>. <code>nix-env</code> requires an
-operation to perform, then there are common options for all operations,
-as well as options specific to each operation.</p>
-<p>You can of course also <a href="https://nixos.org/manual/nix/stable/command-ref/nix-env.html#operation---uninstall">
-uninstall</a>
-and
-<a href="https://nixos.org/manual/nix/stable/command-ref/nix-env.html#operation---upgrade">upgrade</a>
-packages.</p>
+<p>I invite you to read the manpage of <code>nix-env</code>. <code>nix-env</code> requires an operation to perform, then there are common options for all operations, as well as options specific to each operation.</p>
+<p>You can of course also <a href="https://nixos.org/manual/nix/stable/command-ref/nix-env.html#operation---uninstall"> uninstall</a> and <a href="https://nixos.org/manual/nix/stable/command-ref/nix-env.html#operation---upgrade">upgrade</a> packages.</p>
 <h2 id="querying-the-store"><a class="header" href="#querying-the-store">Querying the store</a></h2>
-<p>So far we learned how to query and manipulate the environment. But all
-of the environment components point to the store.</p>
-<p>To query and manipulate the store, there's the <code>nix-store</code> command. We
-can do some interesting things, but we'll only see some queries for
-now.</p>
+<p>So far we learned how to query and manipulate the environment. But all of the environment components point to the store.</p>
+<p>To query and manipulate the store, there's the <code>nix-store</code> command. We can do some interesting things, but we'll only see some queries for now.</p>
 <p>To show the direct runtime dependencies of <code>hello</code>:</p>
-<pre><code>$ nix-store -q --references `which hello`
+<pre><code class="language-console">$ nix-store -q --references `which hello`
 /nix/store/fg4yq8i8wd08xg3fy58l6q73cjy8hjr2-glibc-2.27
 /nix/store/58r35bqb4f3lxbnbabq718svq9i2pda3-hello-2.10
 </code></pre>
-<p>The argument to <code>nix-store</code> can be anything as long as it points to the
-Nix store. It will follow symlinks.</p>
-<p>It may not make sense to you right now, but let's print reverse
-dependencies of <code>hello</code>:</p>
-<pre><code>$ nix-store -q --referrers `which hello`
+<p>The argument to <code>nix-store</code> can be anything as long as it points to the Nix store. It will follow symlinks.</p>
+<p>It may not make sense to you right now, but let's print reverse dependencies of <code>hello</code>:</p>
+<pre><code class="language-console">$ nix-store -q --referrers `which hello`
 /nix/store/58r35bqb4f3lxbnbabq718svq9i2pda3-hello-2.10
 /nix/store/fhvy2550cpmjgcjcx5rzz328i0kfv3z3-env-manifest.nix
 /nix/store/yzdk0xvr0b8dcwhi2nns6d75k2ha5208-env-manifest.nix
 /nix/store/mp987abm20c70pl8p31ljw1r5by4xwfw-user-environment
 /nix/store/ppr3qbq7fk2m2pa49i2z3i32cvfhsv7p-user-environment
 </code></pre>
-<p>Was it what you expected? It turns out that our environments depend upon
-<code>hello</code>. Yes, that means that the environments are in the store, and
-since they contain symlinks to <code>hello</code>, therefore the environment
-depends upon <code>hello</code>.</p>
-<p>Two environments were listed, generation 2 and generation 3, since these
-are the ones that had <code>hello</code> installed in them.</p>
-<p>The <code>manifest.nix</code> file contains metadata about the environment, such as
-which derivations are installed. So that <code>nix-env</code> can list, upgrade or
-remove them. And yet again, the current <code>manifest.nix</code> can be found at
-<code>~/.nix-profile/manifest.nix</code>.</p>
+<p>Was it what you expected? It turns out that our environments depend upon <code>hello</code>. Yes, that means that the environments are in the store, and since they contain symlinks to <code>hello</code>, therefore the environment depends upon <code>hello</code>.</p>
+<p>Two environments were listed, generation 2 and generation 3, since these are the ones that had <code>hello</code> installed in them.</p>
+<p>The <code>manifest.nix</code> file contains metadata about the environment, such as which derivations are installed. So that <code>nix-env</code> can list, upgrade or remove them. And yet again, the current <code>manifest.nix</code> can be found at <code>~/.nix-profile/manifest.nix</code>.</p>
 <h2 id="closures"><a class="header" href="#closures">Closures</a></h2>
-<p>The closures of a derivation is a list of all its dependencies,
-recursively, including absolutely everything necessary to use that
-derivation.</p>
-<pre><code>$ nix-store -qR `which man`
+<p>The closures of a derivation is a list of all its dependencies, recursively, including absolutely everything necessary to use that derivation.</p>
+<pre><code class="language-console">$ nix-store -qR `which man`
 [...]
 </code></pre>
-<p>Copying all those derivations to the Nix store of another machine makes
-you able to run <code>man</code> out of the box on that other machine. That's the
-base of deployment using Nix, and you can already foresee the potential
-when deploying software in the cloud (hint: <code>nix-copy-closures</code> and
-<code>nix-store --export</code>).</p>
+<p>Copying all those derivations to the Nix store of another machine makes you able to run <code>man</code> out of the box on that other machine. That's the base of deployment using Nix, and you can already foresee the potential when deploying software in the cloud (hint: <code>nix-copy-closures</code> and <code>nix-store --export</code>).</p>
 <p>A nicer view of the closure:</p>
-<pre><code>$ nix-store -q --tree `which man`
+<pre><code class="language-console">$ nix-store -q --tree `which man`
 [...]
 </code></pre>
-<p>With the above command, you can find out exactly why a <em>runtime</em>
-dependency, be it direct or indirect, exists for a given derivation.</p>
-<p>The same applies to environments. As an exercise, run
-<code>nix-store -q --tree ~/.nix-profile</code>, and see that the first children
-are direct dependencies of the user environment: the installed
-derivations, and the <code>manifest.nix</code>.</p>
+<p>With the above command, you can find out exactly why a <em>runtime</em> dependency, be it direct or indirect, exists for a given derivation.</p>
+<p>The same applies to environments. As an exercise, run <code>nix-store -q --tree ~/.nix-profile</code>, and see that the first children are direct dependencies of the user environment: the installed derivations, and the <code>manifest.nix</code>.</p>
 <h2 id="dependency-resolution"><a class="header" href="#dependency-resolution">Dependency resolution</a></h2>
-<p>There isn't anything like <code>apt</code> which solves a SAT problem in order to
-satisfy dependencies with lower and upper bounds on versions. There's
-no need for this because all the dependencies are static: if a
-derivation X depends on a derivation Y, then it always depends on it. A
-version of X which depended on Z would be a different derivation.</p>
+<p>There isn't anything like <code>apt</code> which solves a SAT problem in order to satisfy dependencies with lower and upper bounds on versions. There's no need for this because all the dependencies are static: if a derivation X depends on a derivation Y, then it always depends on it. A version of X which depended on Z would be a different derivation.</p>
 <h2 id="recovering-the-hard-way"><a class="header" href="#recovering-the-hard-way">Recovering the hard way</a></h2>
-<pre><code>$ nix-env -e '*'
+<pre><code class="language-console">$ nix-env -e '*'
 uninstalling 'hello-2.10'
 uninstalling 'nix-2.1.3'
 [...]
 </code></pre>
-<p>Oops, that uninstalled all derivations from the environment, including
-Nix. That means we can't even run <code>nix-env</code>, what now?</p>
-<p>Previously we got <code>nix-env</code> from the environment. Environments are a
-convenience for the user, but Nix is still there in the store!</p>
-<p>First, pick one <code>nix-2.1.3</code> derivation: <code>ls /nix/store/*nix-2.1.3</code>, say
-<code>/nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-nix-2.1.3</code>.</p>
+<p>Oops, that uninstalled all derivations from the environment, including Nix. That means we can't even run <code>nix-env</code>, what now?</p>
+<p>Previously we got <code>nix-env</code> from the environment. Environments are a convenience for the user, but Nix is still there in the store!</p>
+<p>First, pick one <code>nix-2.1.3</code> derivation: <code>ls /nix/store/*nix-2.1.3</code>, say <code>/nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-nix-2.1.3</code>.</p>
 <p>The first option is to rollback:</p>
-<pre><code>$ /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-nix-2.1.3/bin/nix-env --rollback
+<pre><code class="language-console">$ /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-nix-2.1.3/bin/nix-env --rollback
 </code></pre>
 <p>The second option is to install Nix, thus creating a new generation:</p>
-<pre><code>$ /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-nix-2.1.3/bin/nix-env -i /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-nix-2.1.3/bin/nix-env 
+<pre><code class="language-console">$ /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-nix-2.1.3/bin/nix-env -i /nix/store/ig31y9gfpp8pf3szdd7d4sf29zr7igbr-nix-2.1.3/bin/nix-env
 </code></pre>
 <h2 id="channels"><a class="header" href="#channels">Channels</a></h2>
-<p>So where are we getting packages from? We said something about this
-already in the <a href="02-install-on-your-running.html">second article</a>.
-There's a list of channels from which we get packages, although usually
-we use a single channel. The tool to manage channels is
-<a href="https://nixos.org/manual/nix/stable/command-ref/nix-channel.html">nix-channel</a>.</p>
-<pre><code>$ nix-channel --list
+<p>So where are we getting packages from? We said something about this already in the <a href="02-install-on-your-running.html">second article</a>. There's a list of channels from which we get packages, although usually we use a single channel. The tool to manage channels is <a href="https://nixos.org/manual/nix/stable/command-ref/nix-channel.html">nix-channel</a>.</p>
+<pre><code class="language-console">$ nix-channel --list
 nixpkgs http://nixos.org/channels/nixpkgs-unstable
 </code></pre>
-<p>If you're using NixOS, you may not see any output from the above
-command (if you're using the default), or you may see a channel whose
-name begins with "nixos-" instead of "nixpkgs".</p>
+<p>If you're using NixOS, you may not see any output from the above command (if you're using the default), or you may see a channel whose name begins with "nixos-" instead of "nixpkgs".</p>
 <p>That's essentially the contents of <code>~/.nix-channels</code>.</p>
 <div class="info">
 <p>Note: <code>~/.nix-channels</code> is not a symlink to the nix store!</p>
 </div>
-<p>To update the channel run <code>nix-channel --update</code>. That will download the
-new Nix expressions (descriptions of the packages), create a new
-generation of the channels profile and unpack it under
-<code>~/.nix-defexpr/channels</code>.</p>
-<p>This is quite similar to <code>apt-get update</code>. (See <a href="https://nixos.wiki/wiki/Cheatsheet">this
-table</a> for a rough mapping between
-Ubuntu and NixOS package management.)</p>
+<p>To update the channel run <code>nix-channel --update</code>. That will download the new Nix expressions (descriptions of the packages), create a new generation of the channels profile and unpack it under <code>~/.nix-defexpr/channels</code>.</p>
+<p>This is quite similar to <code>apt-get update</code>. (See <a href="https://nixos.wiki/wiki/Cheatsheet">this table</a> for a rough mapping between Ubuntu and NixOS package management.)</p>
 <h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
-<p>We learned how to query the user environment and to manipulate it by
-installing and uninstalling software. Upgrading software is also
-straightforward, as you can read in <a href="https://nixos.org/manual/nix/stable/command-ref/nix-env.html#operation---upgrade">the
-manual</a>
-(<code>nix-env -u</code> will upgrade all packages in the environment).</p>
-<p>Every time we change the environment, a new generation is created.
-Switching between generations is easy and immediate.</p>
-<p>Then we learned how to query the store. We inspected the dependencies
-and reverse dependencies of store paths.</p>
-<p>We saw how symlinks are used to compose paths from the Nix store, a
-useful trick.</p>
-<p>A quick analogy with programming languages: you have the heap with all
-the objects, that corresponds to the Nix store. You have objects that
-point to other objects, those correspond to derivations. This is a
-suggestive metaphor, but will it be the right path?</p>
+<p>We learned how to query the user environment and to manipulate it by installing and uninstalling software. Upgrading software is also straightforward, as you can read in <a href="https://nixos.org/manual/nix/stable/command-ref/nix-env.html#operation---upgrade">the manual</a> (<code>nix-env -u</code> will upgrade all packages in the environment).</p>
+<p>Every time we change the environment, a new generation is created. Switching between generations is easy and immediate.</p>
+<p>Then we learned how to query the store. We inspected the dependencies and reverse dependencies of store paths.</p>
+<p>We saw how symlinks are used to compose paths from the Nix store, a useful trick.</p>
+<p>A quick analogy with programming languages: you have the heap with all the objects, that corresponds to the Nix store. You have objects that point to other objects, those correspond to derivations. This is a suggestive metaphor, but will it be the right path?</p>
 <h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
-<p>...we will learn the basics of the Nix language. The Nix language is
-used to describe how to build derivations, and it's the basis for
-everything else, including NixOS. Therefore it's very important to
-understand both the syntax and the semantics of the language.</p>
+<p>...we will learn the basics of the Nix language. The Nix language is used to describe how to build derivations, and it's the basis for everything else, including NixOS. Therefore it's very important to understand both the syntax and the semantics of the language.</p>
 
                     </main>
 

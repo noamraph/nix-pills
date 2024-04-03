@@ -148,6 +148,12 @@
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        <a href="https://github.com/NixOS/nix-pills" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/NixOS/nix-pills/tree/master/pills/20-basic-dependencies-and-hooks.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -175,76 +181,56 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="basic-dependencies-and-hooks"><a class="header" href="#basic-dependencies-and-hooks">Basic Dependencies and Hooks</a></h1>
-<p>Welcome to the 20th Nix pill. In the previous
-<a href="19-fundamentals-of-stdenv.html">19th</a> pill we introduced Nixpkgs' stdenv,
-including <code>setup.sh</code> script, <code>default-builder.sh</code> helper script, and
-<code>stdenv.mkDerivation</code> builder. We focused on how stdenv is put together,
-and how it's used, and a bit about the phases of <code>genericBuild</code>.</p>
-<p>This time, we'll focus on the interaction of packages built with
-<code>stdenv.mkDerivation</code>. Packages need to depend on each other, of course.
-For this we have <code>buildInputs</code> and <code>propagatedBuildInputs</code> attributes.
-We've also found that dependencies sometimes need to influence their
-dependents in ways the dependents can't or shouldn't predict. For this
-we have setup hooks and env hooks. Together, these 4 concepts support
-almost all build-time package interactions.</p>
+<p>Welcome to the 20th Nix pill. In the previous <a href="19-fundamentals-of-stdenv.html">19th</a> pill we introduced Nixpkgs' stdenv, including <code>setup.sh</code> script, <code>default-builder.sh</code> helper script, and <code>stdenv.mkDerivation</code> builder. We focused on how stdenv is put together, and how it's used, and a bit about the phases of <code>genericBuild</code>.</p>
+<p>This time, we'll focus on the interaction of packages built with <code>stdenv.mkDerivation</code>. Packages need to depend on each other, of course. For this we have <code>buildInputs</code> and <code>propagatedBuildInputs</code> attributes. We've also found that dependencies sometimes need to influence their dependents in ways the dependents can't or shouldn't predict. For this we have setup hooks and env hooks. Together, these 4 concepts support almost all build-time package interactions.</p>
 <div class="info">
-Note: The complexity of the dependencies and hooks infrastructure has
-increased, over time, to support cross compilation. Once you learn the
-core concepts, you will be able to understand the extra complexity. As a
-starting point, you might want to refer to nixpkgs commit
-<a href="https://github.com/nixos/nixpkgs/tree/6675f0a52c0962042a1000c7f20e887d0d26ae25">6675f0a5</a>,
-the last version of stdenv without cross-compilation complexity.
+Note: The complexity of the dependencies and hooks infrastructure has increased, over time, to support cross compilation. Once you learn the core concepts, you will be able to understand the extra complexity. As a starting point, you might want to refer to nixpkgs commit <a href="https://github.com/nixos/nixpkgs/tree/6675f0a52c0962042a1000c7f20e887d0d26ae25">6675f0a5</a>, the last version of stdenv without cross-compilation complexity.
 </div>
 <h2 id="the-buildinputs-attribute"><a class="header" href="#the-buildinputs-attribute">The <code>buildInputs</code> Attribute</a></h2>
-<p>For the simplest dependencies where the current package directly needs
-another, we use the <code>buildInputs</code> attribute. This is exactly the pattern
-used in our builder in <a href="08-generic-builders.html">Pill 8</a>. To demo this, let's
-build GNU Hello, and then another package which provides a shell script
-that <code>exec</code>s it.</p>
-<pre><code>let
+<p>For the simplest dependencies where the current package directly needs another, we use the <code>buildInputs</code> attribute. This is exactly the pattern used in our builder in <a href="08-generic-builders.html">Pill 8</a>. To demo this, let's build GNU Hello, and then another package which provides a shell script that <code>exec</code>s it.</p>
+<pre><code class="language-nix">let
 
-  nixpkgs = import &lt;nixpkgs&gt; { };
+    nixpkgs = import &lt;nixpkgs&gt; { };
 
-  inherit (nixpkgs) stdenv fetchurl which;
+    inherit (nixpkgs) stdenv fetchurl which;
 
-  actualHello = stdenv.mkDerivation {
+    actualHello = stdenv.mkDerivation {
     name = "hello-2.3";
 
     src = fetchurl {
-      url = "mirror://gnu/hello/hello-2.3.tar.bz2";
-      sha256 = "0c7vijq8y68bpr7g6dh1gny0bff8qq81vnp4ch8pjzvg56wb3js1";
+        url = "mirror://gnu/hello/hello-2.3.tar.bz2";
+        sha256 = "0c7vijq8y68bpr7g6dh1gny0bff8qq81vnp4ch8pjzvg56wb3js1";
     };
-  };
+    };
 
-  wrappedHello = stdenv.mkDerivation {
+    wrappedHello = stdenv.mkDerivation {
     name = "hello-wrapper";
 
     buildInputs = [
-      actualHello
-      which
+        actualHello
+        which
     ];
 
     unpackPhase = "true";
 
     installPhase = ''
-      mkdir -p "$out/bin"
-      echo "#! ${stdenv.shell}" &gt;&gt; "$out/bin/hello"
-      echo "exec $(which hello)" &gt;&gt; "$out/bin/hello"
-      chmod 0755 "$out/bin/hello"
+        mkdir -p "$out/bin"
+        echo "#! ${stdenv.shell}" &gt;&gt; "$out/bin/hello"
+        echo "exec $(which hello)" &gt;&gt; "$out/bin/hello"
+        chmod 0755 "$out/bin/hello"
     '';
-  };
+    };
 in
 wrappedHello
 </code></pre>
-<p>Notice that the wrappedHello derivation finds the <code>hello</code> binary from
-the <code>PATH</code>. This works because stdenv contains something like:</p>
-<pre><code>pkgs=""
+<p>Notice that the wrappedHello derivation finds the <code>hello</code> binary from the <code>PATH</code>. This works because stdenv contains something like:</p>
+<pre><code class="language-sh">pkgs=""
 for i in $buildInputs; do
     findInputs $i
 done
 </code></pre>
 <p>where <code>findInputs</code> is defined like:</p>
-<pre><code>findInputs() {
+<pre><code class="language-sh">findInputs() {
     local pkg=$1
 
     ## Don't need to repeat already processed package
@@ -260,12 +246,12 @@ done
 }
 </code></pre>
 <p>then after this is run:</p>
-<pre><code>for i in $pkgs; do
+<pre><code class="language-sh">for i in $pkgs; do
     addToEnv $i
 done
 </code></pre>
 <p>where <code>addToEnv</code> is defined like:</p>
-<pre><code>addToEnv() {
+<pre><code class="language-sh">addToEnv() {
     local pkg=$1
 
     if test -d $1/bin; then
@@ -275,39 +261,28 @@ done
     ## More goes here in reality that we can ignore for now.
 }
 </code></pre>
-<p>The <code>addToSearchPath</code> call adds <code>$1/bin</code> to <code>_PATH</code> if the former exists
-(code
-<a href="https://github.com/NixOS/nixpkgs/blob/6675f0a52c0962042a1000c7f20e887d0d26ae25/pkgs/stdenv/generic/setup.sh#L60-L73">here</a>).
-Once all the packages in <code>buildInputs</code> have been processed, then content
-of <code>_PATH</code> is added to <code>PATH</code>, as follows:</p>
-<pre><code>PATH="${_PATH-}${_PATH:+${PATH:+:}}$PATH"
+<p>The <code>addToSearchPath</code> call adds <code>$1/bin</code> to <code>_PATH</code> if the former exists (code <a href="https://github.com/NixOS/nixpkgs/blob/6675f0a52c0962042a1000c7f20e887d0d26ae25/pkgs/stdenv/generic/setup.sh#L60-L73">here</a>). Once all the packages in <code>buildInputs</code> have been processed, then content of <code>_PATH</code> is added to <code>PATH</code>, as follows:</p>
+<pre><code class="language-sh">PATH="${_PATH-}${_PATH:+${PATH:+:}}$PATH"
 </code></pre>
-<p>With the real <code>hello</code> on the <code>PATH</code>, the <code>installPhase</code> should hopefully
-make sense.</p>
+<p>With the real <code>hello</code> on the <code>PATH</code>, the <code>installPhase</code> should hopefully make sense.</p>
 <h2 id="the-propagatedbuildinputs-attribute"><a class="header" href="#the-propagatedbuildinputs-attribute">The <code>propagatedBuildInputs</code> Attribute</a></h2>
-<p>The <code>buildInputs</code> covers direct dependencies, but what about indirect
-dependencies where one package needs a second package which needs a
-third? Nix itself handles this just fine, understanding various
-dependency closures as covered in previous builds. But what about the
-conveniences that <code>buildInputs</code> provides, namely accumulating in <code>pkgs</code>
-environment variable and inclusion of <code>pkg/bin</code> directories on the
-<code>PATH</code>? For this, stdenv provides the <code>propagatedBuildInputs</code>:</p>
-<pre><code>let
+<p>The <code>buildInputs</code> covers direct dependencies, but what about indirect dependencies where one package needs a second package which needs a third? Nix itself handles this just fine, understanding various dependency closures as covered in previous builds. But what about the conveniences that <code>buildInputs</code> provides, namely accumulating in <code>pkgs</code> environment variable and inclusion of <code>pkg/bin</code> directories on the <code>PATH</code>? For this, stdenv provides the <code>propagatedBuildInputs</code>:</p>
+<pre><code class="language-nix">let
 
-  nixpkgs = import &lt;nixpkgs&gt; { };
+    nixpkgs = import &lt;nixpkgs&gt; { };
 
-  inherit (nixpkgs) stdenv fetchurl which;
+    inherit (nixpkgs) stdenv fetchurl which;
 
-  actualHello = stdenv.mkDerivation {
+    actualHello = stdenv.mkDerivation {
     name = "hello-2.3";
 
     src = fetchurl {
-      url = "mirror://gnu/hello/hello-2.3.tar.bz2";
-      sha256 = "0c7vijq8y68bpr7g6dh1gny0bff8qq81vnp4ch8pjzvg56wb3js1";
+        url = "mirror://gnu/hello/hello-2.3.tar.bz2";
+        sha256 = "0c7vijq8y68bpr7g6dh1gny0bff8qq81vnp4ch8pjzvg56wb3js1";
     };
-  };
+    };
 
-  intermediary = stdenv.mkDerivation {
+    intermediary = stdenv.mkDerivation {
     name = "middle-man";
 
     propagatedBuildInputs = [ actualHello ];
@@ -315,37 +290,33 @@ environment variable and inclusion of <code>pkg/bin</code> directories on the
     unpackPhase = "true";
 
     installPhase = ''
-      mkdir -p "$out"
+        mkdir -p "$out"
     '';
-  };
+    };
 
-  wrappedHello = stdenv.mkDerivation {
+    wrappedHello = stdenv.mkDerivation {
     name = "hello-wrapper";
 
     buildInputs = [
-      intermediary
-      which
+        intermediary
+        which
     ];
 
     unpackPhase = "true";
 
     installPhase = ''
-      mkdir -p "$out/bin"
-      echo "#! ${stdenv.shell}" &gt;&gt; "$out/bin/hello"
-      echo "exec $(which hello)" &gt;&gt; "$out/bin/hello"
-      chmod 0755 "$out/bin/hello"
+        mkdir -p "$out/bin"
+        echo "#! ${stdenv.shell}" &gt;&gt; "$out/bin/hello"
+        echo "exec $(which hello)" &gt;&gt; "$out/bin/hello"
+        chmod 0755 "$out/bin/hello"
     '';
-  };
+    };
 in
 wrappedHello
 </code></pre>
-<p>See how the intermediate package has a <code>propagatedBuildInputs</code>
-dependency, but the wrapper only needs a <code>buildInputs</code> dependency on the
-intermediary.</p>
-<p>How does this work? You might think we do something in Nix, but actually
-it's done not at eval time but at build time in bash. let's look at
-part of the <code>fixupPhase</code> of stdenv:</p>
-<pre><code>fixupPhase() {
+<p>See how the intermediate package has a <code>propagatedBuildInputs</code> dependency, but the wrapper only needs a <code>buildInputs</code> dependency on the intermediary.</p>
+<p>How does this work? You might think we do something in Nix, but actually it's done not at eval time but at build time in bash. let's look at part of the <code>fixupPhase</code> of stdenv:</p>
+<pre><code class="language-sh">fixupPhase() {
 
     ## Elided
 
@@ -358,10 +329,8 @@ part of the <code>fixupPhase</code> of stdenv:</p>
 
 }
 </code></pre>
-<p>This dumps the propagated build inputs in a so-named file in
-<code>$out/nix-support/</code>. Then, back in <code>findInputs</code> look at the lines at the
-bottom we elided before:</p>
-<pre><code>findInputs() {
+<p>This dumps the propagated build inputs in a so-named file in <code>$out/nix-support/</code>. Then, back in <code>findInputs</code> look at the lines at the bottom we elided before:</p>
+<pre><code class="language-sh">findInputs() {
     local pkg=$1
 
     ## More goes here in reality that we can ignore for now.
@@ -373,38 +342,18 @@ bottom we elided before:</p>
     fi
 }
 </code></pre>
-<p>See how <code>findInputs</code> is actually recursive, looking at the propagated
-build inputs of each dependency, and those dependencies' propagated
-build inputs, etc.</p>
-<p>We actually simplified the <code>findInputs</code> call site from before;
-<code>propagatedBuildInputs</code> is also looped over in reality:</p>
-<pre><code>pkgs=""
+<p>See how <code>findInputs</code> is actually recursive, looking at the propagated build inputs of each dependency, and those dependencies' propagated build inputs, etc.</p>
+<p>We actually simplified the <code>findInputs</code> call site from before; <code>propagatedBuildInputs</code> is also looped over in reality:</p>
+<pre><code class="language-sh">pkgs=""
 for i in $buildInputs $propagatedBuildInputs; do
     findInputs $i
 done
 </code></pre>
-<p>This demonstrates an important point. For the <em>current</em> package alone,
-it doesn't matter whether a dependency is propagated or not. It will be
-processed the same way: called with <code>findInputs</code> and <code>addToEnv</code>. (The
-packages discovered by <code>findInputs</code>, which are also accumulated in
-<code>pkgs</code> and passed to <code>addToEnv</code>, are also the same in both cases.)
-Downstream however, it certainly does matter because only the propagated
-immediate dependencies are put in the
-<code>$out/nix-support/propagated-build-inputs</code>.</p>
+<p>This demonstrates an important point. For the <em>current</em> package alone, it doesn't matter whether a dependency is propagated or not. It will be processed the same way: called with <code>findInputs</code> and <code>addToEnv</code>. (The packages discovered by <code>findInputs</code>, which are also accumulated in <code>pkgs</code> and passed to <code>addToEnv</code>, are also the same in both cases.) Downstream however, it certainly does matter because only the propagated immediate dependencies are put in the <code>$out/nix-support/propagated-build-inputs</code>.</p>
 <h2 id="setup-hooks"><a class="header" href="#setup-hooks">Setup Hooks</a></h2>
-<p>As we mentioned above, sometimes dependencies need to influence the
-packages that use them in ways other than just <em>being</em> a dependency.
-<sup class="footnote-reference"><a href="#1">1</a></sup> <code>propagatedBuildInputs</code> can actually be seen as an example of this:
-packages using that are effectively "injecting" those dependencies as
-extra <code>buildInputs</code> in their downstream dependents. But in general, a
-dependency might affect the packages it depends on in arbitrary ways.
-<em>Arbitrary</em> is the key word here. We could teach <code>setup.sh</code> things about
-upstream packages like <code>pkg/nix-support/propagated-build-inputs</code>, but
-not arbitrary interactions.</p>
-<p>Setup hooks are the basic building block we have for this. In nixpkgs, a
-"hook" is basically a bash callback, and a setup hook is no exception.
-Let's look at the last part of <code>findInputs</code> we haven't covered:</p>
-<pre><code>findInputs() {
+<p>As we mentioned above, sometimes dependencies need to influence the packages that use them in ways other than just <em>being</em> a dependency. <sup class="footnote-reference"><a href="#1">1</a></sup> <code>propagatedBuildInputs</code> can actually be seen as an example of this: packages using that are effectively "injecting" those dependencies as extra <code>buildInputs</code> in their downstream dependents. But in general, a dependency might affect the packages it depends on in arbitrary ways. <em>Arbitrary</em> is the key word here. We could teach <code>setup.sh</code> things about upstream packages like <code>pkg/nix-support/propagated-build-inputs</code>, but not arbitrary interactions.</p>
+<p>Setup hooks are the basic building block we have for this. In nixpkgs, a "hook" is basically a bash callback, and a setup hook is no exception. Let's look at the last part of <code>findInputs</code> we haven't covered:</p>
+<pre><code class="language-sh">findInputs() {
     local pkg=$1
 
     ## More goes here in reality that we can ignore for now.
@@ -417,33 +366,13 @@ Let's look at the last part of <code>findInputs</code> we haven't covered:</p>
 
 }
 </code></pre>
-<p>If a package includes the path <code>pkg/nix-support/setup-hook</code>, it will be
-sourced by any stdenv-based build including that as a dependency.</p>
-<p>This is strictly more general than any of the other mechanisms
-introduced in this chapter. For example, try writing a setup hook that
-has the same effect as a <em>propagatedBuildInputs</em> entry. One can almost
-think of this as an escape hatch around Nix's normal isolation
-guarantees, and the principle that dependencies are immutable and inert.
-We're not actually doing something unsafe or modifying dependencies,
-but we are allowing arbitrary ad-hoc behavior. For this reason,
-setup-hooks should only be used as a last resort.</p>
+<p>If a package includes the path <code>pkg/nix-support/setup-hook</code>, it will be sourced by any stdenv-based build including that as a dependency.</p>
+<p>This is strictly more general than any of the other mechanisms introduced in this chapter. For example, try writing a setup hook that has the same effect as a <em>propagatedBuildInputs</em> entry. One can almost think of this as an escape hatch around Nix's normal isolation guarantees, and the principle that dependencies are immutable and inert. We're not actually doing something unsafe or modifying dependencies, but we are allowing arbitrary ad-hoc behavior. For this reason, setup-hooks should only be used as a last resort.</p>
 <h2 id="environment-hooks"><a class="header" href="#environment-hooks">Environment Hooks</a></h2>
-<p>As a final convenience, we have environment hooks. Recall in <a href="12-inputs-design-pattern.html">Pill
-12</a> how we created <code>NIX_CFLAGS_COMPILE</code> for <code>-I</code>
-flags and <code>NIX_LDFLAGS</code> for <code>-L</code> flags, in a similar manner to how we
-prepared the <code>PATH</code>. One point of ugliness was how anti-modular this
-was. It makes sense to build the <code>PATH</code> in a generic builder, because
-the <code>PATH</code> is used by the shell, and the generic builder is
-intrinsically tied to the shell. But <code>-I</code> and <code>-L</code> flags are only
-relevant to the C compiler. The stdenv isn't wedded to including a C
-compiler (though it does by default), and there are other compilers too
-which may take completely different flags.</p>
-<p>As a first step, we can move that logic to a setup hook on the C
-compiler; indeed that's just what we do in CC Wrapper. <sup class="footnote-reference"><a href="#2">2</a></sup> But this
-pattern comes up fairly often, so somebody decided to add some helper
-support to reduce boilerplate.</p>
+<p>As a final convenience, we have environment hooks. Recall in <a href="12-inputs-design-pattern.html">Pill 12</a> how we created <code>NIX_CFLAGS_COMPILE</code> for <code>-I</code> flags and <code>NIX_LDFLAGS</code> for <code>-L</code> flags, in a similar manner to how we prepared the <code>PATH</code>. One point of ugliness was how anti-modular this was. It makes sense to build the <code>PATH</code> in a generic builder, because the <code>PATH</code> is used by the shell, and the generic builder is intrinsically tied to the shell. But <code>-I</code> and <code>-L</code> flags are only relevant to the C compiler. The stdenv isn't wedded to including a C compiler (though it does by default), and there are other compilers too which may take completely different flags.</p>
+<p>As a first step, we can move that logic to a setup hook on the C compiler; indeed that's just what we do in CC Wrapper. <sup class="footnote-reference"><a href="#2">2</a></sup> But this pattern comes up fairly often, so somebody decided to add some helper support to reduce boilerplate.</p>
 <p>The other half of <code>addToEnv</code> is:</p>
-<pre><code>addToEnv() {
+<pre><code class="language-sh">addToEnv() {
     local pkg=$1
 
     ## More goes here in reality that we can ignore for now.
@@ -454,9 +383,8 @@ support to reduce boilerplate.</p>
     done
 }
 </code></pre>
-<p>Functions listed in <code>envHooks</code> are applied to every package passed to
-<code>addToEnv</code>. One can write a setup hook like:</p>
-<pre><code>anEnvHook() {
+<p>Functions listed in <code>envHooks</code> are applied to every package passed to <code>addToEnv</code>. One can write a setup hook like:</p>
+<pre><code class="language-sh">anEnvHook() {
     local pkg=$1
 
     echo "I'm depending on \"$pkg\""
@@ -464,27 +392,14 @@ support to reduce boilerplate.</p>
 
 envHooks+=(anEnvHook)
 </code></pre>
-<p>and if one dependency has that setup hook then all of them will be so
-<code>echo</code>ed. Allowing dependencies to learn about their <em>sibling</em>
-dependencies is exactly what compilers need.</p>
+<p>and if one dependency has that setup hook then all of them will be so <code>echo</code>ed. Allowing dependencies to learn about their <em>sibling</em> dependencies is exactly what compilers need.</p>
 <h2 id="next-pill"><a class="header" href="#next-pill">Next pill...</a></h2>
-<p>...I'm not sure! We could talk about the additional dependency types
-and hooks which cross compilation necessitates, building on our
-knowledge here to cover stdenv as it works today. We could talk about
-how nixpkgs is bootstrapped. Or we could talk about how <code>localSystem</code>
-and <code>crossSystem</code> are elaborated into the <code>buildPlatform</code>,
-<code>hostPlatform</code>, and <code>targetPlatform</code> each bootstrapping stage receives.
-Let us know which most interests you!</p>
+<p>...I'm not sure! We could talk about the additional dependency types and hooks which cross compilation necessitates, building on our knowledge here to cover stdenv as it works today. We could talk about how nixpkgs is bootstrapped. Or we could talk about how <code>localSystem</code> and <code>crossSystem</code> are elaborated into the <code>buildPlatform</code>, <code>hostPlatform</code>, and <code>targetPlatform</code> each bootstrapping stage receives. Let us know which most interests you!</p>
 <div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
-<p>We can now be precise and consider what <code>addToEnv</code> does alone the
-minimal treatment of a dependency: i.e. a package that is <em>just</em> a
-dependency would <em>only</em> have <code>addToEnv</code> applied to it.</p>
+<p>We can now be precise and consider what <code>addToEnv</code> does alone the minimal treatment of a dependency: i.e. a package that is <em>just</em> a dependency would <em>only</em> have <code>addToEnv</code> applied to it.</p>
 </div>
 <div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
-<p>It was called <a href="https://github.com/NixOS/nixpkgs/tree/6675f0a52c0962042a1000c7f20e887d0d26ae25/pkgs/build-support/gcc-wrapper">GCC
-Wrapper</a>
-in the version of nixpkgs suggested for following along in this
-pill; Darwin and Clang support hadn't yet motivated the rename.</p>
+<p>It was called <a href="https://github.com/NixOS/nixpkgs/tree/6675f0a52c0962042a1000c7f20e887d0d26ae25/pkgs/build-support/gcc-wrapper">GCC Wrapper</a> in the version of nixpkgs suggested for following along in this pill; Darwin and Clang support hadn't yet motivated the rename.</p>
 </div>
 
                     </main>

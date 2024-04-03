@@ -148,6 +148,12 @@
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        <a href="https://github.com/NixOS/nix-pills" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/NixOS/nix-pills/tree/master/pills/06-our-first-derivation.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -175,76 +181,54 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="our-first-derivation"><a class="header" href="#our-first-derivation">Our First Derivation</a></h1>
-<p>Welcome to the sixth Nix pill. In the previous <a href="05-functions-and-imports.html">fifth
-pill</a> we introduced functions and imports.
-Functions and imports are very simple concepts that allow for building
-complex abstractions and composition of modules to build a flexible Nix
-system.</p>
-<p>In this post we finally arrived to writing a derivation. Derivations are
-the building blocks of a Nix system, from a file system view point. The
-Nix language is used to describe such derivations.</p>
-<p>I remind you how to enter the Nix environment:
-<code>source ~/.nix-profile/etc/profile.d/nix.sh</code></p>
+<p>Welcome to the sixth Nix pill. In the previous <a href="05-functions-and-imports.html">fifth pill</a> we introduced functions and imports. Functions and imports are very simple concepts that allow for building complex abstractions and composition of modules to build a flexible Nix system.</p>
+<p>In this post we finally arrived to writing a derivation. Derivations are the building blocks of a Nix system, from a file system view point. The Nix language is used to describe such derivations.</p>
+<p>I remind you how to enter the Nix environment: <code>source ~/.nix-profile/etc/profile.d/nix.sh</code></p>
 <h2 id="the-derivation-function"><a class="header" href="#the-derivation-function">The derivation function</a></h2>
-<p>The <a href="https://nixos.org/manual/nix/stable/expressions/derivations.html">derivation built-in
-function</a>
-is used to create derivations. I invite you to read the link in the Nix
-manual about the derivation built-in. A derivation from a Nix language
-view point is simply a set, with some attributes. Therefore you can pass
-the derivation around with variables like anything else.</p>
+<p>The <a href="https://nixos.org/manual/nix/stable/expressions/derivations.html">derivation built-in function</a> is used to create derivations. I invite you to read the link in the Nix manual about the derivation built-in. A derivation from a Nix language view point is simply a set, with some attributes. Therefore you can pass the derivation around with variables like anything else.</p>
 <p>That's where the real power comes in.</p>
-<p>The <code>derivation</code> function receives a set as its first argument. This set
-requires at least the following three attributes:</p>
+<p>The <code>derivation</code> function receives a set as its first argument. This set requires at least the following three attributes:</p>
 <ul>
 <li>
-<p>name: the name of the derivation. In the nix store the format is
-hash-name, that's the name.</p>
+<p>name: the name of the derivation. In the nix store the format is hash-name, that's the name.</p>
 </li>
 <li>
-<p>system: is the name of the system in which the derivation can be
-built. For example, x86_64-linux.</p>
+<p>system: is the name of the system in which the derivation can be built. For example, x86_64-linux.</p>
 </li>
 <li>
 <p>builder: is the binary program that builds the derivation.</p>
 </li>
 </ul>
 <p>First of all, what's the name of our system as seen by nix?</p>
-<pre><code>nix-repl&gt; builtins.currentSystem
-"x86_64-linux"
+<pre><code class="language-console">  nix-repl&gt; builtins.currentSystem
+  "x86_64-linux"
 </code></pre>
 <p>Let's try to fake the name of the system:</p>
-<pre><code>nix-repl&gt; d = derivation { name = "myname"; builder = "mybuilder"; system = "mysystem"; }
-nix-repl&gt; d
-«derivation /nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv»
+<pre><code class="language-console">  nix-repl&gt; d = derivation { name = "myname"; builder = "mybuilder"; system = "mysystem"; }
+  nix-repl&gt; d
+  «derivation /nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv»
 </code></pre>
-<p>Oh oh, what's that? Did it build the derivation? No it didn't, but it
-<strong>did create the .drv file</strong>. <code>nix repl</code> does not build derivations
-unless you tell it to do so.</p>
+<p>Oh oh, what's that? Did it build the derivation? No it didn't, but it <strong>did create the .drv file</strong>. <code>nix repl</code> does not build derivations unless you tell it to do so.</p>
 <h2 id="digression-about-drv-files"><a class="header" href="#digression-about-drv-files">Digression about .drv files</a></h2>
-<p>What's that <code>.drv</code> file? It is the specification of how to build the
-derivation, without all the Nix language fuzz.</p>
+<p>What's that <code>.drv</code> file? It is the specification of how to build the derivation, without all the Nix language fuzz.</p>
 <p>Before continuing, some analogies with the C language:</p>
 <ul>
 <li>
 <p><code>.nix</code> files are like <code>.c</code> files.</p>
 </li>
 <li>
-<p><code>.drv</code> files are intermediate files like <code>.o</code> files. The <code>.drv</code>
-describes how to build a derivation; it's the bare minimum
-information.</p>
+<p><code>.drv</code> files are intermediate files like <code>.o</code> files. The <code>.drv</code> describes how to build a derivation; it's the bare minimum information.</p>
 </li>
 <li>
 <p>out paths are then the product of the build.</p>
 </li>
 </ul>
 <p>Both drv paths and out paths are stored in the nix store as you can see.</p>
-<p>What's in that <code>.drv</code> file? You can read it, but it's better to pretty
-print it:</p>
+<p>What's in that <code>.drv</code> file? You can read it, but it's better to pretty print it:</p>
 <div class="info">
-Note: If your version of nix doesn't have `nix derivation show`, use
-`nix show-derivation` instead.
+Note: If your version of nix doesn't have `nix derivation show`, use `nix show-derivation` instead.
 </div>
-<pre><code>$ nix derivation show /nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv
+<pre><code class="language-console">$ nix derivation show /nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv
 {
   "/nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv": {
     "outputs": {
@@ -266,29 +250,16 @@ Note: If your version of nix doesn't have `nix derivation show`, use
   }
 }
 </code></pre>
-<p>Ok, we can see there's an out path, but it does not exist yet. We never
-told Nix to build it, but we know beforehand where the build output will
-be. Why?</p>
-<p>Think, if Nix ever built the derivation just because we accessed it in
-Nix, we would have to wait a long time if it was, say, Firefox. That's
-why Nix let us know the path beforehand and kept evaluating the Nix
-expressions, but it's still empty because no build was ever made.</p>
-<p>Important: the hash of the out path is based solely on the
-input derivations in the current version of Nix, not on the contents of
-the build product. It's possible however to have
-<a href="https://en.wikipedia.org/wiki/Content-addressable_storage">content-addressable</a>
-derivations for e.g. tarballs as we'll see later on.</p>
-<p>Many things are empty in that <code>.drv</code>, however I'll write a summary of
-the <a href="http://nixos.org/~eelco/pubs/phd-thesis.pdf">.drv format</a> for you:</p>
+<p>Ok, we can see there's an out path, but it does not exist yet. We never told Nix to build it, but we know beforehand where the build output will be. Why?</p>
+<p>Think, if Nix ever built the derivation just because we accessed it in Nix, we would have to wait a long time if it was, say, Firefox. That's why Nix let us know the path beforehand and kept evaluating the Nix expressions, but it's still empty because no build was ever made.</p>
+<p>Important: the hash of the out path is based solely on the input derivations in the current version of Nix, not on the contents of the build product. It's possible however to have <a href="https://en.wikipedia.org/wiki/Content-addressable_storage">content-addressable</a> derivations for e.g. tarballs as we'll see later on.</p>
+<p>Many things are empty in that <code>.drv</code>, however I'll write a summary of the <a href="http://nixos.org/~eelco/pubs/phd-thesis.pdf">.drv format</a> for you:</p>
 <ol>
 <li>
-<p>The output paths (there can be multiple ones). By default nix
-creates one out path called "out".</p>
+<p>The output paths (there can be multiple ones). By default nix creates one out path called "out".</p>
 </li>
 <li>
-<p>The list of input derivations. It's empty because we are not
-referring to any other derivation. Otherwise, there would be a list
-of other .drv files.</p>
+<p>The list of input derivations. It's empty because we are not referring to any other derivation. Otherwise, there would be a list of other .drv files.</p>
 </li>
 <li>
 <p>The system and the builder executable (yes, it's a fake one).</p>
@@ -298,15 +269,10 @@ of other .drv files.</p>
 </li>
 </ol>
 <p>That's it, the minimum necessary information to build our derivation.</p>
-<p>Important note: the environment variables passed to the
-builder are just those you see in the .drv plus some other Nix related
-configuration (number of cores, temp dir, ...). The builder will not
-inherit any variable from your running shell, otherwise builds would
-suffer from
-<a href="https://wiki.debian.org/ReproducibleBuilds">non-determinism</a>.</p>
+<p>Important note: the environment variables passed to the builder are just those you see in the .drv plus some other Nix related configuration (number of cores, temp dir, ...). The builder will not inherit any variable from your running shell, otherwise builds would suffer from <a href="https://wiki.debian.org/ReproducibleBuilds">non-determinism</a>.</p>
 <p>Back to our fake derivation.</p>
 <p>Let's build our really fake derivation:</p>
-<pre><code>nix-repl&gt; d = derivation { name = "myname"; builder = "mybuilder"; system = "mysystem"; }
+<pre><code class="language-console">nix-repl&gt; d = derivation { name = "myname"; builder = "mybuilder"; system = "mysystem"; }
 nix-repl&gt; :b d
 [...]
 these derivations will be built:
@@ -314,129 +280,91 @@ these derivations will be built:
 building path(s) `/nix/store/40s0qmrfb45vlh6610rk29ym318dswdr-myname'
 error: a `mysystem' is required to build `/nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv', but I am a `x86_64-linux'
 </code></pre>
-<p>The <code>:b</code> is a <code>nix repl</code> specific command to build a derivation. You can
-see more commands with <code>:?</code> . So in the output you can see that it takes
-the <code>.drv</code> as information on how to build the derivation. Then it says
-it's trying to produce our out path. Finally the error we were waiting
-for: that derivation can't be built on our system.</p>
-<p>We're doing the build inside <code>nix repl</code>, but what if we don't want to
-use <code>nix repl</code>? You can <strong>realise</strong> a <code>.drv</code> with:</p>
-<pre><code>$ nix-store -r /nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv
+<p>The <code>:b</code> is a <code>nix repl</code> specific command to build a derivation. You can see more commands with <code>:?</code> . So in the output you can see that it takes the <code>.drv</code> as information on how to build the derivation. Then it says it's trying to produce our out path. Finally the error we were waiting for: that derivation can't be built on our system.</p>
+<p>We're doing the build inside <code>nix repl</code>, but what if we don't want to use <code>nix repl</code>? You can <strong>realise</strong> a <code>.drv</code> with:</p>
+<pre><code class="language-console">$ nix-store -r /nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv
 </code></pre>
 <p>You will get the same output as before.</p>
 <p>Let's fix the system attribute:</p>
-<pre><code>nix-repl&gt; d = derivation { name = "myname"; builder = "mybuilder"; system = builtins.currentSystem; }
+<pre><code class="language-console">nix-repl&gt; d = derivation { name = "myname"; builder = "mybuilder"; system = builtins.currentSystem; }
 nix-repl&gt; :b d
 [...]
 build error: invalid file name `mybuilder'
 </code></pre>
-<p>A step forward: of course, that <code>mybuilder</code> executable does not really
-exist. Stop for a moment.</p>
+<p>A step forward: of course, that <code>mybuilder</code> executable does not really exist. Stop for a moment.</p>
 <h2 id="whats-in-a-derivation-set"><a class="header" href="#whats-in-a-derivation-set">What's in a derivation set</a></h2>
-<p>It is useful to start by inspecting the return value from the derivation
-function. In this case, the returned value is a plain set:</p>
-<pre><code>nix-repl&gt; d = derivation { name = "myname"; builder = "mybuilder"; system = "mysystem"; }
+<p>It is useful to start by inspecting the return value from the derivation function. In this case, the returned value is a plain set:</p>
+<pre><code class="language-console">nix-repl&gt; d = derivation { name = "myname"; builder = "mybuilder"; system = "mysystem"; }
 nix-repl&gt; builtins.isAttrs d
 true
 nix-repl&gt; builtins.attrNames d
 [ "all" "builder" "drvAttrs" "drvPath" "name" "out" "outPath" "outputName" "system" "type" ]
 </code></pre>
-<p>You can guess what <code>builtins.isAttrs</code> does; it returns true if the
-argument is a set. While <code>builtins.attrNames</code> returns a list of keys of
-the given set. Some kind of reflection, you might say.</p>
+<p>You can guess what <code>builtins.isAttrs</code> does; it returns true if the argument is a set. While <code>builtins.attrNames</code> returns a list of keys of the given set. Some kind of reflection, you might say.</p>
 <p>Start from drvAttrs:</p>
-<pre><code>nix-repl&gt; d.drvAttrs
+<pre><code class="language-console">nix-repl&gt; d.drvAttrs
 { builder = "mybuilder"; name = "myname"; system = "mysystem"; }
 </code></pre>
-<p>That's basically the input we gave to the derivation function. Also the
-<code>d.name</code>, <code>d.system</code> and <code>d.builder</code> attributes are exactly the ones we
-gave as input.</p>
-<pre><code>nix-repl&gt; (d == d.out)
+<p>That's basically the input we gave to the derivation function. Also the <code>d.name</code>, <code>d.system</code> and <code>d.builder</code> attributes are exactly the ones we gave as input.</p>
+<pre><code class="language-console">nix-repl&gt; (d == d.out)
 true
 </code></pre>
-<p>So out is just the derivation itself, it seems weird but the reason is
-that we only have one output from the derivation. That's also the
-reason why <code>d.all</code> is a singleton. We'll see multiple outputs later.</p>
-<p>The <code>d.drvPath</code> is the path of the <code>.drv</code> file:
-<code>/nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv</code>.</p>
-<p>Something interesting is the <code>type</code> attribute. It's <code>"derivation"</code>. Nix
-does add a little of magic to sets with type derivation, but not that
-much. To help you understand, you can create yourself a set with that
-type, it's a simple set:</p>
-<pre><code>nix-repl&gt; { type = "derivation"; }
+<p>So out is just the derivation itself, it seems weird but the reason is that we only have one output from the derivation. That's also the reason why <code>d.all</code> is a singleton. We'll see multiple outputs later.</p>
+<p>The <code>d.drvPath</code> is the path of the <code>.drv</code> file: <code>/nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv</code>.</p>
+<p>Something interesting is the <code>type</code> attribute. It's <code>"derivation"</code>. Nix does add a little of magic to sets with type derivation, but not that much. To help you understand, you can create yourself a set with that type, it's a simple set:</p>
+<pre><code class="language-console">nix-repl&gt; { type = "derivation"; }
 «derivation ???»
 </code></pre>
-<p>Of course it has no other information, so Nix doesn't know what to say
-:-) But you get it, the <code>type = "derivation"</code> is just a convention for
-Nix and for us to understand the set is a derivation.</p>
-<p>When writing packages, we are interested in the outputs. The other
-metadata is needed for Nix to know how to create the drv path and the
-out path.</p>
-<p>The <code>outPath</code> attribute is the build path in the nix store:
-<code>/nix/store/40s0qmrfb45vlh6610rk29ym318dswdr-myname</code>.</p>
+<p>Of course it has no other information, so Nix doesn't know what to say :-) But you get it, the <code>type = "derivation"</code> is just a convention for Nix and for us to understand the set is a derivation.</p>
+<p>When writing packages, we are interested in the outputs. The other metadata is needed for Nix to know how to create the drv path and the out path.</p>
+<p>The <code>outPath</code> attribute is the build path in the nix store: <code>/nix/store/40s0qmrfb45vlh6610rk29ym318dswdr-myname</code>.</p>
 <h2 id="referring-to-other-derivations"><a class="header" href="#referring-to-other-derivations">Referring to other derivations</a></h2>
-<p>Just like dependencies in other package managers, how do we refer to
-other packages? How do we refer to other derivations in terms of files
-on the disk? We use the <code>outPath</code>. The <code>outPath</code> describes the location
-of the files of that derivation. To make it more convenient, Nix is able
-to do a conversion from a derivation set to a string.</p>
-<pre><code>nix-repl&gt; d.outPath
+<p>Just like dependencies in other package managers, how do we refer to other packages? How do we refer to other derivations in terms of files on the disk? We use the <code>outPath</code>. The <code>outPath</code> describes the location of the files of that derivation. To make it more convenient, Nix is able to do a conversion from a derivation set to a string.</p>
+<pre><code class="language-console">nix-repl&gt; d.outPath
 "/nix/store/40s0qmrfb45vlh6610rk29ym318dswdr-myname"
 nix-repl&gt; builtins.toString d
 "/nix/store/40s0qmrfb45vlh6610rk29ym318dswdr-myname"
 </code></pre>
-<p>Nix does the "set to string conversion" as long as there is the
-<code>outPath</code> attribute (much like a toString method in other languages):</p>
-<pre><code>nix-repl&gt; builtins.toString { outPath = "foo"; }
+<p>Nix does the "set to string conversion" as long as there is the <code>outPath</code> attribute (much like a toString method in other languages):</p>
+<pre><code class="language-console">nix-repl&gt; builtins.toString { outPath = "foo"; }
 "foo"
 nix-repl&gt; builtins.toString { a = "b"; }
 error: cannot coerce a set to a string, at (string):1:1
 </code></pre>
 <p>Say we want to use binaries from coreutils (ignore the nixpkgs etc.):</p>
-<pre><code>nix-repl&gt; :l &lt;nixpkgs&gt;
+<pre><code class="language-console">nix-repl&gt; :l &lt;nixpkgs&gt;
 Added 3950 variables.
 nix-repl&gt; coreutils
 «derivation /nix/store/1zcs1y4n27lqs0gw4v038i303pb89rw6-coreutils-8.21.drv»
 nix-repl&gt; builtins.toString coreutils
 "/nix/store/8w4cbiy7wqvaqsnsnb3zvabq1cp2zhyz-coreutils-8.21"
 </code></pre>
-<p>Apart from the nixpkgs stuff, just think we added to the scope a series
-of variables. One of them is coreutils. It is the derivation of the
-coreutils package you all know of from other Linux distributions. It
-contains basic binaries for GNU/Linux systems (you may have multiple
-derivations of coreutils in the nix store, no worries):</p>
-<pre><code>$ ls /nix/store/*coreutils*/bin
+<p>Apart from the nixpkgs stuff, just think we added to the scope a series of variables. One of them is coreutils. It is the derivation of the coreutils package you all know of from other Linux distributions. It contains basic binaries for GNU/Linux systems (you may have multiple derivations of coreutils in the nix store, no worries):</p>
+<pre><code class="language-console">$ ls /nix/store/*coreutils*/bin
 [...]
 </code></pre>
-<p>I remind you, inside strings it's possible to interpolate Nix
-expressions with <code>${...}</code>:</p>
-<pre><code>nix-repl&gt; "${d}"
+<p>I remind you, inside strings it's possible to interpolate Nix expressions with <code>${...}</code>:</p>
+<pre><code class="language-console">nix-repl&gt; "${d}"
 "/nix/store/40s0qmrfb45vlh6610rk29ym318dswdr-myname"
 nix-repl&gt; "${coreutils}"
 "/nix/store/8w4cbiy7wqvaqsnsnb3zvabq1cp2zhyz-coreutils-8.21"
 </code></pre>
-<p>That's very convenient, because then we could refer to e.g. the
-bin/true binary like this:</p>
-<pre><code>nix-repl&gt; "${coreutils}/bin/true"
+<p>That's very convenient, because then we could refer to e.g. the bin/true binary like this:</p>
+<pre><code class="language-console">nix-repl&gt; "${coreutils}/bin/true"
 "/nix/store/8w4cbiy7wqvaqsnsnb3zvabq1cp2zhyz-coreutils-8.21/bin/true"
 </code></pre>
 <h2 id="an-almost-working-derivation"><a class="header" href="#an-almost-working-derivation">An almost working derivation</a></h2>
-<p>In the previous attempt we used a fake builder, <code>mybuilder</code> which
-obviously does not exist. But we can use for example bin/true, which
-always exits with 0 (success).</p>
-<pre><code>nix-repl&gt; :l &lt;nixpkgs&gt;
+<p>In the previous attempt we used a fake builder, <code>mybuilder</code> which obviously does not exist. But we can use for example bin/true, which always exits with 0 (success).</p>
+<pre><code class="language-console">nix-repl&gt; :l &lt;nixpkgs&gt;
 nix-repl&gt; d = derivation { name = "myname"; builder = "${coreutils}/bin/true"; system = builtins.currentSystem; }
 nix-repl&gt; :b d
 [...]
 builder for `/nix/store/qyfrcd53wmc0v22ymhhd5r6sz5xmdc8a-myname.drv' failed to produce output path `/nix/store/ly2k1vswbfmswr33hw0kf0ccilrpisnk-myname'
 </code></pre>
-<p>Another step forward, it executed the builder (bin/true), but the
-builder did not create the out path of course, it just exited with 0.</p>
-<p>Obvious note: every time we change the derivation, a new
-hash is created.</p>
-<p>Let's examine the new <code>.drv</code> now that we referred to another
-derivation:</p>
-<pre><code>$ nix derivation show /nix/store/qyfrcd53wmc0v22ymhhd5r6sz5xmdc8a-myname.drv
+<p>Another step forward, it executed the builder (bin/true), but the builder did not create the out path of course, it just exited with 0.</p>
+<p>Obvious note: every time we change the derivation, a new hash is created.</p>
+<p>Let's examine the new <code>.drv</code> now that we referred to another derivation:</p>
+<pre><code class="language-console">$ nix derivation show /nix/store/qyfrcd53wmc0v22ymhhd5r6sz5xmdc8a-myname.drv
 {
   "/nix/store/qyfrcd53wmc0v22ymhhd5r6sz5xmdc8a-myname.drv": {
     "outputs": {
@@ -462,56 +390,27 @@ derivation:</p>
   }
 }
 </code></pre>
-<p>Aha! Nix added a dependency to our myname.drv, it's the coreutils.drv.
-Before doing our build, Nix should build the coreutils.drv. But since
-coreutils is already in our nix store, no build is needed, it's already
-there with out path
-<code>/nix/store/qrxs7sabhqcr3j9ai0j0cp58zfnny0jz-coreutils-8.29</code>.</p>
+<p>Aha! Nix added a dependency to our myname.drv, it's the coreutils.drv. Before doing our build, Nix should build the coreutils.drv. But since coreutils is already in our nix store, no build is needed, it's already there with out path <code>/nix/store/qrxs7sabhqcr3j9ai0j0cp58zfnny0jz-coreutils-8.29</code>.</p>
 <h2 id="when-is-the-derivation-built"><a class="header" href="#when-is-the-derivation-built">When is the derivation built</a></h2>
-<p>Nix does not build derivations <strong>during evaluation</strong> of Nix expressions.
-In fact, that's why we have to do ":b drv" in <code>nix repl</code>, or use
-nix-store -r in the first place.</p>
+<p>Nix does not build derivations <strong>during evaluation</strong> of Nix expressions. In fact, that's why we have to do ":b drv" in <code>nix repl</code>, or use nix-store -r in the first place.</p>
 <p>An important separation is made in Nix:</p>
 <ul>
 <li>
-<p><strong>Instantiate/Evaluation time</strong>: the Nix expression is parsed,
-interpreted and finally returns a derivation set. During evaluation,
-you can refer to other derivations because Nix will create .drv
-files and we will know out paths beforehand. This is achieved with
-<a href="https://nixos.org/manual/nix/stable/command-ref/nix-instantiate.html">nix-instantiate</a>.</p>
+<p><strong>Instantiate/Evaluation time</strong>: the Nix expression is parsed, interpreted and finally returns a derivation set. During evaluation, you can refer to other derivations because Nix will create .drv files and we will know out paths beforehand. This is achieved with <a href="https://nixos.org/manual/nix/stable/command-ref/nix-instantiate.html">nix-instantiate</a>.</p>
 </li>
 <li>
-<p><strong>Realise/Build time</strong>: the .drv from the derivation set is built,
-first building .drv inputs (build dependencies). This is achieved
-with <a href="https://nixos.org/manual/nix/stable/command-ref/nix-store.html#operation---realise">nix-store
--r</a>.</p>
+<p><strong>Realise/Build time</strong>: the .drv from the derivation set is built, first building .drv inputs (build dependencies). This is achieved with <a href="https://nixos.org/manual/nix/stable/command-ref/nix-store.html#operation---realise">nix-store -r</a>.</p>
 </li>
 </ul>
-<p>Think of it as of compile time and link time like with C/C++ projects.
-You first compile all source files to object files. Then link object
-files in a single executable.</p>
-<p>In Nix, first the Nix expression (usually in a .nix file) is compiled to
-.drv, then each .drv is built and the product is installed in the
-relative out paths.</p>
+<p>Think of it as of compile time and link time like with C/C++ projects. You first compile all source files to object files. Then link object files in a single executable.</p>
+<p>In Nix, first the Nix expression (usually in a .nix file) is compiled to .drv, then each .drv is built and the product is installed in the relative out paths.</p>
 <h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
 <p>Is it that complicated to create a package for Nix? No, it's not.</p>
-<p>We're walking through the fundamentals of Nix derivations, to
-understand how they work, how they are represented. Packaging in Nix is
-certainly easier than that, but we're not there yet in this post. More
-Nix pills are needed.</p>
-<p>With the derivation function we provide a set of information on how to
-build a package, and we get back the information about where the package
-was built. Nix converts a set to a string when there's an <code>outPath</code>;
-that's very convenient. With that, it's easy to refer to other
-derivations.</p>
-<p>When Nix builds a derivation, it first creates a .drv file from a
-derivation expression, and uses it to build the output. It does so
-recursively for all the dependencies (inputs). It "executes" the .drv
-files like a machine. Not much magic after all.</p>
+<p>We're walking through the fundamentals of Nix derivations, to understand how they work, how they are represented. Packaging in Nix is certainly easier than that, but we're not there yet in this post. More Nix pills are needed.</p>
+<p>With the derivation function we provide a set of information on how to build a package, and we get back the information about where the package was built. Nix converts a set to a string when there's an <code>outPath</code>; that's very convenient. With that, it's easy to refer to other derivations.</p>
+<p>When Nix builds a derivation, it first creates a .drv file from a derivation expression, and uses it to build the output. It does so recursively for all the dependencies (inputs). It "executes" the .drv files like a machine. Not much magic after all.</p>
 <h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
-<p>...we will finally write our first <strong>working</strong> derivation. Yes, this
-post is about "our first derivation", but I never said it was a
-working one ;)</p>
+<p>...we will finally write our first <strong>working</strong> derivation. Yes, this post is about "our first derivation", but I never said it was a working one ;)</p>
 
                     </main>
 

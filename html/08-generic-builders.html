@@ -148,6 +148,12 @@
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        <a href="https://github.com/NixOS/nix-pills" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/NixOS/nix-pills/tree/master/pills/08-generic-builders.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -175,24 +181,13 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="generic-builders"><a class="header" href="#generic-builders">Generic Builders</a></h1>
-<p>Welcome to the 8th Nix pill. In the previous <a href="07-working-derivation.html">7th
-pill</a> we successfully built a derivation. We wrote
-a builder script that compiled a C file and installed the binary under
-the nix store.</p>
-<p>In this post, we will generalize the builder script, write a Nix
-expression for <a href="https://www.gnu.org/software/hello/">GNU hello world</a>
-and create a wrapper around the derivation built-in function.</p>
+<p>Welcome to the 8th Nix pill. In the previous <a href="07-working-derivation.html">7th pill</a> we successfully built a derivation. We wrote a builder script that compiled a C file and installed the binary under the nix store.</p>
+<p>In this post, we will generalize the builder script, write a Nix expression for <a href="https://www.gnu.org/software/hello/">GNU hello world</a> and create a wrapper around the derivation built-in function.</p>
 <h2 id="packaging-gnu-hello-world"><a class="header" href="#packaging-gnu-hello-world">Packaging GNU hello world</a></h2>
-<p>In the previous pill we packaged a simple .c file, which was being
-compiled with a raw gcc call. That's not a good example of a project.
-Many use autotools, and since we're going to generalize our builder, it
-would be better to do it with the most used build system.</p>
-<p><a href="https://www.gnu.org/software/hello/">GNU hello world</a>, despite its
-name, is a simple yet complete project which uses autotools. Fetch the
-latest tarball here:
-<a href="https://ftp.gnu.org/gnu/hello/hello-2.12.1.tar.gz">https://ftp.gnu.org/gnu/hello/hello-2.12.1.tar.gz</a>.</p>
+<p>In the previous pill we packaged a simple .c file, which was being compiled with a raw gcc call. That's not a good example of a project. Many use autotools, and since we're going to generalize our builder, it would be better to do it with the most used build system.</p>
+<p><a href="https://www.gnu.org/software/hello/">GNU hello world</a>, despite its name, is a simple yet complete project which uses autotools. Fetch the latest tarball here: <a href="https://ftp.gnu.org/gnu/hello/hello-2.12.1.tar.gz">https://ftp.gnu.org/gnu/hello/hello-2.12.1.tar.gz</a>.</p>
 <p>Let's create a builder script for GNU hello world, hello_builder.sh:</p>
-<pre><code>export PATH="$gnutar/bin:$gcc/bin:$gnumake/bin:$coreutils/bin:$gawk/bin:$gzip/bin:$gnugrep/bin:$gnused/bin:$bintools/bin"
+<pre><code class="language-sh">export PATH="$gnutar/bin:$gcc/bin:$gnumake/bin:$coreutils/bin:$gawk/bin:$gzip/bin:$gnugrep/bin:$gnused/bin:$bintools/bin"
 tar -xzf $src
 cd hello-2.12.1
 ./configure --prefix=$out
@@ -200,14 +195,14 @@ make
 make install
 </code></pre>
 <p>And the derivation hello.nix:</p>
-<pre><code>let
-  pkgs = import &lt;nixpkgs&gt; { };
+<pre><code class="language-nix">let
+    pkgs = import &lt;nixpkgs&gt; { };
 in
 derivation {
-  name = "hello";
-  builder = "${pkgs.bash}/bin/bash";
-  args = [ ./hello_builder.sh ];
-  inherit (pkgs)
+    name = "hello";
+    builder = "${pkgs.bash}/bin/bash";
+    args = [ ./hello_builder.sh ];
+    inherit (pkgs)
     gnutar
     gzip
     gnumake
@@ -217,24 +212,22 @@ derivation {
     gnused
     gnugrep
     ;
-  bintools = pkgs.binutils.bintools;
-  src = ./hello-2.12.1.tar.gz;
-  system = builtins.currentSystem;
+    bintools = pkgs.binutils.bintools;
+    src = ./hello-2.12.1.tar.gz;
+    system = builtins.currentSystem;
 }
 </code></pre>
 <div class="info">
 <h4 id="nix-on-darwin"><a class="header" href="#nix-on-darwin">Nix on darwin</a></h4>
-<p>Darwin (i.e. macOS) builds typically use <code>clang</code> rather than <code>gcc</code> for a
-C compiler. We can adapt this early example for darwin by using this
-modified version of <code>hello.nix</code>:</p>
-<pre><code>let
-  pkgs = import &lt;nixpkgs&gt; { };
+<p>Darwin (i.e. macOS) builds typically use <code>clang</code> rather than <code>gcc</code> for a C compiler. We can adapt this early example for darwin by using this modified version of <code>hello.nix</code>:</p>
+<pre><code class="language-nix">let
+    pkgs = import &lt;nixpkgs&gt; { };
 in
 derivation {
-  name = "hello";
-  builder = "${pkgs.bash}/bin/bash";
-  args = [ ./hello_builder.sh ];
-  inherit (pkgs)
+    name = "hello";
+    builder = "${pkgs.bash}/bin/bash";
+    args = [ ./hello_builder.sh ];
+    inherit (pkgs)
     gnutar
     gzip
     gnumake
@@ -243,37 +236,31 @@ derivation {
     gnused
     gnugrep
     ;
-  gcc = pkgs.clang;
-  bintools = pkgs.clang.bintools.bintools_bin;
-  src = ./hello-2.12.1.tar.gz;
-  system = builtins.currentSystem;
+    gcc = pkgs.clang;
+    bintools = pkgs.clang.bintools.bintools_bin;
+    src = ./hello-2.12.1.tar.gz;
+    system = builtins.currentSystem;
 }
 </code></pre>
-<p>Later, we will show how Nix can automatically handle these differences.
-For now, please be just aware that changes similar to the above may be
-needed in what follows.</p>
+<p>Later, we will show how Nix can automatically handle these differences. For now, please be just aware that changes similar to the above may be needed in what follows.</p>
 </div>
-<p>Now build it with <code>nix-build hello.nix</code> and you can launch
-<code>result/bin/hello</code>. Nothing easier, but do we have to create a
-builder.sh for each package? Do we always have to pass the dependencies
-to the <code>derivation</code> function?</p>
-<p>Please note the <code>--prefix=$out</code> we were talking about in the <a href="07-working-derivation.html">previous
-pill</a>.</p>
+<p>Now build it with <code>nix-build hello.nix</code> and you can launch <code>result/bin/hello</code>. Nothing easier, but do we have to create a builder.sh for each package? Do we always have to pass the dependencies to the <code>derivation</code> function?</p>
+<p>Please note the <code>--prefix=$out</code> we were talking about in the <a href="07-working-derivation.html">previous pill</a>.</p>
 <h2 id="a-generic-builder"><a class="header" href="#a-generic-builder">A generic builder</a></h2>
 <p>Let's create a generic <code>builder.sh</code> for autotools projects:</p>
-<pre><code>set -e
+<pre><code class="language-sh">set -e
 unset PATH
 for p in $buildInputs; do
-  export PATH=$p/bin${PATH:+:}$PATH
+    export PATH=$p/bin${PATH:+:}$PATH
 done
 
 tar -xf $src
 
 for d in *; do
-  if [ -d "$d" ]; then
+    if [ -d "$d" ]; then
     cd "$d"
     break
-  fi
+    fi
 done
 
 ./configure --prefix=$out
@@ -286,194 +273,140 @@ make install
 <p>Exit the build on any error with <code>set -e</code>.</p>
 </li>
 <li>
-<p>First <code>unset PATH</code>, because it's initially set to a non-existent
-path.</p>
+<p>First <code>unset PATH</code>, because it's initially set to a non-existent path.</p>
 </li>
 <li>
-<p>We'll see this below in detail, however for each path in
-<code>$buildInputs</code>, we append <code>bin</code> to <code>PATH</code>.</p>
+<p>We'll see this below in detail, however for each path in <code>$buildInputs</code>, we append <code>bin</code> to <code>PATH</code>.</p>
 </li>
 <li>
 <p>Unpack the source.</p>
 </li>
 <li>
-<p>Find a directory where the source has been unpacked and <code>cd</code> into
-it.</p>
+<p>Find a directory where the source has been unpacked and <code>cd</code> into it.</p>
 </li>
 <li>
 <p>Once we're set up, compile and install.</p>
 </li>
 </ol>
-<p>As you can see, there's no reference to "hello" in the builder
-anymore. It still makes several assumptions, but it's certainly more
-generic.</p>
+<p>As you can see, there's no reference to "hello" in the builder anymore. It still makes several assumptions, but it's certainly more generic.</p>
 <p>Now let's rewrite <code>hello.nix</code>:</p>
-<pre><code>let
-  pkgs = import &lt;nixpkgs&gt; { };
+<pre><code class="language-nix">let
+    pkgs = import &lt;nixpkgs&gt; { };
 in
 derivation {
-  name = "hello";
-  builder = "${pkgs.bash}/bin/bash";
-  args = [ ./builder.sh ];
-  buildInputs = with pkgs; [
-    gnutar
-    gzip
-    gnumake
-    gcc
-    coreutils
-    gawk
-    gnused
-    gnugrep
-    binutils.bintools
-  ];
-  src = ./hello-2.12.1.tar.gz;
-  system = builtins.currentSystem;
+    name = "hello";
+    builder = "${pkgs.bash}/bin/bash";
+    args = [ ./builder.sh ];
+    buildInputs = with pkgs; [
+        gnutar
+        gzip
+        gnumake
+        gcc
+        coreutils
+        gawk
+        gnused
+        gnugrep
+        binutils.bintools
+    ];
+    src = ./hello-2.12.1.tar.gz;
+    system = builtins.currentSystem;
 }
 </code></pre>
-<p>All clear, except that buildInputs. However it's easier than any black
-magic you are thinking of at this moment.</p>
-<p>Nix is able to convert a list to a string. It first converts the
-elements to strings, and then concatenates them separated by a space:</p>
-<pre><code>nix-repl&gt; builtins.toString 123
+<p>All clear, except that buildInputs. However it's easier than any black magic you are thinking of at this moment.</p>
+<p>Nix is able to convert a list to a string. It first converts the elements to strings, and then concatenates them separated by a space:</p>
+<pre><code class="language-console">nix-repl&gt; builtins.toString 123
 "123"
 nix-repl&gt; builtins.toString [ 123 456 ]
 "123 456"
 </code></pre>
 <p>Recall that derivations can be converted to a string, hence:</p>
-<pre><code>nix-repl&gt; :l &lt;nixpkgs&gt;
+<pre><code class="language-console">nix-repl&gt; :l &lt;nixpkgs&gt;
 Added 3950 variables.
 nix-repl&gt; builtins.toString gnugrep
 "/nix/store/g5gdylclfh6d224kqh9sja290pk186xd-gnugrep-2.14"
 nix-repl&gt; builtins.toString [ gnugrep gnused ]
 "/nix/store/g5gdylclfh6d224kqh9sja290pk186xd-gnugrep-2.14 /nix/store/krgdc4sknzpw8iyk9p20lhqfd52kjmg0-gnused-4.2.2"
 </code></pre>
-<p>Simple! The buildInputs variable is a string with out paths separated by
-space, perfect for bash usage in a for loop.</p>
+<p>Simple! The buildInputs variable is a string with out paths separated by space, perfect for bash usage in a for loop.</p>
 <h2 id="a-more-convenient-derivation-function"><a class="header" href="#a-more-convenient-derivation-function">A more convenient derivation function</a></h2>
-<p>We managed to write a builder that can be used for multiple autotools
-projects. But in the hello.nix expression we are specifying tools that
-are common to more projects; we don't want to pass them every time.</p>
-<p>A natural approach would be to create a function that accepts an
-attribute set, similar to the one used by the derivation function, and
-merge it with another attribute set containing values common to many
-projects.</p>
+<p>We managed to write a builder that can be used for multiple autotools projects. But in the hello.nix expression we are specifying tools that are common to more projects; we don't want to pass them every time.</p>
+<p>A natural approach would be to create a function that accepts an attribute set, similar to the one used by the derivation function, and merge it with another attribute set containing values common to many projects.</p>
 <p>Create <code>autotools.nix</code>:</p>
-<pre><code>pkgs: attrs:
+<pre><code class="language-nix">pkgs: attrs:
 let
-  defaultAttrs = {
+    defaultAttrs = {
     builder = "${pkgs.bash}/bin/bash";
     args = [ ./builder.sh ];
     baseInputs = with pkgs; [
-      gnutar
-      gzip
-      gnumake
-      gcc
-      coreutils
-      gawk
-      gnused
-      gnugrep
-      binutils.bintools
+        gnutar
+        gzip
+        gnumake
+        gcc
+        coreutils
+        gawk
+        gnused
+        gnugrep
+        binutils.bintools
     ];
     buildInputs = [ ];
     system = builtins.currentSystem;
-  };
+    };
 in
 derivation (defaultAttrs // attrs)
 </code></pre>
-<p>Ok now we have to remember a little about <a href="05-functions-and-imports.html">Nix
-functions</a>. The whole nix expression of this
-<code>autotools.nix</code> file will evaluate to a function. This function accepts
-a parameter <code>pkgs</code>, then returns a function which accepts a parameter
-<code>attrs</code>.</p>
-<p>The body of the function is simple, yet at first sight it might be hard
-to grasp:</p>
+<p>Ok now we have to remember a little about <a href="05-functions-and-imports.html">Nix functions</a>. The whole nix expression of this <code>autotools.nix</code> file will evaluate to a function. This function accepts a parameter <code>pkgs</code>, then returns a function which accepts a parameter <code>attrs</code>.</p>
+<p>The body of the function is simple, yet at first sight it might be hard to grasp:</p>
 <ol>
 <li>
 <p>First drop in the scope the magic <code>pkgs</code> attribute set.</p>
 </li>
 <li>
-<p>Within a let expression we define a helper variable, <code>defaultAttrs</code>,
-which serves as a set of common attributes used in derivations.</p>
+<p>Within a let expression we define a helper variable, <code>defaultAttrs</code>, which serves as a set of common attributes used in derivations.</p>
 </li>
 <li>
-<p>Finally we create the derivation with that strange expression,
-(<code>defaultAttrs // attrs</code>).</p>
+<p>Finally we create the derivation with that strange expression, (<code>defaultAttrs // attrs</code>).</p>
 </li>
 </ol>
-<p>The <a href="https://nixos.org/manual/nix/stable/expressions/language-operators.html">//
-operator</a>
-is an operator between two sets. The result is the union of the two
-sets. In case of conflicts between attribute names, the value on the
-right set is preferred.</p>
-<p>So we use <code>defaultAttrs</code> as base set, and add (or override) the
-attributes from <code>attrs</code>.</p>
-<p>A couple of examples ought to be enough to clear out the behavior of the
-operator:</p>
-<pre><code>nix-repl&gt; { a = "b"; } // { c = "d"; }
+<p>The <a href="https://nixos.org/manual/nix/stable/expressions/language-operators.html">// operator</a> is an operator between two sets. The result is the union of the two sets. In case of conflicts between attribute names, the value on the right set is preferred.</p>
+<p>So we use <code>defaultAttrs</code> as base set, and add (or override) the attributes from <code>attrs</code>.</p>
+<p>A couple of examples ought to be enough to clear out the behavior of the operator:</p>
+<pre><code class="language-console">nix-repl&gt; { a = "b"; } // { c = "d"; }
 { a = "b"; c = "d"; }
 nix-repl&gt; { a = "b"; } // { a = "c"; }
 { a = "c"; }
 </code></pre>
-<p><strong>Exercise:</strong> Complete the new <code>builder.sh</code> by adding <code>$baseInputs</code> in
-the <code>for</code> loop together with <code>$buildInputs</code>. As you noticed, we passed
-that new variable in the derivation. Instead of merging buildInputs with
-the base ones, we prefer to preserve buildInputs as seen by the caller,
-so we keep them separated. Just a matter of choice.</p>
+<p><strong>Exercise:</strong> Complete the new <code>builder.sh</code> by adding <code>$baseInputs</code> in the <code>for</code> loop together with <code>$buildInputs</code>. As you noticed, we passed that new variable in the derivation. Instead of merging buildInputs with the base ones, we prefer to preserve buildInputs as seen by the caller, so we keep them separated. Just a matter of choice.</p>
 <p>Then we rewrite <code>hello.nix</code> as follows:</p>
-<pre><code>let
-  pkgs = import &lt;nixpkgs&gt; { };
-  mkDerivation = import ./autotools.nix pkgs;
+<pre><code class="language-nix">let
+    pkgs = import &lt;nixpkgs&gt; { };
+    mkDerivation = import ./autotools.nix pkgs;
 in
 mkDerivation {
-  name = "hello";
-  src = ./hello-2.12.1.tar.gz;
+    name = "hello";
+    src = ./hello-2.12.1.tar.gz;
 }
 </code></pre>
-<p>Finally! We got a very simple description of a package! Below are a
-couple of remarks that you may find useful as you're continuing to
-understand the nix language:</p>
+<p>Finally! We got a very simple description of a package! Below are a couple of remarks that you may find useful as you're continuing to understand the nix language:</p>
 <ul>
 <li>
-<p>We assigned to pkgs the import that we did in the previous
-expressions in the "with". Don't be afraid, it's that
-straightforward.</p>
+<p>We assigned to pkgs the import that we did in the previous expressions in the "with". Don't be afraid, it's that straightforward.</p>
 </li>
 <li>
-<p>The mkDerivation variable is a nice example of partial application,
-look at it as (<code>import ./autotools.nix</code>) <code>pkgs</code>. First we import the
-expression, then we apply the <code>pkgs</code> parameter. That will give us a
-function that accepts the attribute set <code>attrs</code>.</p>
+<p>The mkDerivation variable is a nice example of partial application, look at it as (<code>import ./autotools.nix</code>) <code>pkgs</code>. First we import the expression, then we apply the <code>pkgs</code> parameter. That will give us a function that accepts the attribute set <code>attrs</code>.</p>
 </li>
 <li>
-<p>We create the derivation specifying only name and src. If the
-project eventually needed other dependencies to be in PATH, then we
-would simply add those to buildInputs (not specified in hello.nix
-because empty).</p>
+<p>We create the derivation specifying only name and src. If the project eventually needed other dependencies to be in PATH, then we would simply add those to buildInputs (not specified in hello.nix because empty).</p>
 </li>
 </ul>
-<p>Note we didn't use any other library. Special C flags may be needed to
-find include files of other libraries at compile time, and ld flags at
-link time.</p>
+<p>Note we didn't use any other library. Special C flags may be needed to find include files of other libraries at compile time, and ld flags at link time.</p>
 <h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
-<p>Nix gives us the bare metal tools for creating derivations, setting up a
-build environment and storing the result in the nix store.</p>
-<p>Out of this pill we managed to create a generic builder for autotools
-projects, and a function <code>mkDerivation</code> that composes by default the
-common components used in autotools projects instead of repeating them
-in all the packages we would write.</p>
-<p>We are familiarizing ourselves with the way a Nix system grows up: it's
-about creating and composing derivations with the Nix language.</p>
-<p>Analogy: in C you create objects in the heap, and then you
-compose them inside new objects. Pointers are used to refer to other
-objects.</p>
-<p>In Nix you create derivations stored in the nix store, and then you
-compose them by creating new derivations. Store paths are used to refer
-to other derivations.</p>
+<p>Nix gives us the bare metal tools for creating derivations, setting up a build environment and storing the result in the nix store.</p>
+<p>Out of this pill we managed to create a generic builder for autotools projects, and a function <code>mkDerivation</code> that composes by default the common components used in autotools projects instead of repeating them in all the packages we would write.</p>
+<p>We are familiarizing ourselves with the way a Nix system grows up: it's about creating and composing derivations with the Nix language.</p>
+<p>Analogy: in C you create objects in the heap, and then you compose them inside new objects. Pointers are used to refer to other objects.</p>
+<p>In Nix you create derivations stored in the nix store, and then you compose them by creating new derivations. Store paths are used to refer to other derivations.</p>
 <h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
-<p>...we will talk a little about runtime dependencies. Is the GNU hello
-world package self-contained? What are its runtime dependencies? We only
-specified build dependencies by means of using other derivations in the
-"hello" derivation.</p>
+<p>...we will talk a little about runtime dependencies. Is the GNU hello world package self-contained? What are its runtime dependencies? We only specified build dependencies by means of using other derivations in the "hello" derivation.</p>
 
                     </main>
 

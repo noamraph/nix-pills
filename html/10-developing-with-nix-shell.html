@@ -148,6 +148,12 @@
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        <a href="https://github.com/NixOS/nix-pills" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/NixOS/nix-pills/tree/master/pills/10-developing-with-nix-shell.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -175,203 +181,136 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="developing-with-nix-shell"><a class="header" href="#developing-with-nix-shell">Developing with <code>nix-shell</code></a></h1>
-<p>Welcome to the 10th Nix pill. In the previous <a href="09-automatic-runtime.html">9th
-pill</a> we saw one of the powerful
-features of Nix: automatic discovery of runtime dependencies. We also
-finalized the GNU <code>hello</code> package.</p>
-<p>In this pill, we will introduce the <code>nix-shell</code> tool and use it to hack
-on the GNU <code>hello</code> program. We will see how <code>nix-shell</code> gives us an
-isolated environment while we modify the source files of the project,
-similar to how <code>nix-build</code> gave us an isolated environment while
-building the derivation.</p>
-<p>Finally, we will modify our builder to work more ergonomically with a
-<code>nix-shell</code>-focused workflow.</p>
+<p>Welcome to the 10th Nix pill. In the previous <a href="09-automatic-runtime.html">9th pill</a> we saw one of the powerful features of Nix: automatic discovery of runtime dependencies. We also finalized the GNU <code>hello</code> package.</p>
+<p>In this pill, we will introduce the <code>nix-shell</code> tool and use it to hack on the GNU <code>hello</code> program. We will see how <code>nix-shell</code> gives us an isolated environment while we modify the source files of the project, similar to how <code>nix-build</code> gave us an isolated environment while building the derivation.</p>
+<p>Finally, we will modify our builder to work more ergonomically with a <code>nix-shell</code>-focused workflow.</p>
 <h2 id="what-is-nix-shell"><a class="header" href="#what-is-nix-shell">What is <code>nix-shell</code>?</a></h2>
-<p>The
-<a href="https://nixos.org/manual/nix/stable/command-ref/nix-shell.html">nix-shell</a>
-tool drops us in a shell after setting up the environment variables
-necessary to hack on a derivation. It does not build the derivation; it
-only serves as a preparation so that we can run the build steps
-manually.</p>
-<p>Recall that in a nix environment, we don't have access to libraries or
-programs unless they have been installed with <code>nix-env</code>. However,
-installing libraries with <code>nix-env</code> is not good practice. We prefer to
-have isolated environments for development, which <code>nix-shell</code> provides
-for us.</p>
-<p>We can call <code>nix-shell</code> on any Nix expression which returns a
-derivation, but the resulting <code>bash</code> shell's <code>PATH</code> does not have the
-utilities we want:</p>
-<pre><code>$ nix-shell hello.nix
+<p>The <a href="https://nixos.org/manual/nix/stable/command-ref/nix-shell.html">nix-shell</a> tool drops us in a shell after setting up the environment variables necessary to hack on a derivation. It does not build the derivation; it only serves as a preparation so that we can run the build steps manually.</p>
+<p>Recall that in a nix environment, we don't have access to libraries or programs unless they have been installed with <code>nix-env</code>. However, installing libraries with <code>nix-env</code> is not good practice. We prefer to have isolated environments for development, which <code>nix-shell</code> provides for us.</p>
+<p>We can call <code>nix-shell</code> on any Nix expression which returns a derivation, but the resulting <code>bash</code> shell's <code>PATH</code> does not have the utilities we want:</p>
+<pre><code class="language-console">$ nix-shell hello.nix
 [nix-shell]$ make
 bash: make: command not found
 [nix-shell]$ echo $baseInputs
 /nix/store/jff4a6zqi0yrladx3kwy4v6844s3swpc-gnutar-1.27.1 [...]
 </code></pre>
-<p>This shell is rather useless. It would be reasonable to expect that the
-GNU <code>hello</code> build inputs are available in <code>PATH</code>, including GNU <code>make</code>,
-but this is not the case.</p>
-<p>However, we do have the environment variables that we set in the
-derivation, like <code>$baseInputs</code>, <code>$buildInputs</code>, <code>$src</code>, and so on.</p>
-<p>This means that we can <code>source</code> our <code>builder.sh</code>, and it will build the
-derivation. You may get an error in the installation phase, because your
-user may not have the permission to write to <code>/nix/store</code>:</p>
-<pre><code>[nix-shell]$ source builder.sh
+<p>This shell is rather useless. It would be reasonable to expect that the GNU <code>hello</code> build inputs are available in <code>PATH</code>, including GNU <code>make</code>, but this is not the case.</p>
+<p>However, we do have the environment variables that we set in the derivation, like <code>$baseInputs</code>, <code>$buildInputs</code>, <code>$src</code>, and so on.</p>
+<p>This means that we can <code>source</code> our <code>builder.sh</code>, and it will build the derivation. You may get an error in the installation phase, because your user may not have the permission to write to <code>/nix/store</code>:</p>
+<pre><code class="language-console">[nix-shell]$ source builder.sh
 ...
 </code></pre>
 <p>The derivation didn't install, but it did build. Note the following:</p>
 <ul>
 <li>
-<p>We sourced <code>builder.sh</code> and it ran all of the build steps, including
-setting up the <code>PATH</code> for us.</p>
+<p>We sourced <code>builder.sh</code> and it ran all of the build steps, including setting up the <code>PATH</code> for us.</p>
 </li>
 <li>
-<p>The working directory is no longer a temp directory created by
-<code>nix-build</code>, but is instead the directory in which we entered the
-shell. Therefore, <code>hello-2.10</code> has been unpacked in the current
-directory.</p>
+<p>The working directory is no longer a temp directory created by <code>nix-build</code>, but is instead the directory in which we entered the shell. Therefore, <code>hello-2.10</code> has been unpacked in the current directory.</p>
 </li>
 </ul>
-<p>We are able to <code>cd</code> into <code>hello-2.10</code> and type <code>make</code>, because <code>make</code> is
-now available.</p>
-<p>The take-away is that <code>nix-shell</code> drops us in a shell with the same (or
-very similar) environment used to run the builder.</p>
+<p>We are able to <code>cd</code> into <code>hello-2.10</code> and type <code>make</code>, because <code>make</code> is now available.</p>
+<p>The take-away is that <code>nix-shell</code> drops us in a shell with the same (or very similar) environment used to run the builder.</p>
 <h2 id="a-builder-for-nix-shell"><a class="header" href="#a-builder-for-nix-shell">A builder for nix-shell</a></h2>
-<p>The previous steps require some manual commands to be run and are not
-optimized for a workflow centered on <code>nix-shell</code>. We will now improve
-our builder to be more <code>nix-shell</code> friendly.</p>
+<p>The previous steps require some manual commands to be run and are not optimized for a workflow centered on <code>nix-shell</code>. We will now improve our builder to be more <code>nix-shell</code> friendly.</p>
 <p>There are a few things that we would like to change.</p>
-<p>First, when we <code>source</code>d the <code>builder.sh</code> file, we obtained the file in
-the current directory. What we really wanted was the <code>builder.sh</code> that
-is stored in the nix store, as this is the file that would be used by
-<code>nix-build</code>. To achieve this, the correct technique is to pass an
-environment variable through the derivation. (Note that <code>$builder</code> is
-already defined, but it points to the bash executable rather than our
-<code>builder.sh</code>. Our <code>builder.sh</code> is passed as an argument to bash.)</p>
-<p>Second, we don't want to run the whole builder: we only want to setup
-the necessary environment for manually building the project. Thus, we
-can break <code>builder.sh</code> into two files: a <code>setup.sh</code> for setting up the
-environment, and the real <code>builder.sh</code> that <code>nix-build</code> expects.</p>
-<p>During our refactoring, we will wrap the build phases in functions to
-give more structure to our design. Additionally, we'll move the
-<code>set -e</code> to the builder file instead of the setup file. The <code>set -e</code> is
-annoying in <code>nix-shell</code>, as it will terminate the shell if an error is
-encountered (such as a mistyped command.)</p>
-<p>Here is our modified <code>autotools.nix</code>. Noteworthy is the
-<code>setup = ./setup.sh;</code> attribute in the derivation, which adds <code>setup.sh</code>
-to the nix store and correspondingly adds a <code>$setup</code> environment
-variable in the builder.</p>
-<pre><code>pkgs: attrs:
+<p>First, when we <code>source</code>d the <code>builder.sh</code> file, we obtained the file in the current directory. What we really wanted was the <code>builder.sh</code> that is stored in the nix store, as this is the file that would be used by <code>nix-build</code>. To achieve this, the correct technique is to pass an environment variable through the derivation. (Note that <code>$builder</code> is already defined, but it points to the bash executable rather than our <code>builder.sh</code>. Our <code>builder.sh</code> is passed as an argument to bash.)</p>
+<p>Second, we don't want to run the whole builder: we only want to setup the necessary environment for manually building the project. Thus, we can break <code>builder.sh</code> into two files: a <code>setup.sh</code> for setting up the environment, and the real <code>builder.sh</code> that <code>nix-build</code> expects.</p>
+<p>During our refactoring, we will wrap the build phases in functions to give more structure to our design. Additionally, we'll move the <code>set -e</code> to the builder file instead of the setup file. The <code>set -e</code> is annoying in <code>nix-shell</code>, as it will terminate the shell if an error is encountered (such as a mistyped command.)</p>
+<p>Here is our modified <code>autotools.nix</code>. Noteworthy is the <code>setup = ./setup.sh;</code> attribute in the derivation, which adds <code>setup.sh</code> to the nix store and correspondingly adds a <code>$setup</code> environment variable in the builder.</p>
+<pre><code class="language-nix">pkgs: attrs:
 let
-  defaultAttrs = {
+    defaultAttrs = {
     builder = "${pkgs.bash}/bin/bash";
     args = [ ./builder.sh ];
     setup = ./setup.sh;
     baseInputs = with pkgs; [
-      gnutar
-      gzip
-      gnumake
-      gcc
-      coreutils
-      gawk
-      gnused
-      gnugrep
-      binutils.bintools
-      patchelf
-      findutils
+        gnutar
+        gzip
+        gnumake
+        gcc
+        coreutils
+        gawk
+        gnused
+        gnugrep
+        binutils.bintools
+        patchelf
+        findutils
     ];
     buildInputs = [ ];
     system = builtins.currentSystem;
-  };
+    };
 in
 derivation (defaultAttrs // attrs)
 </code></pre>
-<p>Thanks to that, we can split <code>builder.sh</code> into <code>setup.sh</code> and
-<code>builder.sh</code>. What <code>builder.sh</code> does is <code>source</code> <code>$setup</code> and call the
-<code>genericBuild</code> function. Everything else is just some changes to the
-bash script.</p>
+<p>Thanks to that, we can split <code>builder.sh</code> into <code>setup.sh</code> and <code>builder.sh</code>. What <code>builder.sh</code> does is <code>source</code> <code>$setup</code> and call the <code>genericBuild</code> function. Everything else is just some changes to the bash script.</p>
 <p>Here is the modified <code>builder.sh</code>:</p>
-<pre><code>set -e
+<pre><code class="language-sh">set -e
 source $setup
 genericBuild
 </code></pre>
 <p>Here is the newly added <code>setup.sh</code>:</p>
-<pre><code>unset PATH
+<pre><code class="language-sh">unset PATH
 for p in $baseInputs $buildInputs; do
-  export PATH=$p/bin${PATH:+:}$PATH
+    export PATH=$p/bin${PATH:+:}$PATH
 done
 
 function unpackPhase() {
-  tar -xzf $src
+    tar -xzf $src
 
-  for d in *; do
+    for d in *; do
     if [ -d "$d" ]; then
-      cd "$d"
-      break
+        cd "$d"
+        break
     fi
-  done
+    done
 }
 
 function configurePhase() {
-  ./configure --prefix=$out
+    ./configure --prefix=$out
 }
 
 function buildPhase() {
-  make
+    make
 }
 
 function installPhase() {
-  make install
+    make install
 }
 
 function fixupPhase() {
-  find $out -type f -exec patchelf --shrink-rpath '{}' \; -exec strip '{}' \; 2&gt;/dev/null
+    find $out -type f -exec patchelf --shrink-rpath '{}' \; -exec strip '{}' \; 2&gt;/dev/null
 }
 
 function genericBuild() {
-  unpackPhase
-  configurePhase
-  buildPhase
-  installPhase
-  fixupPhase
+    unpackPhase
+    configurePhase
+    buildPhase
+    installPhase
+    fixupPhase
 }
 </code></pre>
 <p>Finally, here is <code>hello.nix</code>:</p>
-<pre><code>let
-  pkgs = import &lt;nixpkgs&gt; { };
-  mkDerivation = import ./autotools.nix pkgs;
+<pre><code class="language-nix">let
+    pkgs = import &lt;nixpkgs&gt; { };
+    mkDerivation = import ./autotools.nix pkgs;
 in
 mkDerivation {
-  name = "hello";
-  src = ./hello-2.12.1.tar.gz;
+    name = "hello";
+    src = ./hello-2.12.1.tar.gz;
 }
 </code></pre>
 <p>Now back to nix-shell:</p>
-<pre><code>$ nix-shell hello.nix
+<pre><code class="language-console">$ nix-shell hello.nix
 [nix-shell]$ source $setup
 [nix-shell]$
 </code></pre>
-<p>Now, for example, you can run <code>unpackPhase</code> which unpacks <code>$src</code> and
-enters the directory. And you can run commands like <code>./configure</code>,
-<code>make</code>, and so forth manually, or run phases with their respective
-functions.</p>
-<p>The process is that straightforward. <code>nix-shell</code> builds the <code>.drv</code> file
-and its input dependencies, then drops into a shell by setting up the
-environment variables necessary to build the <code>.drv</code>. In particular, the
-environment variables in the shell match those passed to the
-<code>derivation</code> function.</p>
+<p>Now, for example, you can run <code>unpackPhase</code> which unpacks <code>$src</code> and enters the directory. And you can run commands like <code>./configure</code>, <code>make</code>, and so forth manually, or run phases with their respective functions.</p>
+<p>The process is that straightforward. <code>nix-shell</code> builds the <code>.drv</code> file and its input dependencies, then drops into a shell by setting up the environment variables necessary to build the <code>.drv</code>. In particular, the environment variables in the shell match those passed to the <code>derivation</code> function.</p>
 <h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
-<p>With <code>nix-shell</code> we are able to drop into an isolated environment
-suitable for developing a project. This environment provides the
-necessary dependencies for the development shell, similar to how
-<code>nix-build</code> provides the necessary dependencies to a builder.
-Additionally, we can build and debug the project manually, executing
-step-by-step like we would in any other operating system. Note that we
-never installed tools such <code>gcc</code> or <code>make</code> system-wide; these tools and
-libraries are isolated and available per-build.</p>
+<p>With <code>nix-shell</code> we are able to drop into an isolated environment suitable for developing a project. This environment provides the necessary dependencies for the development shell, similar to how <code>nix-build</code> provides the necessary dependencies to a builder. Additionally, we can build and debug the project manually, executing step-by-step like we would in any other operating system. Note that we never installed tools such <code>gcc</code> or <code>make</code> system-wide; these tools and libraries are isolated and available per-build.</p>
 <h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
-<p>In the next pill, we will clean up the nix store. We have written and
-built derivations which add to the nix store, but until now we haven't
-worried about cleaning up the used space in the store.</p>
+<p>In the next pill, we will clean up the nix store. We have written and built derivations which add to the nix store, but until now we haven't worried about cleaning up the used space in the store.</p>
 
                     </main>
 

@@ -148,6 +148,12 @@
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        <a href="https://github.com/NixOS/nix-pills" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/NixOS/nix-pills/tree/master/pills/15-nix-search-paths.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -175,58 +181,27 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="nix-search-paths"><a class="header" href="#nix-search-paths">Nix Search Paths</a></h1>
-<p>Welcome to the 15th Nix pill. In the previous
-<a href="14-override-design-pattern.html">14th</a> pill we have introduced the
-"override" pattern, useful for writing variants of derivations by
-passing different inputs.</p>
-<p>Assuming you followed the previous posts, I hope you are now ready to
-understand <code>nixpkgs</code>. But we have to find <code>nixpkgs</code> in our system first!
-So this is the step: introducing some options and environment variables
-used by nix tools.</p>
+<p>Welcome to the 15th Nix pill. In the previous <a href="14-override-design-pattern.html">14th</a> pill we have introduced the "override" pattern, useful for writing variants of derivations by passing different inputs.</p>
+<p>Assuming you followed the previous posts, I hope you are now ready to understand <code>nixpkgs</code>. But we have to find <code>nixpkgs</code> in our system first! So this is the step: introducing some options and environment variables used by nix tools.</p>
 <h2 id="the-nix_path"><a class="header" href="#the-nix_path">The NIX_PATH</a></h2>
-<p>The <a href="https://nixos.org/manual/nix/stable/command-ref/env-common.html">NIX_PATH environment
-variable</a>
-is very important. It's very similar to the <code>PATH</code> environment
-variable. The syntax is similar, several paths are separated by a colon
-<code>:</code>. Nix will then search for something in those paths from left to
-right.</p>
-<p>Who uses <code>NIX_PATH</code>? The nix expressions! Yes, <code>NIX_PATH</code> is not of much
-use by the nix tools themselves, rather it's used when writing nix
-expressions.</p>
-<p>In the shell for example, when you execute the command <code>ping</code>, it's
-being searched in the <code>PATH</code> directories. The first one found is the one
-being used.</p>
-<p>In nix it's exactly the same, however the syntax is different. Instead
-of just typing <code>ping</code> you have to type <code>&lt;ping&gt;</code>. Yes, I know... you are
-already thinking of <code>&lt;nixpkgs&gt;</code>. However, don't stop reading here,
-let's keep going.</p>
-<p>What's <code>NIX_PATH</code> good for? Nix expressions may refer to an
-"abstract" path such as <code>&lt;nixpkgs&gt;</code>, and it's possible to override it
-from the command line.</p>
-<p>For ease we will use <code>nix-instantiate --eval</code> to do our tests. I remind
-you,
-<a href="https://nixos.org/manual/nix/stable/command-ref/nix-instantiate.html">nix-instantiate</a>
-is used to evaluate nix expressions and generate the .drv files. Here we
-are not interested in building derivations, so evaluation is enough. It
-can be used for one-shot expressions.</p>
+<p>The <a href="https://nixos.org/manual/nix/stable/command-ref/env-common.html">NIX_PATH environment variable</a> is very important. It's very similar to the <code>PATH</code> environment variable. The syntax is similar, several paths are separated by a colon <code>:</code>. Nix will then search for something in those paths from left to right.</p>
+<p>Who uses <code>NIX_PATH</code>? The nix expressions! Yes, <code>NIX_PATH</code> is not of much use by the nix tools themselves, rather it's used when writing nix expressions.</p>
+<p>In the shell for example, when you execute the command <code>ping</code>, it's being searched in the <code>PATH</code> directories. The first one found is the one being used.</p>
+<p>In nix it's exactly the same, however the syntax is different. Instead of just typing <code>ping</code> you have to type <code>&lt;ping&gt;</code>. Yes, I know... you are already thinking of <code>&lt;nixpkgs&gt;</code>. However, don't stop reading here, let's keep going.</p>
+<p>What's <code>NIX_PATH</code> good for? Nix expressions may refer to an "abstract" path such as <code>&lt;nixpkgs&gt;</code>, and it's possible to override it from the command line.</p>
+<p>For ease we will use <code>nix-instantiate --eval</code> to do our tests. I remind you, <a href="https://nixos.org/manual/nix/stable/command-ref/nix-instantiate.html">nix-instantiate</a> is used to evaluate nix expressions and generate the .drv files. Here we are not interested in building derivations, so evaluation is enough. It can be used for one-shot expressions.</p>
 <h2 id="fake-it-a-little"><a class="header" href="#fake-it-a-little">Fake it a little</a></h2>
-<p>It's useless from a nix view point, but I think it's useful for your
-own understanding. Let's use <code>PATH</code> itself as <code>NIX_PATH</code>, and try to
-locate <code>ping</code> (or another binary if you don't have it).</p>
-<pre><code>$ nix-instantiate --eval -E '&lt;ping&gt;'
+<p>It's useless from a nix view point, but I think it's useful for your own understanding. Let's use <code>PATH</code> itself as <code>NIX_PATH</code>, and try to locate <code>ping</code> (or another binary if you don't have it).</p>
+<pre><code class="language-console">$ nix-instantiate --eval -E '&lt;ping&gt;'
 error: file `ping' was not found in the Nix search path (add it using $NIX_PATH or -I)
 $ NIX_PATH=$PATH nix-instantiate --eval -E '&lt;ping&gt;'
 /bin/ping
 $ nix-instantiate -I /bin --eval -E '&lt;ping&gt;'
 /bin/ping
 </code></pre>
-<p>Great. At first attempt nix obviously said could not be found anywhere
-in the search path. Note that the -I option accepts a single directory.
-Paths added with -I take precedence over <code>NIX_PATH</code>.</p>
-<p>The <code>NIX_PATH</code> also accepts a different yet very handy syntax:
-"<code>somename=somepath</code>". That is, instead of searching inside a
-directory for a name, we specify exactly the value of that name.</p>
-<pre><code>$ NIX_PATH="ping=/bin/ping" nix-instantiate --eval -E '&lt;ping&gt;'
+<p>Great. At first attempt nix obviously said could not be found anywhere in the search path. Note that the -I option accepts a single directory. Paths added with -I take precedence over <code>NIX_PATH</code>.</p>
+<p>The <code>NIX_PATH</code> also accepts a different yet very handy syntax: "<code>somename=somepath</code>". That is, instead of searching inside a directory for a name, we specify exactly the value of that name.</p>
+<pre><code class="language-console">$ NIX_PATH="ping=/bin/ping" nix-instantiate --eval -E '&lt;ping&gt;'
 /bin/ping
 $ NIX_PATH="ping=/bin/foo" nix-instantiate --eval -E '&lt;ping&gt;'
 error: file `ping' was not found in the Nix search path (add it using $N
@@ -234,119 +209,63 @@ error: file `ping' was not found in the Nix search path (add it using $N
 <p>Note in the second case how Nix checks whether the path exists or not.</p>
 <h2 id="the-path-to-repository"><a class="header" href="#the-path-to-repository">The path to repository</a></h2>
 <p>You are out of curiosity, right?</p>
-<pre><code>$ nix-instantiate --eval -E '&lt;nixpkgs&gt;'
+<pre><code class="language-console">$ nix-instantiate --eval -E '&lt;nixpkgs&gt;'
 /home/nix/.nix-defexpr/channels/nixpkgs
 $ echo $NIX_PATH
 nixpkgs=/home/nix/.nix-defexpr/channels/nixpkgs
 </code></pre>
-<p>You may have a different path, depending on how you added channels etc..
-Anyway that's the whole point. The <code>&lt;nixpkgs&gt;</code> stranger that we used in
-our nix expressions, is referring to a path in the filesystem specified
-by <code>NIX_PATH</code>.</p>
-<p>You can list that directory and realize it's simply a checkout of the
-nixpkgs repository at a specific commit (hint: <code>.version-suffix</code>).</p>
-<p>The <code>NIX_PATH</code> variable is exported by <code>nix.sh</code>, and that's the reason
-why I always asked you to <a href="https://nixos.org/manual/nix/stable/installation/env-variables.html">source
-nix.sh</a>
-at the beginning of my posts.</p>
-<p>You may wonder: then I can also specify a different
-<a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> path to, e.g., a
-<code>git checkout</code> of <code>nixpkgs</code>? Yes, you can and I encourage doing that.
-We'll talk about this in the next pill.</p>
-<p>Let's define a path for our repository, then! Let's say all the
-<code>default.nix</code>, <code>graphviz.nix</code> etc. are under <code>/home/nix/mypkgs</code>:</p>
-<pre><code>$ export NIX_PATH=mypkgs=/home/nix/mypkgs:$NIX_PATH
+<p>You may have a different path, depending on how you added channels etc.. Anyway that's the whole point. The <code>&lt;nixpkgs&gt;</code> stranger that we used in our nix expressions, is referring to a path in the filesystem specified by <code>NIX_PATH</code>.</p>
+<p>You can list that directory and realize it's simply a checkout of the nixpkgs repository at a specific commit (hint: <code>.version-suffix</code>).</p>
+<p>The <code>NIX_PATH</code> variable is exported by <code>nix.sh</code>, and that's the reason why I always asked you to <a href="https://nixos.org/manual/nix/stable/installation/env-variables.html">source nix.sh</a> at the beginning of my posts.</p>
+<p>You may wonder: then I can also specify a different <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> path to, e.g., a <code>git checkout</code> of <code>nixpkgs</code>? Yes, you can and I encourage doing that. We'll talk about this in the next pill.</p>
+<p>Let's define a path for our repository, then! Let's say all the <code>default.nix</code>, <code>graphviz.nix</code> etc. are under <code>/home/nix/mypkgs</code>:</p>
+<pre><code class="language-console">$ export NIX_PATH=mypkgs=/home/nix/mypkgs:$NIX_PATH
 $ nix-instantiate --eval '&lt;mypkgs&gt;'
 { graphviz = &lt;code&gt;; graphvizCore = &lt;code&gt;; hello = &lt;code&gt;; mkDerivation = &lt;code&gt;; }
 </code></pre>
-<p>Yes, <code>nix-build</code> also accepts paths with angular brackets. We first
-evaluate the whole repository (<code>default.nix</code>) and then pick the graphviz
-attribute.</p>
+<p>Yes, <code>nix-build</code> also accepts paths with angular brackets. We first evaluate the whole repository (<code>default.nix</code>) and then pick the graphviz attribute.</p>
 <h2 id="a-big-word-about-nix-env"><a class="header" href="#a-big-word-about-nix-env">A big word about nix-env</a></h2>
-<p>The
-<a href="https://nixos.org/manual/nix/stable/command-ref/nix-env.html">nix-env</a>
-command is a little different than <code>nix-instantiate</code> and <code>nix-build</code>.
-Whereas <code>nix-instantiate</code> and <code>nix-build</code> require a starting nix
-expression, <code>nix-env</code> does not.</p>
-<p>You may be crippled by this concept at the beginning, you may think
-<code>nix-env</code> uses <code>NIX_PATH</code> to find the <code>nixpkgs</code> repository. But that's
-not it.</p>
-<p>The <code>nix-env</code> command uses <code>~/.nix-defexpr</code>, which is also part of
-<code>NIX_PATH</code> by default, but that's only a coincidence. If you empty
-<code>NIX_PATH</code>, <code>nix-env</code> will still be able to find derivations because of
-<code>~/.nix-defexpr</code>.</p>
-<p>So if you run <code>nix-env -i graphviz</code> inside your repository, it will
-install the nixpkgs one. Same if you set <code>NIX_PATH</code> to point to your
-repository.</p>
-<p>In order to specify an alternative to <code>~/.nix-defexpr</code> it's possible to
-use the -f option:</p>
-<pre><code>$ nix-env -f '&lt;mypkgs&gt;' -i graphviz
+<p>The <a href="https://nixos.org/manual/nix/stable/command-ref/nix-env.html">nix-env</a> command is a little different than <code>nix-instantiate</code> and <code>nix-build</code>. Whereas <code>nix-instantiate</code> and <code>nix-build</code> require a starting nix expression, <code>nix-env</code> does not.</p>
+<p>You may be crippled by this concept at the beginning, you may think <code>nix-env</code> uses <code>NIX_PATH</code> to find the <code>nixpkgs</code> repository. But that's not it.</p>
+<p>The <code>nix-env</code> command uses <code>~/.nix-defexpr</code>, which is also part of <code>NIX_PATH</code> by default, but that's only a coincidence. If you empty <code>NIX_PATH</code>, <code>nix-env</code> will still be able to find derivations because of <code>~/.nix-defexpr</code>.</p>
+<p>So if you run <code>nix-env -i graphviz</code> inside your repository, it will install the nixpkgs one. Same if you set <code>NIX_PATH</code> to point to your repository.</p>
+<p>In order to specify an alternative to <code>~/.nix-defexpr</code> it's possible to use the -f option:</p>
+<pre><code class="language-console">$ nix-env -f '&lt;mypkgs&gt;' -i graphviz
 warning: there are multiple derivations named `graphviz'; using the first one
 replacing old `graphviz'
 installing `graphviz'
 </code></pre>
-<p>Oh why did it say there's another derivation named graphviz? Because
-both <code>graphviz</code> and <code>graphvizCore</code> attributes in our repository have the
-name "graphviz" for the derivation:</p>
-<pre><code>$ nix-env -f '&lt;mypkgs&gt;' -qaP
+<p>Oh why did it say there's another derivation named graphviz? Because both <code>graphviz</code> and <code>graphvizCore</code> attributes in our repository have the name "graphviz" for the derivation:</p>
+<pre><code class="language-console">$ nix-env -f '&lt;mypkgs&gt;' -qaP
 graphviz      graphviz
 graphvizCore  graphviz
 hello         hello
 </code></pre>
-<p>By default <code>nix-env</code> parses all derivations and uses the derivation
-names to interpret the command line. So in this case "graphviz"
-matched two derivations. Alternatively, like for <code>nix-build</code>, one can
-use -A to specify an attribute name instead of a derivation name:</p>
-<pre><code>$ nix-env -f '&lt;mypkgs&gt;' -i -A graphviz
+<p>By default <code>nix-env</code> parses all derivations and uses the derivation names to interpret the command line. So in this case "graphviz" matched two derivations. Alternatively, like for <code>nix-build</code>, one can use -A to specify an attribute name instead of a derivation name:</p>
+<pre><code class="language-console">$ nix-env -f '&lt;mypkgs&gt;' -i -A graphviz
 replacing old `graphviz'
 installing `graphviz'
 </code></pre>
-<p>This form, other than being more precise, it's also faster because
-<code>nix-env</code> does not have to parse all the derivations.</p>
-<p>For completeness: you must install <code>graphvizCore</code> with -A, since without
-the -A switch it's ambiguous.</p>
-<p>In summary, it may happen when playing with nix that <code>nix-env</code> picks a
-different derivation than <code>nix-build</code>. In that case you probably
-specified <code>NIX_PATH</code>, but <code>nix-env</code> is instead looking into
-<code>~/.nix-defexpr</code>.</p>
-<p>Why is <code>nix-env</code> having this different behavior? I don't know
-specifically by myself either, but the answers could be:</p>
+<p>This form, other than being more precise, it's also faster because <code>nix-env</code> does not have to parse all the derivations.</p>
+<p>For completeness: you must install <code>graphvizCore</code> with -A, since without the -A switch it's ambiguous.</p>
+<p>In summary, it may happen when playing with nix that <code>nix-env</code> picks a different derivation than <code>nix-build</code>. In that case you probably specified <code>NIX_PATH</code>, but <code>nix-env</code> is instead looking into <code>~/.nix-defexpr</code>.</p>
+<p>Why is <code>nix-env</code> having this different behavior? I don't know specifically by myself either, but the answers could be:</p>
 <ul>
 <li>
-<p><code>nix-env</code> tries to be generic, thus it does not look for <code>nixpkgs</code>
-in <code>NIX_PATH</code>, rather it looks in <code>~/.nix-defexpr</code>.</p>
+<p><code>nix-env</code> tries to be generic, thus it does not look for <code>nixpkgs</code> in <code>NIX_PATH</code>, rather it looks in <code>~/.nix-defexpr</code>.</p>
 </li>
 <li>
-<p><code>nix-env</code> is able to merge multiple trees in <code>~/.nix-defexpr</code> by
-looking at all the possible derivations</p>
+<p><code>nix-env</code> is able to merge multiple trees in <code>~/.nix-defexpr</code> by looking at all the possible derivations</p>
 </li>
 </ul>
-<p>It may also happen to you <strong>that you cannot match a derivation name when
-installing</strong>, because of the derivation name vs -A switch described
-above. Maybe <code>nix-env</code> wanted to be more friendly in this case for
-default user setups.</p>
-<p>It may or may not make sense for you, or it's like that for historical
-reasons, but that's how it works currently, unless somebody comes up
-with a better idea.</p>
+<p>It may also happen to you <strong>that you cannot match a derivation name when installing</strong>, because of the derivation name vs -A switch described above. Maybe <code>nix-env</code> wanted to be more friendly in this case for default user setups.</p>
+<p>It may or may not make sense for you, or it's like that for historical reasons, but that's how it works currently, unless somebody comes up with a better idea.</p>
 <h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
-<p>The <code>NIX_PATH</code> variable is the search path used by nix when using the
-angular brackets syntax. It's possible to refer to "abstract" paths
-inside nix expressions and define the "concrete" path by means of
-<code>NIX_PATH</code>, or the usual -I flag in nix tools.</p>
-<p>We've also explained some of the uncommon <code>nix-env</code> behaviors for
-newcomers. The <code>nix-env</code> tool does not use <code>NIX_PATH</code> to search for
-packages, but rather for <code>~/.nix-defexpr</code>. Beware of that!</p>
-<p>In general do not abuse <code>NIX_PATH</code>, when possible use relative paths
-when writing your own nix expressions. Of course, in the case of
-<code>&lt;nixpkgs&gt;</code> in our repository, that's a perfectly fine usage of
-<code>NIX_PATH</code>. Instead, inside our repository itself, refer to expressions
-with relative paths like <code>./hello.nix</code>.</p>
+<p>The <code>NIX_PATH</code> variable is the search path used by nix when using the angular brackets syntax. It's possible to refer to "abstract" paths inside nix expressions and define the "concrete" path by means of <code>NIX_PATH</code>, or the usual -I flag in nix tools.</p>
+<p>We've also explained some of the uncommon <code>nix-env</code> behaviors for newcomers. The <code>nix-env</code> tool does not use <code>NIX_PATH</code> to search for packages, but rather for <code>~/.nix-defexpr</code>. Beware of that!</p>
+<p>In general do not abuse <code>NIX_PATH</code>, when possible use relative paths when writing your own nix expressions. Of course, in the case of <code>&lt;nixpkgs&gt;</code> in our repository, that's a perfectly fine usage of <code>NIX_PATH</code>. Instead, inside our repository itself, refer to expressions with relative paths like <code>./hello.nix</code>.</p>
 <h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
-<p>...we will finally dive into <code>nixpkgs</code>. Most of the techniques we have
-developed in this series are already in <code>nixpkgs</code>, like <code>mkDerivation</code>,
-<code>callPackage</code>, <code>override</code>, etc., but of course better. With time, those
-base utilities get enhanced by the community with more features in order
-to handle more and more use cases and in a more general way.</p>
+<p>...we will finally dive into <code>nixpkgs</code>. Most of the techniques we have developed in this series are already in <code>nixpkgs</code>, like <code>mkDerivation</code>, <code>callPackage</code>, <code>override</code>, etc., but of course better. With time, those base utilities get enhanced by the community with more features in order to handle more and more use cases and in a more general way.</p>
 
                     </main>
 

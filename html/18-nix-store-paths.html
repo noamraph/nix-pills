@@ -148,6 +148,12 @@
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        <a href="https://github.com/NixOS/nix-pills" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/NixOS/nix-pills/tree/master/pills/18-nix-store-paths.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -175,33 +181,20 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="nix-store-paths"><a class="header" href="#nix-store-paths">Nix Store Paths</a></h1>
-<p>Welcome to the 18th Nix pill. In the previous
-<a href="17-nixpkgs-overriding-packages.html">17th</a> pill we have scratched the surface
-of the <code>nixpkgs</code> repository structure. It is a set of packages, and
-it's possible to override such packages so that all other packages will
-use the overrides.</p>
-<p>Before reading existing derivations, I'd like to talk about store paths
-and how they are computed. In particular we are interested in fixed
-store paths that depend on an integrity hash (e.g. a sha256), which is
-usually applied to source tarballs.</p>
-<p>The way store paths are computed is a little contrived, mostly due to
-historical reasons. Our reference will be the <a href="https://github.com/NixOS/nix/blob/07f992a74b64f4376d5b415d0042babc924772f3/src/libstore/store-api.cc#L197">Nix source
-code</a>.</p>
+<p>Welcome to the 18th Nix pill. In the previous <a href="17-nixpkgs-overriding-packages.html">17th</a> pill we have scratched the surface of the <code>nixpkgs</code> repository structure. It is a set of packages, and it's possible to override such packages so that all other packages will use the overrides.</p>
+<p>Before reading existing derivations, I'd like to talk about store paths and how they are computed. In particular we are interested in fixed store paths that depend on an integrity hash (e.g. a sha256), which is usually applied to source tarballs.</p>
+<p>The way store paths are computed is a little contrived, mostly due to historical reasons. Our reference will be the <a href="https://github.com/NixOS/nix/blob/07f992a74b64f4376d5b415d0042babc924772f3/src/libstore/store-api.cc#L197">Nix source code</a>.</p>
 <h2 id="source-paths"><a class="header" href="#source-paths">Source paths</a></h2>
-<p>Let's start simple. You know nix allows relative paths to be used, such
-that the file or directory is stored in the nix store, that is
-<code>./myfile</code> gets stored into <code>/nix/store/.......</code> We want to understand
-how is the store path generated for such a file:</p>
-<pre><code>$ echo mycontent &gt; myfile
+<p>Let's start simple. You know nix allows relative paths to be used, such that the file or directory is stored in the nix store, that is <code>./myfile</code> gets stored into <code>/nix/store/.......</code> We want to understand how is the store path generated for such a file:</p>
+<pre><code class="language-console">$ echo mycontent &gt; myfile
 </code></pre>
-<p>I remind you, the simplest derivation you can write has a <code>name</code>, a
-<code>builder</code> and the <code>system</code>:</p>
-<pre><code>$ nix repl
+<p>I remind you, the simplest derivation you can write has a <code>name</code>, a <code>builder</code> and the <code>system</code>:</p>
+<pre><code class="language-console">$ nix repl
 nix-repl&gt; derivation { system = "x86_64-linux"; builder = ./myfile; name = "foo"; }
 «derivation /nix/store/y4h73bmrc9ii5bxg6i7ck6hsf5gqv8ck-foo.drv»
 </code></pre>
 <p>Now inspect the .drv to see where is <code>./myfile</code> being stored:</p>
-<pre><code>$ nix derivation show /nix/store/y4h73bmrc9ii5bxg6i7ck6hsf5gqv8ck-foo.drv
+<pre><code class="language-console">$ nix derivation show /nix/store/y4h73bmrc9ii5bxg6i7ck6hsf5gqv8ck-foo.drv
 {
   "/nix/store/y4h73bmrc9ii5bxg6i7ck6hsf5gqv8ck-foo.drv": {
     "outputs": {
@@ -225,81 +218,57 @@ nix-repl&gt; derivation { system = "x86_64-linux"; builder = ./myfile; name = "f
   }
 }
 </code></pre>
-<p>Great, how did nix decide to use <code>xv2iccirbrvklck36f1g7vldn5v58vck</code> ?
-Keep looking at the nix comments.</p>
-<p><strong>Note:</strong> doing <code>nix-store --add myfile</code> will store the file in the same
-store path.</p>
+<p>Great, how did nix decide to use <code>xv2iccirbrvklck36f1g7vldn5v58vck</code> ? Keep looking at the nix comments.</p>
+<p><strong>Note:</strong> doing <code>nix-store --add myfile</code> will store the file in the same store path.</p>
 <h3 id="step-1-compute-the-hash-of-the-file"><a class="header" href="#step-1-compute-the-hash-of-the-file">Step 1, compute the hash of the file</a></h3>
-<p>The comments tell us to first compute the sha256 of the NAR
-serialization of the file. Can be done in two ways:</p>
-<pre><code>$ nix-hash --type sha256 myfile
+<p>The comments tell us to first compute the sha256 of the NAR serialization of the file. Can be done in two ways:</p>
+<pre><code class="language-console">$ nix-hash --type sha256 myfile
 2bfef67de873c54551d884fdab3055d84d573e654efa79db3c0d7b98883f9ee3
 </code></pre>
 <p>Or:</p>
-<pre><code>$ nix-store --dump myfile|sha256sum
+<pre><code class="language-console">$ nix-store --dump myfile|sha256sum
 2bfef67de873c54551d884fdab3055d84d573e654efa79db3c0d7b98883f9ee3
 </code></pre>
-<p>In general, Nix understands two contents: flat for regular files, or
-recursive for NAR serializations which can be anything.</p>
+<p>In general, Nix understands two contents: flat for regular files, or recursive for NAR serializations which can be anything.</p>
 <h3 id="step-2-build-the-string-description"><a class="header" href="#step-2-build-the-string-description">Step 2, build the string description</a></h3>
-<p>Then nix uses a special string which includes the hash, the path type
-and the file name. We store this in another file:</p>
-<pre><code>$ echo -n "source:sha256:2bfef67de873c54551d884fdab3055d84d573e654efa79db3c0d7b98883f9ee3:/nix/store:myfile" &gt; myfile.str
+<p>Then nix uses a special string which includes the hash, the path type and the file name. We store this in another file:</p>
+<pre><code class="language-console">$ echo -n "source:sha256:2bfef67de873c54551d884fdab3055d84d573e654efa79db3c0d7b98883f9ee3:/nix/store:myfile" &gt; myfile.str
 </code></pre>
 <h3 id="step-3-compute-the-final-hash"><a class="header" href="#step-3-compute-the-final-hash">Step 3, compute the final hash</a></h3>
-<p>Finally the comments tell us to compute the base-32 representation of
-the first 160 bits (truncation) of a sha256 of the above string:</p>
-<pre><code>$ nix-hash --type sha256 --truncate --base32 --flat myfile.str
+<p>Finally the comments tell us to compute the base-32 representation of the first 160 bits (truncation) of a sha256 of the above string:</p>
+<pre><code class="language-console">$ nix-hash --type sha256 --truncate --base32 --flat myfile.str
 xv2iccirbrvklck36f1g7vldn5v58vck
 </code></pre>
 <h2 id="output-paths"><a class="header" href="#output-paths">Output paths</a></h2>
-<p>Output paths are usually generated for derivations. We use the above
-example because it's simple. Even if we didn't build the derivation,
-nix knows the out path <code>hs0yi5n5nw6micqhy8l1igkbhqdkzqa1</code>. This is
-because the out path only depends on inputs.</p>
-<p>It's computed in a similar way to source paths, except that the .drv is
-hashed and the type of derivation is <code>output:out</code>. In case of multiple
-outputs, we may have different <code>output:&lt;id&gt;</code>.</p>
-<p>At the time nix computes the out path, the .drv contains an empty string
-for each out path. So what we do is getting our .drv and replacing the
-out path with an empty string:</p>
-<pre><code>$ cp -f /nix/store/y4h73bmrc9ii5bxg6i7ck6hsf5gqv8ck-foo.drv myout.drv
+<p>Output paths are usually generated for derivations. We use the above example because it's simple. Even if we didn't build the derivation, nix knows the out path <code>hs0yi5n5nw6micqhy8l1igkbhqdkzqa1</code>. This is because the out path only depends on inputs.</p>
+<p>It's computed in a similar way to source paths, except that the .drv is hashed and the type of derivation is <code>output:out</code>. In case of multiple outputs, we may have different <code>output:&lt;id&gt;</code>.</p>
+<p>At the time nix computes the out path, the .drv contains an empty string for each out path. So what we do is getting our .drv and replacing the out path with an empty string:</p>
+<pre><code class="language-console">$ cp -f /nix/store/y4h73bmrc9ii5bxg6i7ck6hsf5gqv8ck-foo.drv myout.drv
 $ sed -i 's,/nix/store/hs0yi5n5nw6micqhy8l1igkbhqdkzqa1-foo,,g' myout.drv
 </code></pre>
-<p>The <code>myout.drv</code> is the .drv state in which nix is when computing the out
-path for our derivation:</p>
-<pre><code>$ sha256sum myout.drv
+<p>The <code>myout.drv</code> is the .drv state in which nix is when computing the out path for our derivation:</p>
+<pre><code class="language-console">$ sha256sum myout.drv
 1bdc41b9649a0d59f270a92d69ce6b5af0bc82b46cb9d9441ebc6620665f40b5  myout.drv
 $ echo -n "output:out:sha256:1bdc41b9649a0d59f270a92d69ce6b5af0bc82b46cb9d9441ebc6620665f40b5:/nix/store:foo" &gt; myout.str
 $ nix-hash --type sha256 --truncate --base32 --flat myout.str
 hs0yi5n5nw6micqhy8l1igkbhqdkzqa1
 </code></pre>
 <p>Then nix puts that out path in the .drv, and that's it.</p>
-<p>In case the .drv has input derivations, that is it references other
-.drv, then such .drv paths are replaced by this same algorithm which
-returns a hash.</p>
-<p>In other words, you get a final .drv where every other .drv path is
-replaced by its hash.</p>
+<p>In case the .drv has input derivations, that is it references other .drv, then such .drv paths are replaced by this same algorithm which returns a hash.</p>
+<p>In other words, you get a final .drv where every other .drv path is replaced by its hash.</p>
 <h2 id="fixed-output-paths"><a class="header" href="#fixed-output-paths">Fixed-output paths</a></h2>
-<p>Finally, the other most used kind of path is when we know beforehand an
-integrity hash of a file. This is usual for tarballs.</p>
-<p>A derivation can take three special attributes: <code>outputHashMode</code>,
-<code>outputHash</code> and <code>outputHashAlgo</code> which are well documented in the <a href="https://nixos.org/manual/nix/stable/expressions/advanced-attributes.html">nix
-manual</a>.</p>
-<p>The builder must create the out path and make sure its hash is the same
-as the one declared with <code>outputHash</code>.</p>
-<p>Let's say our builder should create a file whose contents is
-<code>mycontent</code>:</p>
-<pre><code>$ echo mycontent &gt; myfile
+<p>Finally, the other most used kind of path is when we know beforehand an integrity hash of a file. This is usual for tarballs.</p>
+<p>A derivation can take three special attributes: <code>outputHashMode</code>, <code>outputHash</code> and <code>outputHashAlgo</code> which are well documented in the <a href="https://nixos.org/manual/nix/stable/expressions/advanced-attributes.html">nix manual</a>.</p>
+<p>The builder must create the out path and make sure its hash is the same as the one declared with <code>outputHash</code>.</p>
+<p>Let's say our builder should create a file whose contents is <code>mycontent</code>:</p>
+<pre><code class="language-console">$ echo mycontent &gt; myfile
 $ sha256sum myfile
 f3f3c4763037e059b4d834eaf68595bbc02ba19f6d2a500dce06d124e2cd99bb  myfile
 nix-repl&gt; derivation { name = "bar"; system = "x86_64-linux"; builder = "none"; outputHashMode = "flat"; outputHashAlgo = "sha256"; outputHash = "f3f3c4763037e059b4d834eaf68595bbc02ba19f6d2a500dce06d124e2cd99bb"; }
 «derivation /nix/store/ymsf5zcqr9wlkkqdjwhqllgwa97rff5i-bar.drv»
 </code></pre>
-<p>Inspect the .drv and see that it also stored the fact that it's a
-fixed-output derivation with sha256 algorithm, compared to the previous
-examples:</p>
-<pre><code>$ nix derivation show /nix/store/ymsf5zcqr9wlkkqdjwhqllgwa97rff5i-bar.drv
+<p>Inspect the .drv and see that it also stored the fact that it's a fixed-output derivation with sha256 algorithm, compared to the previous examples:</p>
+<pre><code class="language-console">$ nix derivation show /nix/store/ymsf5zcqr9wlkkqdjwhqllgwa97rff5i-bar.drv
 {
   "/nix/store/ymsf5zcqr9wlkkqdjwhqllgwa97rff5i-bar.drv": {
     "outputs": {
@@ -312,34 +281,23 @@ examples:</p>
 [...]
 }
 </code></pre>
-<p>It doesn't matter which input derivations are being used, the final out
-path must only depend on the declared hash.</p>
-<p>What nix does is to create an intermediate string representation of the
-fixed-output content:</p>
-<pre><code>$ echo -n "fixed:out:sha256:f3f3c4763037e059b4d834eaf68595bbc02ba19f6d2a500dce06d124e2cd99bb:" &gt; mycontent.str
-$ sha256sum mycontent.str 
+<p>It doesn't matter which input derivations are being used, the final out path must only depend on the declared hash.</p>
+<p>What nix does is to create an intermediate string representation of the fixed-output content:</p>
+<pre><code class="language-console">$ echo -n "fixed:out:sha256:f3f3c4763037e059b4d834eaf68595bbc02ba19f6d2a500dce06d124e2cd99bb:" &gt; mycontent.str
+$ sha256sum mycontent.str
 423e6fdef56d53251c5939359c375bf21ea07aaa8d89ca5798fb374dbcfd7639  myfile.str
 </code></pre>
 <p>Then proceed as it was a normal derivation output path:</p>
-<pre><code>$ echo -n "output:out:sha256:423e6fdef56d53251c5939359c375bf21ea07aaa8d89ca5798fb374dbcfd7639:/nix/store:bar" &gt; myfile.str
+<pre><code class="language-console">$ echo -n "output:out:sha256:423e6fdef56d53251c5939359c375bf21ea07aaa8d89ca5798fb374dbcfd7639:/nix/store:bar" &gt; myfile.str
 $ nix-hash --type sha256 --truncate --base32 --flat myfile.str
 a00d5f71k0vp5a6klkls0mvr1f7sx6ch
 </code></pre>
 <p>Hence, the store path only depends on the declared fixed-output hash.</p>
 <h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
-<p>There are other types of store paths, but you get the idea. Nix first
-hashes the contents, then creates a string description, and the final
-store path is the hash of this string.</p>
-<p>Also we've introduced some fundamentals, in particular the fact that
-Nix knows beforehand the out path of a derivation since it only depends
-on the inputs. We've also introduced fixed-output derivations which are
-especially used by the nixpkgs repository for downloading and verifying
-source tarballs.</p>
+<p>There are other types of store paths, but you get the idea. Nix first hashes the contents, then creates a string description, and the final store path is the hash of this string.</p>
+<p>Also we've introduced some fundamentals, in particular the fact that Nix knows beforehand the out path of a derivation since it only depends on the inputs. We've also introduced fixed-output derivations which are especially used by the nixpkgs repository for downloading and verifying source tarballs.</p>
 <h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
-<p>...we will introduce <code>stdenv</code>. In the previous pills we rolled our own
-<code>mkDerivation</code> convenience function for wrapping the builtin derivation,
-but the <code>nixpkgs</code> repository also has its own convenience functions for
-dealing with autotools projects and other build systems.</p>
+<p>...we will introduce <code>stdenv</code>. In the previous pills we rolled our own <code>mkDerivation</code> convenience function for wrapping the builtin derivation, but the <code>nixpkgs</code> repository also has its own convenience functions for dealing with autotools projects and other build systems.</p>
 
                     </main>
 

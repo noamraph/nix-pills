@@ -148,6 +148,12 @@
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        <a href="https://github.com/NixOS/nix-pills" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/NixOS/nix-pills/tree/master/pills/04-basics-of-language.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -175,47 +181,20 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="basics-of-language"><a class="header" href="#basics-of-language">The Basics of the Language</a></h1>
-<p>Welcome to the fourth Nix pill. In the <a href="03-enter-environment.html">previous
-article</a> we learned about Nix environments. We
-installed software as a user, managed their profile, switched between
-generations, and queried the Nix store. Those are the very basics of
-system administration using Nix.</p>
-<p>The <a href="https://nixos.org/manual/nix/stable/expressions/expression-language.html">Nix
-language</a>
-is used to write expressions that produce derivations. The
-<a href="https://nixos.org/manual/nix/stable/command-ref/nix-build.html">nix-build</a>
-tool is used to build derivations from an expression. Even as a system
-administrator that wants to customize the installation, it's necessary
-to master Nix. Using Nix for your jobs means you get the features we saw
-in the previous articles for free.</p>
-<p>The syntax of Nix is quite unfamiliar, so looking at existing examples
-may lead you to think that there's a lot of magic happening. In
-reality, it's mostly about writing utility functions to make things
-convenient.</p>
-<p>On the other hand, the same syntax is great for describing packages, so
-learning the language itself will pay off when writing package
-expressions.</p>
+<p>Welcome to the fourth Nix pill. In the <a href="03-enter-environment.html">previous article</a> we learned about Nix environments. We installed software as a user, managed their profile, switched between generations, and queried the Nix store. Those are the very basics of system administration using Nix.</p>
+<p>The <a href="https://nixos.org/manual/nix/stable/expressions/expression-language.html">Nix language</a> is used to write expressions that produce derivations. The <a href="https://nixos.org/manual/nix/stable/command-ref/nix-build.html">nix-build</a> tool is used to build derivations from an expression. Even as a system administrator that wants to customize the installation, it's necessary to master Nix. Using Nix for your jobs means you get the features we saw in the previous articles for free.</p>
+<p>The syntax of Nix is quite unfamiliar, so looking at existing examples may lead you to think that there's a lot of magic happening. In reality, it's mostly about writing utility functions to make things convenient.</p>
+<p>On the other hand, the same syntax is great for describing packages, so learning the language itself will pay off when writing package expressions.</p>
 <div class="info">
-Important: In Nix, everything is an expression, there are no statements. This is
-common in functional languages.
+Important: In Nix, everything is an expression, there are no statements. This is common in functional languages.
 </div>
 <div class="info">
 Important: Values in Nix are immutable.
 </div>
 <h2 id="value-types"><a class="header" href="#value-types">Value types</a></h2>
-<p>Nix 2.0 contains a command named <code>nix repl</code> which is a simple command
-line tool for playing with the Nix language. In fact, Nix is a <a href="https://nixos.org/manual/nix/stable/expressions/expression-language.html">pure,
-lazy, functional
-language</a>,
-not only a set of tools to manage derivations. The <code>nix repl</code> syntax is
-slightly different to Nix syntax when it comes to assigning variables,
-but it shouldn't be confusing so long as you bear it in mind. I prefer
-to start with <code>nix repl</code> before cluttering your mind with more complex
-expressions.</p>
-<p>Launch <code>nix repl</code>. First of all, Nix supports basic arithmetic
-operations: <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code>. (To exit <code>nix repl</code>, use the command
-<code>:q</code>. Help is available through the <code>:?</code> command.)</p>
-<pre><code>nix-repl&gt; 1+3
+<p>Nix 2.0 contains a command named <code>nix repl</code> which is a simple command line tool for playing with the Nix language. In fact, Nix is a <a href="https://nixos.org/manual/nix/stable/expressions/expression-language.html">pure, lazy, functional language</a>, not only a set of tools to manage derivations. The <code>nix repl</code> syntax is slightly different to Nix syntax when it comes to assigning variables, but it shouldn't be confusing so long as you bear it in mind. I prefer to start with <code>nix repl</code> before cluttering your mind with more complex expressions.</p>
+<p>Launch <code>nix repl</code>. First of all, Nix supports basic arithmetic operations: <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code>. (To exit <code>nix repl</code>, use the command <code>:q</code>. Help is available through the <code>:?</code> command.)</p>
+<pre><code class="language-console">nix-repl&gt; 1+3
 4
 
 nix-repl&gt; 7-4
@@ -225,65 +204,39 @@ nix-repl&gt; 3*2
 6
 </code></pre>
 <p>Attempting to perform division in Nix can lead to some surprises.</p>
-<pre><code>nix-repl&gt; 6/3
+<pre><code class="language-console">nix-repl&gt; 6/3
 /home/nix/6/3
 </code></pre>
-<p>What happened? Recall that Nix is not a general purpose language, it's
-a domain-specific language for writing packages. Integer division isn't
-actually that useful when writing package expressions. Nix parsed <code>6/3</code>
-as a relative path to the current directory. To get Nix to perform
-division instead, leave a space after the <code>/</code>. Alternatively, you can
-use <code>builtins.div</code>.</p>
-<pre><code>nix-repl&gt; 6/ 3
+<p>What happened? Recall that Nix is not a general purpose language, it's a domain-specific language for writing packages. Integer division isn't actually that useful when writing package expressions. Nix parsed <code>6/3</code> as a relative path to the current directory. To get Nix to perform division instead, leave a space after the <code>/</code>. Alternatively, you can use <code>builtins.div</code>.</p>
+<pre><code class="language-console">nix-repl&gt; 6/ 3
 2
 
 nix-repl&gt; builtins.div 6 3
 2
 </code></pre>
-<p>Other operators are <code>||</code>, <code>&amp;&amp;</code> and <code>!</code> for booleans, and relational
-operators such as <code>!=</code>, <code>==</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>. In Nix, <code>&lt;</code>, <code>&gt;</code>,
-<code>&lt;=</code> and <code>&gt;=</code> are not much used. There are also other operators we will
-see in the course of this series.</p>
-<p>Nix has integer, floating point, string, path, boolean and null
-<a href="https://nixos.org/manual/nix/stable/expressions/language-values.html">simple</a>
-types. Then there are also lists, sets and functions. These types are
-enough to build an operating system.</p>
-<p>Nix is strongly typed, but it's not statically typed. That is, you
-cannot mix strings and integers, you must first do the conversion.</p>
-<p>As demonstrated above, expressions will be parsed as paths as long as
-there's a slash not followed by a space. Therefore to specify the
-current directory, use <code>./.</code> In addition, Nix also parses urls
-specially.</p>
-<p>Not all urls or paths can be parsed this way. If a syntax error occurs,
-it's still possible to fallback to plain strings. Literal urls and
-paths are convenient for additional safety.</p>
+<p>Other operators are <code>||</code>, <code>&amp;&amp;</code> and <code>!</code> for booleans, and relational operators such as <code>!=</code>, <code>==</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>. In Nix, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code> and <code>&gt;=</code> are not much used. There are also other operators we will see in the course of this series.</p>
+<p>Nix has integer, floating point, string, path, boolean and null <a href="https://nixos.org/manual/nix/stable/expressions/language-values.html">simple</a> types. Then there are also lists, sets and functions. These types are enough to build an operating system.</p>
+<p>Nix is strongly typed, but it's not statically typed. That is, you cannot mix strings and integers, you must first do the conversion.</p>
+<p>As demonstrated above, expressions will be parsed as paths as long as there's a slash not followed by a space. Therefore to specify the current directory, use <code>./.</code> In addition, Nix also parses urls specially.</p>
+<p>Not all urls or paths can be parsed this way. If a syntax error occurs, it's still possible to fallback to plain strings. Literal urls and paths are convenient for additional safety.</p>
 <h2 id="identifier"><a class="header" href="#identifier">Identifier</a></h2>
-<p>There's not much to say here, except that dash (<code>-</code>) is allowed in
-identifiers. That's convenient since many packages use dash in their
-names. In fact:</p>
-<pre><code>nix-repl&gt; a-b
+<p>There's not much to say here, except that dash (<code>-</code>) is allowed in identifiers. That's convenient since many packages use dash in their names. In fact:</p>
+<pre><code class="language-console">nix-repl&gt; a-b
 error: undefined variable `a-b' at (string):1:1
 nix-repl&gt; a - b
 error: undefined variable `a' at (string):1:1
 </code></pre>
 <p>As you can see, <code>a-b</code> is parsed as identifier, not as a subtraction.</p>
 <h2 id="strings"><a class="header" href="#strings">Strings</a></h2>
-<p>It's important to understand the syntax for strings. When learning to
-read Nix expressions, you may find dollars (<code>$</code>) ambiguous, but they are
-very important . Strings are enclosed by double quotes (<code>"</code>), or two
-single quotes (<code>''</code>).</p>
-<pre><code>nix-repl&gt; "foo"
+<p>It's important to understand the syntax for strings. When learning to read Nix expressions, you may find dollars (<code>$</code>) ambiguous, but they are very important . Strings are enclosed by double quotes (<code>"</code>), or two single quotes (<code>''</code>).</p>
+<pre><code class="language-console">nix-repl&gt; "foo"
 "foo"
 nix-repl&gt; ''foo''
 "foo"
 </code></pre>
-<p>In other languages like Python you can also use single quotes for
-strings (e.g. <code>'foo'</code>), but not in Nix.</p>
-<p>It's possible to
-<a href="https://nixos.org/manual/nix/stable/expressions/language-values.html">interpolate</a>
-whole Nix expressions inside strings with the <code>${...}</code> syntax and only
-that syntax, not <code>$foo</code> or <code>{$foo}</code> or anything else.</p>
-<pre><code>nix-repl&gt; foo = "strval"
+<p>In other languages like Python you can also use single quotes for strings (e.g. <code>'foo'</code>), but not in Nix.</p>
+<p>It's possible to <a href="https://nixos.org/manual/nix/stable/expressions/language-values.html">interpolate</a> whole Nix expressions inside strings with the <code>${...}</code> syntax and only that syntax, not <code>$foo</code> or <code>{$foo}</code> or anything else.</p>
+<pre><code class="language-console">nix-repl&gt; foo = "strval"
 nix-repl&gt; "$foo"
 "$foo"
 nix-repl&gt; "${foo}"
@@ -291,141 +244,107 @@ nix-repl&gt; "${foo}"
 nix-repl&gt; "${2+3}"
 error: cannot coerce an integer to a string, at (string):1:2
 </code></pre>
-<p>Note: ignore the <code>foo = "strval"</code> assignment, special syntax in
-<code>nix repl</code>.</p>
-<p>As said previously, you cannot mix integers and strings. You need to
-explicitly include conversions. We'll see this later: function calls
-are another story.</p>
-<p>Using the syntax with two single quotes is useful for writing double
-quotes inside strings without needing to escape them:</p>
-<pre><code>nix-repl&gt; ''test " test''
+<p>Note: ignore the <code>foo = "strval"</code> assignment, special syntax in <code>nix repl</code>.</p>
+<p>As said previously, you cannot mix integers and strings. You need to explicitly include conversions. We'll see this later: function calls are another story.</p>
+<p>Using the syntax with two single quotes is useful for writing double quotes inside strings without needing to escape them:</p>
+<pre><code class="language-console">nix-repl&gt; ''test " test''
 "test \" test"
 nix-repl&gt; ''${foo}''
 "strval"
 </code></pre>
-<p>Escaping <code>${...}</code> within double quoted strings is done with the
-backslash. Within two single quotes, it's done with <code>''</code>:</p>
-<pre><code>nix-repl&gt; "\${foo}"
+<p>Escaping <code>${...}</code> within double quoted strings is done with the backslash. Within two single quotes, it's done with <code>''</code>:</p>
+<pre><code class="language-console">nix-repl&gt; "\${foo}"
 "${foo}"
 nix-repl&gt; ''test ''${foo} test''
 "test ${foo} test"
 </code></pre>
 <h2 id="lists"><a class="header" href="#lists">Lists</a></h2>
 <p>Lists are a sequence of expressions delimited by space (<em>not</em> comma):</p>
-<pre><code>nix-repl&gt; [ 2 "foo" true (2+3) ]
+<pre><code class="language-console">nix-repl&gt; [ 2 "foo" true (2+3) ]
 [ 2 "foo" true 5 ]
 </code></pre>
-<p>Lists, like everything else in Nix, are immutable. Adding or removing
-elements from a list is possible, but will return a new list.</p>
+<p>Lists, like everything else in Nix, are immutable. Adding or removing elements from a list is possible, but will return a new list.</p>
 <h2 id="attribute-sets"><a class="header" href="#attribute-sets">Attribute sets</a></h2>
-<p>An attribute set is an association between string keys and Nix values.
-Keys can only be strings. When writing attribute sets you can also use
-unquoted identifiers as keys.</p>
-<pre><code>nix-repl&gt; s = { foo = "bar"; a-b = "baz"; "123" = "num"; }
+<p>An attribute set is an association between string keys and Nix values. Keys can only be strings. When writing attribute sets you can also use unquoted identifiers as keys.</p>
+<pre><code class="language-console">nix-repl&gt; s = { foo = "bar"; a-b = "baz"; "123" = "num"; }
 nix-repl&gt; s
 { "123" = "num"; a-b = "baz"; foo = "bar"; }
 </code></pre>
-<p>For those reading Nix expressions from nixpkgs: do not confuse attribute
-sets with argument sets used in functions.</p>
+<p>For those reading Nix expressions from nixpkgs: do not confuse attribute sets with argument sets used in functions.</p>
 <p>To access elements in the attribute set:</p>
-<pre><code>nix-repl&gt; s.a-b
+<pre><code class="language-console">nix-repl&gt; s.a-b
 "baz"
 nix-repl&gt; s."123"
 "num"
 </code></pre>
-<p>Yes, you can use strings to address keys which aren't valid
-identifiers.</p>
-<p>Inside an attribute set you cannot normally refer to elements of the
-same attribute set:</p>
-<pre><code>nix-repl&gt; { a = 3; b = a+4; }
+<p>Yes, you can use strings to address keys which aren't valid identifiers.</p>
+<p>Inside an attribute set you cannot normally refer to elements of the same attribute set:</p>
+<pre><code class="language-console">nix-repl&gt; { a = 3; b = a+4; }
 error: undefined variable `a' at (string):1:10
 </code></pre>
-<p>To do so, use <a href="https://nixos.org/manual/nix/stable/expressions/language-constructs.html#recursive-sets">recursive attribute
-sets</a>:</p>
-<pre><code>nix-repl&gt; rec { a = 3; b = a+4; }
+<p>To do so, use <a href="https://nixos.org/manual/nix/stable/expressions/language-constructs.html#recursive-sets">recursive attribute sets</a>:</p>
+<pre><code class="language-console">nix-repl&gt; rec { a = 3; b = a+4; }
 { a = 3; b = 7; }
 </code></pre>
-<p>This is very convenient when defining packages, which tend to be
-recursive attribute sets.</p>
+<p>This is very convenient when defining packages, which tend to be recursive attribute sets.</p>
 <h2 id="if-expressions"><a class="header" href="#if-expressions">If expressions</a></h2>
 <p>These are expressions, not statements.</p>
-<pre><code>nix-repl&gt; a = 3
+<pre><code class="language-console">nix-repl&gt; a = 3
 nix-repl&gt; b = 4
 nix-repl&gt; if a &gt; b then "yes" else "no"
 "no"
 </code></pre>
-<p>You can't have only the <code>then</code> branch, you must specify also the <code>else</code>
-branch, because an expression must have a value in all cases.</p>
+<p>You can't have only the <code>then</code> branch, you must specify also the <code>else</code> branch, because an expression must have a value in all cases.</p>
 <h2 id="let-expressions"><a class="header" href="#let-expressions">Let expressions</a></h2>
-<p>This kind of expression is used to define local variables for inner
-expressions.</p>
-<pre><code>nix-repl&gt; let a = "foo"; in a
+<p>This kind of expression is used to define local variables for inner expressions.</p>
+<pre><code class="language-console">nix-repl&gt; let a = "foo"; in a
 "foo"
 </code></pre>
-<p>The syntax is: first assign variables, then <code>in</code>, then an expression
-which can use the defined variables. The value of the whole <code>let</code>
-expression will be the value of the expression after the <code>in</code>.</p>
-<pre><code>nix-repl&gt; let a = 3; b = 4; in a + b
+<p>The syntax is: first assign variables, then <code>in</code>, then an expression which can use the defined variables. The value of the whole <code>let</code> expression will be the value of the expression after the <code>in</code>.</p>
+<pre><code class="language-console">nix-repl&gt; let a = 3; b = 4; in a + b
 7
 </code></pre>
 <p>Let's write two <code>let</code> expressions, one inside the other:</p>
-<pre><code>nix-repl&gt; let a = 3; in let b = 4; in a + b
+<pre><code class="language-console">nix-repl&gt; let a = 3; in let b = 4; in a + b
 7
 </code></pre>
-<p>With <code>let</code> you cannot assign twice to the same variable. However, you
-can shadow outer variables:</p>
-<pre><code>nix-repl&gt; let a = 3; a = 8; in a
+<p>With <code>let</code> you cannot assign twice to the same variable. However, you can shadow outer variables:</p>
+<pre><code class="language-console">nix-repl&gt; let a = 3; a = 8; in a
 error: attribute `a' at (string):1:12 already defined at (string):1:5
 nix-repl&gt; let a = 3; in let a = 8; in a
 8
 </code></pre>
 <p>You cannot refer to variables in a <code>let</code> expression outside of it:</p>
-<pre><code>nix-repl&gt; let a = (let c = 3; in c); in c
+<pre><code class="language-console">nix-repl&gt; let a = (let c = 3; in c); in c
 error: undefined variable `c' at (string):1:31
 </code></pre>
-<p>You can refer to variables in the <code>let</code> expression when assigning
-variables, like with recursive attribute sets:</p>
-<pre><code>nix-repl&gt; let a = 4; b = a + 5; in b
+<p>You can refer to variables in the <code>let</code> expression when assigning variables, like with recursive attribute sets:</p>
+<pre><code class="language-console">nix-repl&gt; let a = 4; b = a + 5; in b
 9
 </code></pre>
-<p>So beware when you want to refer to a variable from the outer scope, but
-it's also defined in the current let expression. The same applies to
-recursive attribute sets.</p>
+<p>So beware when you want to refer to a variable from the outer scope, but it's also defined in the current let expression. The same applies to recursive attribute sets.</p>
 <h2 id="with-expression"><a class="header" href="#with-expression">With expression</a></h2>
-<p>This kind of expression is something you rarely see in other languages.
-You can think of it like a more granular version of <code>using</code> from C++, or
-<code>from module import *</code> from Python. You decide per-expression when to
-include symbols into the scope.</p>
-<pre><code>nix-repl&gt; longName = { a = 3; b = 4; }
+<p>This kind of expression is something you rarely see in other languages. You can think of it like a more granular version of <code>using</code> from C++, or <code>from module import *</code> from Python. You decide per-expression when to include symbols into the scope.</p>
+<pre><code class="language-console">nix-repl&gt; longName = { a = 3; b = 4; }
 nix-repl&gt; longName.a + longName.b
 7
 nix-repl&gt; with longName; a + b
 7
 </code></pre>
-<p>That's it, it takes an attribute set and includes symbols from it in
-the scope of the inner expression. Of course, only valid identifiers
-from the keys of the set will be included. If a symbol exists in the
-outer scope and would also be introduced by the <code>with</code>, it will <em>not</em> be
-shadowed. You can however still refer to the attribute set:</p>
-<pre><code>nix-repl&gt; let a = 10; in with longName; a + b
+<p>That's it, it takes an attribute set and includes symbols from it in the scope of the inner expression. Of course, only valid identifiers from the keys of the set will be included. If a symbol exists in the outer scope and would also be introduced by the <code>with</code>, it will <em>not</em> be shadowed. You can however still refer to the attribute set:</p>
+<pre><code class="language-console">nix-repl&gt; let a = 10; in with longName; a + b
 14
 nix-repl&gt; let a = 10; in with longName; longName.a + b
 7
 </code></pre>
 <h2 id="laziness"><a class="header" href="#laziness">Laziness</a></h2>
-<p>Nix evaluates expressions only when needed. This is a great feature when
-working with packages.</p>
-<pre><code>nix-repl&gt; let a = builtins.div 4 0; b = 6; in b
+<p>Nix evaluates expressions only when needed. This is a great feature when working with packages.</p>
+<pre><code class="language-console">nix-repl&gt; let a = builtins.div 4 0; b = 6; in b
 6
 </code></pre>
-<p>Since <code>a</code> is not needed, there's no error about division by zero,
-because the expression is not in need to be evaluated. That's why we
-can have all the packages defined on demand, yet have access to specific
-packages very quickly.</p>
+<p>Since <code>a</code> is not needed, there's no error about division by zero, because the expression is not in need to be evaluated. That's why we can have all the packages defined on demand, yet have access to specific packages very quickly.</p>
 <h2 id="next-pill"><a class="header" href="#next-pill">Next pill</a></h2>
-<p>...we will talk about functions and imports. In this pill I've tried
-to avoid function calls as much as possible, otherwise the post would
-have been too long.</p>
+<p>...we will talk about functions and imports. In this pill I've tried to avoid function calls as much as possible, otherwise the post would have been too long.</p>
 
                     </main>
 
