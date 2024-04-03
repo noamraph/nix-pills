@@ -1,6 +1,6 @@
 # The Basics of the Language {#basics-of-language}
 
-Welcome to the fourth Nix pill. In the [previous article](#enter-environment) we learned about Nix environments. We installed software as a user, managed their profile, switched between generations, and queried the Nix store. Those are the very basics of system administration using Nix.
+Welcome to the fourth Nix pill. In the [previous article](03-enter-environment.md) we learned about Nix environments. We installed software as a user, managed their profile, switched between generations, and queried the Nix store. Those are the very basics of system administration using Nix.
 
 The [Nix language](https://nixos.org/manual/nix/stable/expressions/expression-language.html) is used to write expressions that produce derivations. The [nix-build](https://nixos.org/manual/nix/stable/command-ref/nix-build.html) tool is used to build derivations from an expression. Even as a system administrator that wants to customize the installation, it\'s necessary to master Nix. Using Nix for your jobs means you get the features we saw in the previous articles for free.
 
