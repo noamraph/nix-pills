@@ -176,7 +176,9 @@ If you\'re using NixOS, you may not see any output from the above command (if yo
 That\'s essentially the contents of `~/.nix-channels`.
 
 <div class="info">
+
 Note: `~/.nix-channels` is not a symlink to the nix store!
+
 </div>
 
 To update the channel run `nix-channel --update`. That will download the new Nix expressions (descriptions of the packages), create a new generation of the channels profile and unpack it under `~/.nix-defexpr/channels`.

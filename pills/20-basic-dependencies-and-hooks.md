@@ -5,12 +5,12 @@ Welcome to the 20th Nix pill. In the previous [19th](19-fundamentals-of-stdenv.m
 This time, we\'ll focus on the interaction of packages built with `stdenv.mkDerivation`. Packages need to depend on each other, of course. For this we have `buildInputs` and `propagatedBuildInputs` attributes. We\'ve also found that dependencies sometimes need to influence their dependents in ways the dependents can\'t or shouldn\'t predict. For this we have setup hooks and env hooks. Together, these 4 concepts support almost all build-time package interactions.
 
 <div class="info">
-The complexity of the dependencies and hooks infrastructure has increased, over time, to support cross compilation. Once you learn the core concepts, you will be able to understand the extra complexity. As a starting point, you might want to refer to nixpkgs commit <a href="https://github.com/nixos/nixpkgs/tree/6675f0a52c0962042a1000c7f20e887d0d26ae25">6675f0a5</a>, the last version of stdenv without cross-compilation complexity.
+Note: The complexity of the dependencies and hooks infrastructure has increased, over time, to support cross compilation. Once you learn the core concepts, you will be able to understand the extra complexity. As a starting point, you might want to refer to nixpkgs commit <a href="https://github.com/nixos/nixpkgs/tree/6675f0a52c0962042a1000c7f20e887d0d26ae25">6675f0a5</a>, the last version of stdenv without cross-compilation complexity.
 </div>
 
 ## The `buildInputs` Attribute
 
-For the simplest dependencies where the current package directly needs another, we use the `buildInputs` attribute. This is exactly the pattern used in our builder in [Pill 8](#generic-builders). To demo this, let\'s build GNU Hello, and then another package which provides a shell script that `exec`s it.
+For the simplest dependencies where the current package directly needs another, we use the `buildInputs` attribute. This is exactly the pattern used in our builder in [Pill 8](08-generic-builders.html). To demo this, let\'s build GNU Hello, and then another package which provides a shell script that `exec`s it.
 
     let
 

@@ -13,8 +13,11 @@ These articles are not a tutorial on *using* Nix. Instead, we\'re going to walk 
 The first thing to note: derivations in the Nix store refer to other derivations which are themselves in the Nix store. They don\'t use `libc` from our system or anywhere else. It\'s a self-contained store of all the software we need to bootstrap up to any particular package.
 
 <div class="info">
-Note: In a multi-user installation, such as the one used in NixOS, the store is owned by root and multiple users can install and build software through a Nix daemon. You can read more about multi-user installations here: <https://nixos.org/manual/nix/stable/installation/installing-binary.html#multi-user-installation>.
+
+Note: In a multi-user installation, such as the one used in NixOS, the store is owned by root and multiple users can install and build software through a Nix daemon. You can read more about multi-user installations here: <a href="https://nixos.org/manual/nix/stable/installation/installing-binary.html#multi-user-installation">https://nixos.org/manual/nix/stable/installation/installing-binary.html#multi-user-installation</a>.
+
 </div>
+
 ## The beginnings of the Nix store
 
 Start looking at the output of the install command:
@@ -40,11 +43,15 @@ Then there\'s a dependency relation from path to paths upon which they depend.
 You can inspect the database by installing sqlite (`nix-env -iA sqlite -f '<nixpkgs>'`) and then running `sqlite3 /nix/var/nix/db/db.sqlite`.
 
 <div class="info">
-If this is the first time you\'re using Nix after the initial installation, remember you must close and open your terminals first, so that your shell environment will be updated.
+
+Note: If this is the first time you\'re using Nix after the initial installation, remember you must close and open your terminals first, so that your shell environment will be updated.
+
 </div>
 
 <div class="warning">
+
 Important: Never change `/nix/store` manually. If you do, then it will no longer be in sync with the sqlite db, unless you *really* know what you are doing.
+
 </div>
 
 ## The first profile

@@ -50,7 +50,7 @@ Both drv paths and out paths are stored in the nix store as you can see.
 What\'s in that `.drv` file? You can read it, but it\'s better to pretty print it:
 
 <div class="info">
-If your version of nix doesn\'t have `nix derivation show`, use `nix show-derivation` instead.
+Note: If your version of nix doesn\'t have `nix derivation show`, use `nix show-derivation` instead.
 </div>
 
 \<screen xmlns=\"http://docbook.org/ns/docbook\"\>\<prompt\>\$ \</prompt\>\<userinput\>nix derivation show /nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-\<emphasis\>myname.drv\</emphasis\>\</userinput\> \<computeroutput\>{ \"/nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv\": { \"outputs\": { \"out\": { \"path\": \"/nix/store/40s0qmrfb45vlh6610rk29ym318dswdr-myname\" } }, \"inputSrcs\": \[\], \"inputDrvs\": {}, \"platform\": \"mysystem\", \"builder\": \"mybuilder\", \"args\": \[\], \"env\": { \"builder\": \"mybuilder\", \"name\": \"myname\", \"out\": \"/nix/store/40s0qmrfb45vlh6610rk29ym318dswdr-myname\", \"system\": \"mysystem\" } } }\</computeroutput\>\</screen\>
